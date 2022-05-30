@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="864"
+    android:viewportHeight="864">
+    <path
+        android:fillColor="@color/custom_button_background"
+        android:pathData="M432,6c235.3,0 426,190.7 426,426S667.3,858 432,858S6,667.3 6,432S196.7,6 432,6z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M858,432c0,235.3 -190.7,426 -426,426S6,667.3 6,432S196.7,6 432,6S858,196.7 858,432z"
+        android:strokeWidth="3"
+        android:strokeColor="@color/custom_text_color" />
+    <path
+        android:fillColor="@color/black"
+        android:pathData="M619,423.9l0,16.2l-178.9,0l0,178.9l-16.2,0l0,-178.9l-178.9,0l0,-16.2l178.9,0l0,-178.9l16.2,0l0,178.9z"
+        android:strokeWidth="5"
+        android:strokeColor="@color/custom_text_color" />
+</vector>

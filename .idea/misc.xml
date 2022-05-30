@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/add_workout_layout.xml" value="0.3135" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/delete_rename_workout_background.xml" value="0.3135" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_rounds_background.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_workout_layout_background.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic__play_button.xml" value="0.236" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_add_button.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_edit_view.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_camera.xml" value="0.34" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.338" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_remove_workout.xml" value="0.338" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_pause_button.xml" value="0.236" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_play_button.xml" value="0.236" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_play_pause_button.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_remove_view.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_rest_clock.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_work_clock.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/layouts_background.xml" value="0.193" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/main_layout_background.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/side_nav_bar.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/add_activity.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/add_new_workout.xml" value="0.3640625" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/add_view.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/app_bar_main.xml" value="0.25" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/content_main.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/delete_exercise.xml" value="0.3640625" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/delete_rename_workout.xml" value="0.33" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/edit_workout.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/fragment_calendar.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/fragment_gallery.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/fragment_slideshow.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/fragment_workout.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/list_group.xml" value="0.25" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/list_item.xml" value="0.25" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/nav_header_main.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/menu/activity_main_drawer.xml" value="0.3651041666666667" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/menu/main.xml" value="0.18489583333333334" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

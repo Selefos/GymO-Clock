@@ -15,7 +15,7 @@ var restTimeInMillis by Delegates.notNull<Long>()
 var startTime: String = ""
 
 //region Exercise Timer
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
     workTimeInMillis = convertTimeToMillis(position.exerciseClockValue.text.toString())
@@ -46,7 +46,7 @@ fun UserAddActivityAdapter.startExerciseTimer(positionData: Int) {
 
     position.wTimerIsRunning = true
 }
-
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.pauseExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
 
@@ -56,7 +56,7 @@ fun UserAddActivityAdapter.pauseExerciseTimer(positionData: Int) {
     position.wTimerIsPaused = true
     position.wCountDownTimer.cancel()
 }
-
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.updateWorkCountUI(positionData: Int) {
     val position = dataList[positionData]
     val minutesWork = (workTimeInMillis / 1000) / 60
@@ -79,7 +79,7 @@ fun UserAddActivityAdapter.updateWorkCountUI(positionData: Int) {
 //endregion
 
 //region Rest Timer
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
     val position = dataList[positionData]
     restTimeInMillis = convertTimeToMillis(position.restClockValue.text.toString())
@@ -136,7 +136,7 @@ fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
     }.start()
     position.rTimerIsRunning = true
 }
-
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.pauseRestTimer(positionData: Int) {
     val position = dataList[positionData]
     speak("REST PAUSED")
@@ -145,7 +145,7 @@ fun UserAddActivityAdapter.pauseRestTimer(positionData: Int) {
     position.rTimerIsPaused = true
     position.rCountDownTimer.cancel()
 }
-
+@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.updateRestCountUI(positionData: Int) {
     val position = dataList[positionData]
     val minutesWork = (restTimeInMillis / 1000) / 60

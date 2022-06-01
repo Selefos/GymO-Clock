@@ -3,6 +3,7 @@ package com.gym.o.gymoclock.functionality.workout_pr.user_adapter
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -27,7 +28,7 @@ import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import java.util.*
 import kotlin.properties.Delegates
 
-
+@RequiresApi(Build.VERSION_CODES.Q)
 class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: RecyclerViewInterface, val dataList: ArrayList<Elements>) :
     RecyclerView.Adapter<UserAddActivityAdapter.ViewHolder>() {
 
@@ -83,7 +84,7 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
         return ViewHolder(v)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val newList = dataList[position]
         holder.exerciseName.text = newList.exerciseNameValue
@@ -143,19 +144,22 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
     }
 
     private lateinit var workoutDB: WorkoutDB
+    private lateinit var db: SQLiteDatabase
     fun totalTime(rounds: Int): Int {
+
         var totalTime = 0
         workoutDB = WorkoutDB(context)
-        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName)
+        db = workoutDB.readableDatabase
+        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName, db)
 
         if (cursor.moveToFirst()) {
             do {
                 totalTime += cursor.getInt(2)
                 totalTime += cursor.getInt(3)
-
             } while (cursor.moveToNext())
         }
         cursor.close()
+        db.close()
 
         return totalTime * rounds
     }
@@ -163,7 +167,8 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
     fun totalWorkingTime(rounds: Int): Int {
         var totalTime = 0
         workoutDB = WorkoutDB(context)
-        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName)
+        db = workoutDB.readableDatabase
+        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName, db)
 
         if (cursor.moveToFirst()) {
             do {
@@ -172,6 +177,7 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
             } while (cursor.moveToNext())
         }
         cursor.close()
+        db.close()
 
         return totalTime * rounds
     }

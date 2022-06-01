@@ -41,7 +41,7 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-
+@RequiresApi(Build.VERSION_CODES.Q)
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var dialogBuilder: AlertDialog.Builder
     private lateinit var dialog: AlertDialog
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -197,15 +196,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun calendarDBInit(){
         val calendarDB: CalendarDB = CalendarDB(this)
         val dateTimeUtils: DateTimeUtils = DateTimeUtils()
         val monthYear = "${dateTimeUtils.getCurrentMonth()} ${dateTimeUtils.getCurrentYear()}".replace(" ", "_")
+        val calendarMonths: List<String> = calendarDB.loadCalendarTableNames()
 
-        Log.d("DateTime" ,"$monthYear ${dateTimeUtils.getCurrentTime()} ${dateTimeUtils.getDate()}")
+        for (month in calendarMonths)
+            if (monthYear == month){
+                Log.e("Calendar Database", "Occurrence Found")
+                return
+            }
+
+        Log.e("DateTime" ,"$monthYear ${dateTimeUtils.getCurrentTime()} ${dateTimeUtils.getDate()}")
         Toast.makeText(this, "$monthYear ${dateTimeUtils.getCurrentTime()} ${dateTimeUtils.getDate()}", Toast.LENGTH_SHORT ).show()
-        if(calendarDB.loadCalendarTableNames().isEmpty())
+        //if(calendarDB.loadCalendarTableNames().isEmpty())
             calendarDB.addCalendarTable(monthYear)
 
     }

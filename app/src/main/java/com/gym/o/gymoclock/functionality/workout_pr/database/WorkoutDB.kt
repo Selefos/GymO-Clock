@@ -15,6 +15,7 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_WORKOUT")
         onCreate(db)
+        db.close()
     }
 
     fun addWorkoutTable(WorkoutName: String) {
@@ -41,6 +42,7 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     fun deleteWorkoutTable(tableName: String) {
         val db = this.writableDatabase
         db.execSQL("DROP TABLE IF EXISTS $tableName")
+        db.close()
     }
 
     fun loadWorkoutTableNames(): List<String> {
@@ -88,9 +90,9 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result != -1
     }
 
-    fun loadRecyclerElements(tableName: String): Cursor {
+    fun loadRecyclerElements(tableName: String, db: SQLiteDatabase): Cursor {
 
-        val db: SQLiteDatabase = readableDatabase
+        //val db: SQLiteDatabase = readableDatabase
         return db.query(tableName, null, null, null, null, null, null)
     }
 

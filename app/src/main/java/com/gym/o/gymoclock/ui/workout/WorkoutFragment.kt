@@ -1,24 +1,17 @@
 package com.gym.o.gymoclock.ui.workout
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.*
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -27,7 +20,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.RecyclerViewInterface
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
@@ -41,13 +33,16 @@ import java.util.*
 import kotlin.properties.Delegates
 
 
-class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
+@RequiresApi(Build.VERSION_CODES.Q)
+open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
+    val TAG_NUMPICKER = "NumberPicker"
 
     private var _binding: FragmentWorkoutBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var listAdapter: UserAddActivityAdapter
     private lateinit var workoutDB: WorkoutDB
+    private lateinit var db: SQLiteDatabase
     private lateinit var recyclerView: RecyclerView
     private lateinit var dataList: ArrayList<Elements>
 
@@ -65,10 +60,8 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     private lateinit var dateTimeUtils: DateTimeUtils
     private lateinit var calendarDB: CalendarDB
-    lateinit var sharedPreferences: SharedPreferences
-    private var isRoundsChangedByUser: Boolean = false
+    private lateinit var sharedPreferences: SharedPreferences
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,11 +70,6 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-//        for(i: Int in 0..20)
-//        {
-//            binding.roundsEdit.ap
-//        }
 
         sharedPreferences = requireContext().getSharedPreferences("Rounds", Context.MODE_PRIVATE)
         rounds = sharedPreferences.getInt("roundsInt", -1)
@@ -100,7 +88,8 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         workoutInit()
 
         if (listAdapter.itemCount != 0)
-            roundsEditable()
+            roundsPicker()
+        //roundsEditable()
 
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
@@ -268,13 +257,12 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         cancelButton.setOnClickListener { dialog.dismiss() }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun roundsCount() {
         val dateTimeUtils = DateTimeUtils()
         rounds--
         iterator = 0
         if (rounds < 0) rounds = 0
-        binding.roundsEdit.setText(rounds.toString())
+        binding.roundsEdit.value = rounds
         Log.d(
             "MAIN",
             "Rounds Total: $rounds, isStartWorkout $isStartWorkout isPauseWorkout $isPauseWorkout -- ${dateTimeUtils.getCurrentTime()}"
@@ -284,6 +272,7 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             return
 
         if (rounds == 0) {
+            binding.roundsEdit.textColor = Color.RED
             endOfWorkout()
             return
         }
@@ -295,8 +284,7 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         listAdapter.startExerciseTimer(iterator)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun endOfWorkout() {
+    private fun endOfWorkout() {
         val dateTimeUtils = DateTimeUtils()
         binding.playPauseButton.background =
             getDrawable(requireContext(), R.drawable.ic_play_button)
@@ -325,8 +313,9 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     override fun loadRecyclerViews() {
 
         workoutDB = WorkoutDB(requireActivity().applicationContext)
+        db = workoutDB.readableDatabase
         dataList.clear()
-        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName)
+        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName, db)
 
         if (cursor.moveToFirst()) {
             do {
@@ -375,6 +364,7 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             } while (cursor.moveToNext())
         }
         cursor.close()
+        db.close()
         listAdapter.notifyDataSetChanged()
 
     }
@@ -402,11 +392,13 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialog.show()
 
         okButton.setOnClickListener {
+
+            Log.w("Add Exercise", workoutName)
             var exerciseName = "Exercise Name"
-            if (exerciseNameEdit.text.toString() != "")
+            if (exerciseNameEdit.text.toString().isNotEmpty())
                 exerciseName = exerciseNameEdit.text.toString().trim()
 
-            if (workoutName == "" || workoutName == "temp") {
+            if (workoutName.isEmpty() || workoutName == "temp") {
                 val exerciseClock: TextView = viewRecycler.findViewById(R.id.countdown_work)
                 exerciseClock.text = convertTimeToDigitalClock(workTimeEdit.text.toString())
 
@@ -437,18 +429,20 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 )
                 listAdapter.notifyDataSetChanged()
 
-                val insertExerciseData = workoutDB.insertExerciseDetails(
-                    workoutName, exerciseName, workTimeEdit.text.toString(),
-                    restTimeEdit.text.toString()
-                )
-                if (insertExerciseData)
-                    Toast.makeText(context, "Exercise Added", Toast.LENGTH_SHORT).show()
+//                val insertExerciseData = workoutDB.insertExerciseDetails(
+//                    workoutName, exerciseName, workTimeEdit.text.toString(),
+//                    restTimeEdit.text.toString()
+//                )
+//                if (insertExerciseData)
+//                    Toast.makeText(context, "Exercise Added", Toast.LENGTH_SHORT).show()
 
                 binding.totalTime.text =
                     convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
                 dialog.dismiss()
                 return@setOnClickListener
             }
+
+            Log.w("Add Exercise", "Past no Database")
 
             if (nameIsDuplicate(exerciseName))
                 editTextWarning(exerciseNameEdit, "Exercise already registered")
@@ -473,7 +467,6 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
                     override fun onFinish() {}
                 }
-
 
                 dataList.add(
                     Elements(
@@ -536,59 +529,82 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         return (listAdapter.totalTime(rounds)) - timeDifference
     }
 
-    private fun roundsEditable() {
+    private fun roundsPicker(){
 
-        binding.roundsEdit.setText(rounds.toString())
+        binding.roundsEdit.maxValue = 20
+        binding.roundsEdit.value = rounds
 
-        binding.roundsEdit.setOnFocusChangeListener { _, hasFocus ->
-            isRoundsChangedByUser = hasFocus
+        Log.d(TAG_NUMPICKER, "${binding.roundsEdit.value}")
+
+        binding.roundsEdit.setOnScrollListener { view, scrollState ->
+            when(scrollState){
+                NumberPicker.OnScrollListener.SCROLL_STATE_IDLE -> scrollIdle(view)
+                NumberPicker.OnScrollListener.SCROLL_STATE_FLING -> scrollFlying()
+                NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL -> scrollTouched(view)
+            }
         }
 
-        binding.roundsEdit.addTextChangedListener(object : TextWatcher {
+//            binding.roundsEdit.setOnValueChangedListener { picker, oldVal, newVal ->
+//                oldValue = oldVal
+//                Log.d("RoundsPicker", "OldValue = $oldVal")
+//                Log.d("RoundsPicker", "NewValue = $newVal")
+//        }
 
-            override fun afterTextChanged(s: Editable) {
+    }
 
-                if (s.isNotEmpty()) {
+    private fun scrollIdle(scrollView: NumberPicker){
 
-                    //binding.totalTime.text = convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
-                    binding.totalTime.text = convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
-                    if (isStartWorkout) {
-                        pauseTotalTimer()
-                        startTotalTimer()
-                    }
-                    if(isRoundsChangedByUser){
-                        Log.d("Edit Rounds Changes U/A", "Changed By User")
-                        val save = sharedPreferences.edit()
-                        save.putInt("roundsInt", binding.roundsEdit.text.toString().toInt())
-                        save.apply()
-                    }else Log.d("Edit Rounds Changes U/A", "Changed By Android")
+        Log.i(TAG_NUMPICKER, "Scroll Idle")
+        var oldValue = rounds
+        rounds = scrollView.value
 
-                }
-                if (s.toString() != "0") binding.roundsEdit.setTextColor(
-                    getColor(
-                        requireContext(),
-                        R.color.custom_text_color
-                    )
-                )
-            }
+        val save = sharedPreferences.edit()
+        save.putInt("roundsInt", rounds)
+        save.apply()
+        Log.i(TAG_NUMPICKER, "Round Value Saved: New Value = $rounds")
+        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                timeDifference = timeDifference(listAdapter.totalTime(rounds))
-            }
+        Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
+//        if(oldValue == 0 ){
+//            oldValue = 1
+//            Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
+//            binding.roundsEdit.value = oldValue
+//        }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.isNotEmpty()) {
-                    rounds = binding.roundsEdit.editableText.toString().toInt()
-                    if (rounds > 20) {
-                        rounds = 20
-                        //rounds = binding.roundsEdit.editableText.toString().toInt()
-                        binding.roundsEdit.setText(rounds.toString())
-                    }
+//        if (isStartWorkout) {
+//            when (rounds) {
+//                0 -> {
+//                    oldValue = 1
+//                    Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
+//                    binding.roundsEdit.value = 1
+//                }
+//            }
+//        }
+        timeDifference = timeDifference(listAdapter.totalTime(oldValue))
 
-                }
-            }
+        binding.totalTime.text =
+            convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
 
-        })
+        if (isStartWorkout) {
+            pauseTotalTimer()
+            startTotalTimer()
+        }
+
+        if (scrollView.value == 0) binding.roundsEdit.textColor = Color.RED
+        else binding.roundsEdit.textColor = getColor(
+            requireContext(),
+            R.color.custom_text_color)
+
+    }
+
+    private fun scrollFlying(){
+        Log.i("NumberPicker", "Scroll Flying")
+    }
+
+    private fun scrollTouched(scrollView: NumberPicker){
+        Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
+
+
     }
 
     private fun setItemTouchHelper() {
@@ -719,7 +735,6 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         binding.totalTime.text = totalCount
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun workoutInit() {
 
         binding.addLayout.setOnClickListener {
@@ -731,7 +746,7 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (rounds == 0) {
                 iterator = 0
-                editTextWarning(binding.roundsEdit, rounds.toString())
+                pickerTextWarning(binding.roundsEdit, rounds)
                 return@setOnClickListener
             }
 
@@ -766,4 +781,5 @@ class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
 
     }
+
 }

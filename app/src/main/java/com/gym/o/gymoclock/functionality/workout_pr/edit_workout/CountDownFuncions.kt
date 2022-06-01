@@ -123,7 +123,7 @@ fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
 
                 val monthYear = "${dateTimeUtils.getCurrentMonth()} ${dateTimeUtils.getCurrentYear()}".replace(" ", "_")
                 calendarDB.insertCalendarDetails(monthYear, dateTimeUtils.getDate(), startTime, dateTimeUtils.getCurrentTime(), workoutName,
-                    convertTimeToDigitalClock(totalTime(5).toString()), convertTimeToDigitalClock(totalWorkingTime(5).toString())
+                    convertTimeToDigitalClock(totalTime(rounds).toString()), convertTimeToDigitalClock(totalWorkingTime(rounds).toString())
                 )
                 startTime = ""
             }

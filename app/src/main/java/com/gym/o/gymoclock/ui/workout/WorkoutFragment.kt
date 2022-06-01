@@ -544,67 +544,65 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
         }
 
-//            binding.roundsEdit.setOnValueChangedListener { picker, oldVal, newVal ->
-//                oldValue = oldVal
-//                Log.d("RoundsPicker", "OldValue = $oldVal")
-//                Log.d("RoundsPicker", "NewValue = $newVal")
-//        }
-
     }
 
     private fun scrollIdle(scrollView: NumberPicker){
 
         Log.i(TAG_NUMPICKER, "Scroll Idle")
+
         var oldValue = rounds
-        rounds = scrollView.value
-
-        val save = sharedPreferences.edit()
-        save.putInt("roundsInt", rounds)
-        save.apply()
-        Log.i(TAG_NUMPICKER, "Round Value Saved: New Value = $rounds")
-        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
-
         Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
-//        if(oldValue == 0 ){
-//            oldValue = 1
-//            Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
-//            binding.roundsEdit.value = oldValue
-//        }
 
-//        if (isStartWorkout) {
-//            when (rounds) {
-//                0 -> {
-//                    oldValue = 1
-//                    Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
-//                    binding.roundsEdit.value = 1
-//                }
-//            }
-//        }
+        rounds = scrollView.value
+        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
+        //Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
+
+        saveRoundsValueToPreferences(scrollView)
+
         timeDifference = timeDifference(listAdapter.totalTime(oldValue))
-
         binding.totalTime.text =
             convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
 
         if (isStartWorkout) {
+            when (rounds) {
+                0 -> {
+                    //oldValue = oldValue
+                    Log.d(TAG_NUMPICKER, "OldValue On WorkSet= $oldValue")
+                    //binding.roundsEdit.value = oldValue
+                }
+            }
             pauseTotalTimer()
             startTotalTimer()
         }
 
+
+
         if (scrollView.value == 0) binding.roundsEdit.textColor = Color.RED
         else binding.roundsEdit.textColor = getColor(
             requireContext(),
-            R.color.custom_text_color)
+            R.color.number_picker_scroll_idle)
 
     }
 
     private fun scrollFlying(){
         Log.i("NumberPicker", "Scroll Flying")
+        binding.roundsEdit.textColor = getColor(
+            requireContext(),
+            R.color.number_picker_scroll_flying)
     }
 
     private fun scrollTouched(scrollView: NumberPicker){
         Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
+        binding.roundsEdit.textColor = getColor(
+            requireContext(),
+            R.color.number_picker_scroll_touched)
+    }
 
-
+    private fun saveRoundsValueToPreferences(scrollView: NumberPicker){
+        val save = sharedPreferences.edit()
+        save.putInt("roundsInt", scrollView.value)
+        save.apply()
+        Log.i(TAG_NUMPICKER, "Round Value Saved: New Value = ${scrollView.value}")
     }
 
     private fun setItemTouchHelper() {

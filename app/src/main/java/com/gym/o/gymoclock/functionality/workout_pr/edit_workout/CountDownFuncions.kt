@@ -1,12 +1,15 @@
 package com.gym.o.gymoclock.functionality.workout_pr.edit_workout
 
+
 import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
-import com.gym.o.gymoclock.functionality.calendar_pr.insertionFunctions.DateTimeUtils
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.UserAddActivityAdapter
+import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -15,7 +18,7 @@ var restTimeInMillis by Delegates.notNull<Long>()
 var startTime: String = ""
 
 //region Exercise Timer
-@RequiresApi(Build.VERSION_CODES.Q)
+
 fun UserAddActivityAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
     workTimeInMillis = convertTimeToMillis(position.exerciseClockValue.text.toString())
@@ -46,17 +49,17 @@ fun UserAddActivityAdapter.startExerciseTimer(positionData: Int) {
 
     position.wTimerIsRunning = true
 }
-@RequiresApi(Build.VERSION_CODES.Q)
-fun UserAddActivityAdapter.pauseExerciseTimer(positionData: Int) {
+
+fun UserAddActivityAdapter.pauseExerciseTimer(positionData: Int, speakText: String) {
     val position = dataList[positionData]
 
-    speak("EXERCISE PAUSED")
+    TextToSpeechUtils.getInstance(context).speak(speakText)
 
     position.wTimerIsRunning = false
     position.wTimerIsPaused = true
     position.wCountDownTimer.cancel()
 }
-@RequiresApi(Build.VERSION_CODES.Q)
+
 fun UserAddActivityAdapter.updateWorkCountUI(positionData: Int) {
     val position = dataList[positionData]
     val minutesWork = (workTimeInMillis / 1000) / 60
@@ -65,13 +68,15 @@ fun UserAddActivityAdapter.updateWorkCountUI(positionData: Int) {
         String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
 
     if (workTimeInMillis / 1000 <= 5 && workTimeInMillis / 1000 != 0L)
-        speak((workTimeInMillis / 1000).toString())
+        TextToSpeechUtils.getInstance(context).speak((workTimeInMillis / 1000).toString())
     if (workTimeInMillis / 1000 == 0L && iterator != itemCount - 1)
-        speak("REST")
+        TextToSpeechUtils.getInstance(context).speak(res.getString(R.string.workout_rest))
+
     else if (workTimeInMillis / 1000 == 0L && iterator == itemCount - 1 && rounds > 1)
-        speak("REST INTERVAL")
+        TextToSpeechUtils.getInstance(context).speak(res.getString(R.string.rest_interval))
+
     else if (workTimeInMillis / 1000 == 0L && iterator == itemCount - 1 && rounds == 1)
-        speak("WORKOUT COMPLETED")
+        TextToSpeechUtils.getInstance(context).speak(res.getString(R.string.workout_completed))
 
     position.exerciseClockValue.text = workCount
     notifyItemChanged(positionData, position.exerciseClockValue)
@@ -79,7 +84,6 @@ fun UserAddActivityAdapter.updateWorkCountUI(positionData: Int) {
 //endregion
 
 //region Rest Timer
-@RequiresApi(Build.VERSION_CODES.Q)
 fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
     val position = dataList[positionData]
     restTimeInMillis = convertTimeToMillis(position.restClockValue.text.toString())
@@ -99,30 +103,30 @@ fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
             dateTimeUtils = DateTimeUtils()
             Log.e("CountDown", "Rest Timer onFinish() {$iterator} -- ${dateTimeUtils.getCurrentTime()}")
 
-            if (iterator == itemCount - 1 && rounds > 0) {
+            if (iterator == itemCount - 1 && totalTime(rounds) > 0) {
 
                 dataList.clear()
                 notifyDataSetChanged()
                 mRecyclerViewInterface.loadRecyclerViews()
                 mRecyclerViewInterface.roundsCount()
 
-                Log.d("CountDown", "Rounds Decrease $rounds -- ${dateTimeUtils.getCurrentTime()}")
+                Log.d("CountDown", "Rounds Decrease ${totalTime(rounds)} -- ${dateTimeUtils.getCurrentTime()}")
                 return
             }
-            if (iterator < itemCount - 1 && rounds > 0) {
+            if (iterator < itemCount - 1 && totalTime(rounds) > 0) {
 
                 iterator++
                 Log.d("ITERATOR", "ITERATOR {$iterator} -- ${dateTimeUtils.getCurrentTime()}")
                 startExerciseTimer(iterator)
             }
-            if (rounds == 0) {
+            if (totalTime(rounds) == 0) {
 
                 calendarDB = CalendarDB(context)
                 dateTimeUtils = DateTimeUtils()
                 Log.d("CountDown", "rounds == 0 ${dateTimeUtils.getCurrentTime()}")
 
-                val monthYear = "${dateTimeUtils.getCurrentMonth()} ${dateTimeUtils.getCurrentYear()}".replace(" ", "_")
-                calendarDB.insertCalendarDetails(monthYear, dateTimeUtils.getDate(), startTime, dateTimeUtils.getCurrentTime(), workoutName,
+                val dateTimeUtils = DateTimeUtils()
+                calendarDB.insertCalendarDetails(dateTimeUtils.setCalendarTableName(), dateTimeUtils.getDate(), startTime, dateTimeUtils.getCurrentTime(), workoutName,
                     convertTimeToDigitalClock(totalTime(rounds).toString()), convertTimeToDigitalClock(totalWorkingTime(rounds).toString())
                 )
                 startTime = ""
@@ -136,16 +140,17 @@ fun UserAddActivityAdapter.startRestTimer(positionData: Int) {
     }.start()
     position.rTimerIsRunning = true
 }
-@RequiresApi(Build.VERSION_CODES.Q)
-fun UserAddActivityAdapter.pauseRestTimer(positionData: Int) {
+
+fun UserAddActivityAdapter.pauseRestTimer(positionData: Int, speakText: String) {
     val position = dataList[positionData]
-    speak("REST PAUSED")
+    TextToSpeechUtils.getInstance(context).speak(speakText)
 
     position.rTimerIsRunning = false
     position.rTimerIsPaused = true
     position.rCountDownTimer.cancel()
 }
-@RequiresApi(Build.VERSION_CODES.Q)
+
+
 fun UserAddActivityAdapter.updateRestCountUI(positionData: Int) {
     val position = dataList[positionData]
     val minutesWork = (restTimeInMillis / 1000) / 60
@@ -154,9 +159,10 @@ fun UserAddActivityAdapter.updateRestCountUI(positionData: Int) {
         String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
 
     if (restTimeInMillis / 1000 <= 5 && restTimeInMillis / 1000 != 0L)
-        speak((restTimeInMillis / 1000).toString())
+        TextToSpeechUtils.getInstance(context).speak((restTimeInMillis / 1000).toString())
+
     if (restTimeInMillis / 1000 == 0L)
-        speak("START")
+        TextToSpeechUtils.getInstance(context).speak(res.getString(R.string.workout_start))
 
     position.restClockValue.text = restCount
     notifyItemChanged(positionData, position.restClockValue)

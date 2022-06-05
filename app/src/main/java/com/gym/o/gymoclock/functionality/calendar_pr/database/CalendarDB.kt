@@ -2,17 +2,24 @@ package com.gym.o.gymoclock.functionality.calendar_pr.database
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import com.gym.o.gymoclock.utils.DateTimeUtils
 import kotlin.collections.ArrayList
 
 class CalendarDB (context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
+
+
     override fun onCreate(db: SQLiteDatabase) {}
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_WORKOUT")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CALENDAR")
         onCreate(db)
+        db.close()
     }
 
     fun addCalendarTable(monthYearTable: String) {
@@ -68,8 +75,13 @@ class CalendarDB (context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, 
 
 
     companion object {
+
+        @RequiresApi(Build.VERSION_CODES.Q)
+        val dateTimeUtils: DateTimeUtils = DateTimeUtils()
+
         const val DATABASE_NAME = "Calendar.db"
-        var TABLE_WORKOUT = "Workout_Name"
+        @RequiresApi(Build.VERSION_CODES.Q)
+        var TABLE_CALENDAR = dateTimeUtils.setCalendarTableName()
         const val COL_ID = "ID"
         const val COL_DATE = "DATE"
         const val COL_START_TIME = "START_TIME"

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,19 +22,20 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.RecyclerViewInterface
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
-import com.gym.o.gymoclock.functionality.calendar_pr.insertionFunctions.DateTimeUtils
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
 import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.*
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.Elements
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.UserAddActivityAdapter
+import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
+import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.TextToSpeechUtils
+import java.lang.reflect.Field
 import java.util.*
 import kotlin.properties.Delegates
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
 open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     val TAG_NUMPICKER = "NumberPicker"
 
@@ -89,7 +91,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         if (listAdapter.itemCount != 0)
             roundsPicker()
-        //roundsEditable()
 
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
@@ -98,33 +99,51 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+
+        // _binding = null
+        TextToSpeechUtils.getInstance(requireContext()).stopTTS()
+        binding.addLayout.isEnabled = false
+        binding.addLayout.isClickable = false
+
+        binding.playPauseButton.isEnabled = false
+        binding.playPauseButton.isClickable = false
+
+        binding.roundsEdit.isEnabled = false
+        binding.roundsEdit.isClickable = false
 
         val position = dataList[iterator]
 
         if (position.wTimerIsRunning) {
             pauseTotalTimer()
-            position.wCountDownTimer.cancel()
+            listAdapter.pauseExerciseTimer(iterator, resources.getString(R.string.workout_stopped))
+            //position.wCountDownTimer.cancel()
         }
         if (position.rTimerIsRunning) {
             pauseTotalTimer()
-            position.rCountDownTimer.cancel()
+            listAdapter.pauseRestTimer(iterator, resources.getString(R.string.workout_stopped))
+            //position.rCountDownTimer.cancel()
         }
 
-//        binding.playPauseButton.isEnabled = false
-//        binding.playPauseButton.isClickable = false
-//
-//        binding.roundsEdit.isEnabled = false
-//        binding.roundsEdit.isClickable = false
-//
-//        binding.addLayout.isEnabled = false
-//        binding.addLayout.isClickable = false
+        Log.i("WorkFrag", "onDestroyView")
+        super.onDestroyView()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        TextToSpeechUtils.getInstance(requireContext()).stopTTS()
+        binding.addLayout.isEnabled = false
+        binding.addLayout.isClickable = false
+
+        binding.playPauseButton.isEnabled = false
+        binding.playPauseButton.isClickable = false
+
+        binding.roundsEdit.isEnabled = false
+        binding.roundsEdit.isClickable = false
+
         _binding = null
+        Log.i("WorkFrag", "onDestroy")
+
     }
 
     override fun editExercise(dataPosition: Int) {
@@ -261,7 +280,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         val dateTimeUtils = DateTimeUtils()
         rounds--
         iterator = 0
-        if (rounds < 0) rounds = 0
+        //if (rounds < 1) rounds = 1
         binding.roundsEdit.value = rounds
         Log.d(
             "MAIN",
@@ -271,9 +290,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (workoutName == "")
             return
 
-        if (rounds == 0) {
-            binding.roundsEdit.textColor = Color.RED
-            endOfWorkout()
+        if (listAdapter.totalTime(rounds) == 0) {
+            //binding.roundsEdit.textColor = Color.RED
+            roundPickerColor(binding.roundsEdit, Color.RED)
+            binding.roundsEdit.value = 1
+            onEndOfWorkout()
             return
         }
 
@@ -284,7 +305,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         listAdapter.startExerciseTimer(iterator)
     }
 
-    private fun endOfWorkout() {
+    private fun onEndOfWorkout() {
         val dateTimeUtils = DateTimeUtils()
         binding.playPauseButton.background =
             getDrawable(requireContext(), R.drawable.ic_play_button)
@@ -529,24 +550,25 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         return (listAdapter.totalTime(rounds)) - timeDifference
     }
 
-    private fun roundsPicker(){
+    private fun roundsPicker() {
 
+        binding.roundsEdit.minValue = 1
         binding.roundsEdit.maxValue = 20
         binding.roundsEdit.value = rounds
 
         Log.d(TAG_NUMPICKER, "${binding.roundsEdit.value}")
 
         binding.roundsEdit.setOnScrollListener { view, scrollState ->
-            when(scrollState){
-                NumberPicker.OnScrollListener.SCROLL_STATE_IDLE -> scrollIdle(view)
-                NumberPicker.OnScrollListener.SCROLL_STATE_FLING -> scrollFlying()
-                NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL -> scrollTouched(view)
+            when (scrollState) {
+                NumberPicker.OnScrollListener.SCROLL_STATE_IDLE -> onScrollIdle(view)
+                NumberPicker.OnScrollListener.SCROLL_STATE_FLING -> onScrollFlying()
+                NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL -> onScrollTouched(view)
             }
         }
 
     }
 
-    private fun scrollIdle(scrollView: NumberPicker){
+    private fun onScrollIdle(scrollView: NumberPicker) {
 
         Log.i(TAG_NUMPICKER, "Scroll Idle")
 
@@ -554,51 +576,52 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
 
         rounds = scrollView.value
-        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
-        //Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
-
         saveRoundsValueToPreferences(scrollView)
+        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
 
         timeDifference = timeDifference(listAdapter.totalTime(oldValue))
         binding.totalTime.text =
             convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
 
         if (isStartWorkout) {
-            when (rounds) {
-                0 -> {
-                    //oldValue = oldValue
-                    Log.d(TAG_NUMPICKER, "OldValue On WorkSet= $oldValue")
-                    //binding.roundsEdit.value = oldValue
-                }
-            }
             pauseTotalTimer()
             startTotalTimer()
         }
 
-
-
-        if (scrollView.value == 0) binding.roundsEdit.textColor = Color.RED
-        else binding.roundsEdit.textColor = getColor(
+        if (scrollView.value == 0) roundPickerColor(binding.roundsEdit, Color.RED)//binding.roundsEdit.textColor = Color.RED
+        else roundPickerColor(binding.roundsEdit, getColor(
             requireContext(),
-            R.color.number_picker_scroll_idle)
+            R.color.number_picker_scroll_idle))
+//        binding.roundsEdit.textColor = getColor(
+//            requireContext(),
+//            R.color.number_picker_scroll_idle
+//        )
 
     }
 
-    private fun scrollFlying(){
+    private fun onScrollFlying() {
         Log.i("NumberPicker", "Scroll Flying")
-        binding.roundsEdit.textColor = getColor(
+        roundPickerColor(binding.roundsEdit, getColor(
             requireContext(),
-            R.color.number_picker_scroll_flying)
+            R.color.number_picker_scroll_flying))
+//        binding.roundsEdit.textColor = getColor(
+//            requireContext(),
+//            R.color.number_picker_scroll_flying
+//        )
     }
 
-    private fun scrollTouched(scrollView: NumberPicker){
+    private fun onScrollTouched(scrollView: NumberPicker) {
         Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
-        binding.roundsEdit.textColor = getColor(
+        roundPickerColor(binding.roundsEdit, getColor(
             requireContext(),
-            R.color.number_picker_scroll_touched)
+            R.color.number_picker_scroll_touched))
+//        binding.roundsEdit.textColor = getColor(
+//            requireContext(),
+//            R.color.number_picker_scroll_touched
+//        )
     }
 
-    private fun saveRoundsValueToPreferences(scrollView: NumberPicker){
+    private fun saveRoundsValueToPreferences(scrollView: NumberPicker) {
         val save = sharedPreferences.edit()
         save.putInt("roundsInt", scrollView.value)
         save.apply()
@@ -757,7 +780,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             isStartWorkout = !isStartWorkout
             isPauseWorkout = !isPauseWorkout
             Log.d("isPauseWorkout", (isPauseWorkout).toString())
-            Toast.makeText(context, isPauseWorkout.toString(), Toast.LENGTH_SHORT).show()
+
             if (isStartWorkout) {
 
                 binding.playPauseButton.background =
@@ -769,8 +792,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
 
             val position = dataList[iterator]
-            if (position.wTimerIsRunning) listAdapter.pauseExerciseTimer(iterator)
-            if (position.rTimerIsRunning) listAdapter.pauseRestTimer(iterator)
+            if (position.wTimerIsRunning) listAdapter.pauseExerciseTimer(
+                iterator,
+                resources.getString(R.string.exercise_paused)
+            )
+            if (position.rTimerIsRunning) listAdapter.pauseRestTimer(
+                iterator,
+                resources.getString(R.string.rest_paused)
+            )
 
             pauseTotalTimer()
             binding.playPauseButton.background =
@@ -779,5 +808,42 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
 
     }
+
+    private fun roundPickerColor(numberPicker: NumberPicker, color: Int){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            numberPicker.textColor = color
+        }
+        else {
+            val count = numberPicker.childCount
+            for (i in 0 until count) {
+                val child = numberPicker.getChildAt(i)
+                if (child is EditText) {
+                    try {
+                        child.setTextColor(color)
+                        numberPicker.invalidate()
+                        val fieldSelectorWheelPaint: Field =
+                            numberPicker.javaClass.getDeclaredField("mSelectorWheelPaint")
+                        var isAccessible: Boolean = fieldSelectorWheelPaint.isAccessible
+                        fieldSelectorWheelPaint.isAccessible = true
+                        val paint: Paint = fieldSelectorWheelPaint.get(numberPicker) as Paint
+                        if (paint != null) {
+                            paint.color = color
+                            fieldSelectorWheelPaint.isAccessible = isAccessible
+                            numberPicker.invalidate()
+                        }
+                        val fieldSelectionDivider: Field =
+                            numberPicker.javaClass.getDeclaredField("mSelectorWheelPaint")
+                        isAccessible = fieldSelectionDivider.isAccessible
+                        fieldSelectionDivider.isAccessible = true
+                        fieldSelectionDivider.set(numberPicker, null)
+                        fieldSelectionDivider.isAccessible = isAccessible
+                        numberPicker.invalidate()
+                    } catch (ex: Exception) {
+                        Log.e("NumberPickerColor", "Field Selection Exception")
+                    }
+                }
+            }
+        }
+   }
 
 }

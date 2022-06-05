@@ -38,6 +38,7 @@
             app:layout_constraintTop_toBottomOf="@+id/add_layout"
             app:layout_constraintVertical_bias="0.0" />
 
+
         <TextView
             android:id="@+id/rounds_text"
             android:layout_width="98dp"
@@ -49,11 +50,9 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/rounds_edit"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.397"
-            app:layout_constraintStart_toEndOf="@+id/add_layout"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
-
 
         <NumberPicker
             android:id="@+id/rounds_edit"
@@ -61,6 +60,7 @@
             android:layout_height="100dp"
             android:layout_weight="1"
             android:autofillHints="hint:number"
+            android:descendantFocusability="blocksDescendants"
             android:gravity="center"
             android:solidColor="#00000000"
             android:textAlignment="center"

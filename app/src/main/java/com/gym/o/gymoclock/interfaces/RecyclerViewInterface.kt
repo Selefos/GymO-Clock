@@ -1,4 +1,4 @@
-package com.gym.o.gymoclock
+package com.gym.o.gymoclock.interfaces
 
 import android.view.View
 

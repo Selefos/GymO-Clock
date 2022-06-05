@@ -53,6 +53,15 @@
     <string name="ok_button">OK</string>
     <string name="rename">Rename</string>
     <!--  __________________________________________________  -->
+    <!--  _________________Timer Text Speak_________________  -->
+    <string name="workout_start">start</string>
+    <string name="workout_rest">rest</string>
+    <string name="exercise_paused">exercise paused</string>
+    <string name="rest_paused">rest paused</string>
+    <string name="workout_stopped">workout stopped</string>
+    <string name="rest_interval">rest interval</string>
+    <string name="workout_completed">workout completed</string>
+    <!--  __________________________________________________  -->
 
     <string name="delete_exercise_dialog_text">Delete this exercise?</string>
 

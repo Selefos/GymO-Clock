@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.116" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/add_workout_layout.xml" value="0.3135" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/delete_rename_workout_background.xml" value="0.3135" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_rounds_background.xml" value="0.245" />
@@ -10,6 +11,7 @@
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic__play_button.xml" value="0.236" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_add_button.xml" value="0.245" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_edit_view.xml" value="0.245" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_launcher_background.xml" value="0.116" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_camera.xml" value="0.34" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.338" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/ic_menu_remove_workout.xml" value="0.338" />

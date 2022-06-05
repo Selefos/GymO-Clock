@@ -3,7 +3,6 @@ package com.gym.o.gymoclock
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -14,7 +13,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.AdapterView.OnItemLongClickListener
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -29,19 +27,19 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
-import com.gym.o.gymoclock.functionality.calendar_pr.insertionFunctions.DateTimeUtils
+import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
 import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.editTextWarning
 import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.workoutName
 import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-@RequiresApi(Build.VERSION_CODES.Q)
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -67,6 +65,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(binding.root)
 
         //setSupportActionBar(binding.appBarMain.toolbar)
+
+        TextToSpeechUtils.getInstance(this)
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -130,6 +130,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        }
 
     }
+
+    /* init  {
+         if (BuildConfig.DEBUG) StrictMode.enableDefaults()
+     }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -196,23 +200,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onDestroy() {
+        TextToSpeechUtils.getInstance(this).stopTTS()
+        Log.i("Main", "onDestroy")
+        super.onDestroy()
+    }
 
     private fun calendarDBInit(){
-        val calendarDB: CalendarDB = CalendarDB(this)
-        val dateTimeUtils: DateTimeUtils = DateTimeUtils()
-        val monthYear = "${dateTimeUtils.getCurrentMonth()} ${dateTimeUtils.getCurrentYear()}".replace(" ", "_")
+        val calendarDB = CalendarDB(this)
         val calendarMonths: List<String> = calendarDB.loadCalendarTableNames()
+        val dateTimeUtils = DateTimeUtils()
+
+//        dateTimeUtils.getCurrentYear()
+//        dateTimeUtils.getCurrentMonth()
+//        dateTimeUtils.setCalendarTableName()
+//        dateTimeUtils.getDate()
+//        dateTimeUtils.getCurrentTime()
 
         for (month in calendarMonths)
-            if (monthYear == month){
+            if (dateTimeUtils.setCalendarTableName() == month){
                 Log.e("Calendar Database", "Occurrence Found")
                 return
             }
 
-        Log.e("DateTime" ,"$monthYear ${dateTimeUtils.getCurrentTime()} ${dateTimeUtils.getDate()}")
-        Toast.makeText(this, "$monthYear ${dateTimeUtils.getCurrentTime()} ${dateTimeUtils.getDate()}", Toast.LENGTH_SHORT ).show()
-        //if(calendarDB.loadCalendarTableNames().isEmpty())
-            calendarDB.addCalendarTable(monthYear)
+        calendarDB.addCalendarTable(dateTimeUtils.setCalendarTableName())
 
     }
 
@@ -263,17 +274,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
 
-        expandableListView.setOnGroupExpandListener(ExpandableListView.OnGroupExpandListener() {
+        expandableListView.setOnGroupExpandListener {
             fun onGroupExpand(groupPosition: Int) {
                 supportActionBar?.title = listTitle[groupPosition].toString()
             }
-        })
+        }
 
-        expandableListView.setOnGroupCollapseListener(ExpandableListView.OnGroupCollapseListener {
+        expandableListView.setOnGroupCollapseListener {
             fun onGroupCollapse(groupPosition: Int): Unit {
                 supportActionBar?.title = "GymO'Clock";
             }
-        })
+        }
 
         expandableListView.setOnChildClickListener(ExpandableListView.OnChildClickListener(fun(
             parent: ExpandableListView,

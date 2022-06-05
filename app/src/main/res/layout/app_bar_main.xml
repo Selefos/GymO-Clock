@@ -33,6 +33,7 @@
         android:layout_marginBottom="16dp"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="bottom|center"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        android:contentDescription="@string/ok_button" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

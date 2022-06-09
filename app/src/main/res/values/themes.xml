@@ -51,7 +51,7 @@
         <item name="colorControlNormal">@color/custom_transparent</item>
     </style>
 
-    <style name="Theme.GymOclock.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.GymOClock.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.GymOclock.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.GymOClock.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

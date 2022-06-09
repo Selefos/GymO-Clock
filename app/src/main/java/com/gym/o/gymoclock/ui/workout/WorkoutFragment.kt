@@ -6,14 +6,18 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.os.*
+import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.annotation.RequiresApi
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat.getColor
@@ -24,45 +28,43 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
+import com.gym.o.gymoclock.functionality.workout_pr.*
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.*
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
 import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.*
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings.editTextWarning
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings.pickerTextWarning
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings.textViewWarning
+import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.Elements
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.UserAddActivityAdapter
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.DateTimeUtils
-import com.gym.o.gymoclock.utils.TextToSpeechUtils
-import java.lang.reflect.Field
-import java.util.*
-import kotlin.properties.Delegates
 
 
 open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     val TAG_NUMPICKER = "NumberPicker"
 
     private var _binding: FragmentWorkoutBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
-    private lateinit var listAdapter: UserAddActivityAdapter
+    lateinit var listAdapter: UserAddActivityAdapter
+    lateinit var sharedPreferences: SharedPreferences
+    lateinit var dialogBuilder: AlertDialog.Builder
+    lateinit var dialog: AlertDialog
+
+    var isStartWorkout: Boolean = false
+    private var isPauseWorkout: Boolean = true
     private lateinit var workoutDB: WorkoutDB
     private lateinit var db: SQLiteDatabase
     private lateinit var recyclerView: RecyclerView
-    private lateinit var dataList: ArrayList<Elements>
-
-    private lateinit var dialogBuilder: AlertDialog.Builder
-    private lateinit var dialog: AlertDialog
+    lateinit var dataList: ArrayList<Elements>
 
     private lateinit var workCountDown: CountDownTimer
     private lateinit var restCountDown: CountDownTimer
 
-    private var isStartWorkout: Boolean = false
-    private var isPauseWorkout: Boolean = true
-    private lateinit var totalTimer: CountDownTimer
-    private var totalTimeInMillis by Delegates.notNull<Long>()
-    private var timeDifference by Delegates.notNull<Int>()
-
     private lateinit var dateTimeUtils: DateTimeUtils
     private lateinit var calendarDB: CalendarDB
-    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,14 +75,12 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        sharedPreferences = requireContext().getSharedPreferences("Rounds", Context.MODE_PRIVATE)
-        rounds = sharedPreferences.getInt("roundsInt", -1)
-
         init()
+        onSavedInstance(savedInstanceState)
         if (workoutName != "") {
             loadRecyclerViews()
             binding.totalTime.text =
-                convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
+                ConvertTime.convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
         }
 
         setItemTouchHelper()
@@ -92,6 +92,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (listAdapter.itemCount != 0)
             roundsPicker()
 
+
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
 
@@ -101,29 +102,36 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     override fun onDestroyView() {
 
         // _binding = null
-        TextToSpeechUtils.getInstance(requireContext()).stopTTS()
-        binding.addLayout.isEnabled = false
-        binding.addLayout.isClickable = false
-
-        binding.playPauseButton.isEnabled = false
-        binding.playPauseButton.isClickable = false
-
-        binding.roundsEdit.isEnabled = false
-        binding.roundsEdit.isClickable = false
-
-        val position = dataList[iterator]
-
-        if (position.wTimerIsRunning) {
-            pauseTotalTimer()
-            listAdapter.pauseExerciseTimer(iterator, resources.getString(R.string.workout_stopped))
-            //position.wCountDownTimer.cancel()
-        }
-        if (position.rTimerIsRunning) {
-            pauseTotalTimer()
-            listAdapter.pauseRestTimer(iterator, resources.getString(R.string.workout_stopped))
-            //position.rCountDownTimer.cancel()
-        }
-
+        //TextToSpeechUtils.getInstance(requireContext()).stopTTS()
+//        binding.addLayout.isEnabled = false
+//        binding.addLayout.isClickable = false
+//
+//        binding.playPauseButton.isEnabled = false
+//        binding.playPauseButton.isClickable = false
+//
+//        binding.roundsEdit.isEnabled = false
+//        binding.roundsEdit.isClickable = false
+//
+//        if(listAdapter.itemCount > 0) {
+//            val position = dataList[iterator]
+//
+//            if (position.wTimerIsRunning) {
+//                pauseTotalTimer()
+//                listAdapter.pauseExerciseTimer(
+//                    iterator, resources.getString(R.string.workout_stopped)
+//                )
+//            }
+//
+//            if (position.rTimerIsRunning) {
+//                pauseTotalTimer()
+//                listAdapter.pauseRestTimer(
+//                    iterator,
+//                    resources.getString(R.string.workout_stopped)
+//                )
+//            }
+//        }
+//
+//        iterator = 0
         Log.i("WorkFrag", "onDestroyView")
         super.onDestroyView()
 
@@ -131,18 +139,18 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     override fun onDestroy() {
         super.onDestroy()
-        TextToSpeechUtils.getInstance(requireContext()).stopTTS()
-        binding.addLayout.isEnabled = false
-        binding.addLayout.isClickable = false
-
-        binding.playPauseButton.isEnabled = false
-        binding.playPauseButton.isClickable = false
-
-        binding.roundsEdit.isEnabled = false
-        binding.roundsEdit.isClickable = false
-
+//        TextToSpeechUtils.getInstance(requireContext()).stopTTS()
+//        binding.addLayout.isEnabled = false
+//        binding.addLayout.isClickable = false
+//
+//        binding.playPauseButton.isEnabled = false
+//        binding.playPauseButton.isClickable = false
+//
+//        binding.roundsEdit.isEnabled = false
+//        binding.roundsEdit.isClickable = false
+//
         _binding = null
-        Log.i("WorkFrag", "onDestroy")
+//        Log.i("WorkFrag", "onDestroy")
 
     }
 
@@ -172,13 +180,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (workTimeEdit.text.toString() != "") {
                 position.exerciseClockValue.text =
-                    convertTimeToDigitalClock(workTimeEdit.text.toString())
+                    ConvertTime.convertTimeToDigitalClock(workTimeEdit.text.toString())
                 listAdapter.notifyItemChanged(dataPosition, position.exerciseClockValue)
             }
 
             if (restTimeEdit.text.toString() != "") {
                 position.restClockValue.text =
-                    convertTimeToDigitalClock(restTimeEdit.text.toString())
+                    ConvertTime.convertTimeToDigitalClock(restTimeEdit.text.toString())
                 listAdapter.notifyItemChanged(dataPosition, position.restClockValue)
             }
 
@@ -199,14 +207,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (workoutName != "") {
                 val updateExerciseData = workoutDB.updateExerciseDetails(
                     workoutName, oldExerciseName, position.exerciseNameValue,
-                    convertTimeToSeconds(position.exerciseClockValue.text.toString()).toString(),
-                    convertTimeToSeconds(position.restClockValue.text.toString()).toString()
+                    ConvertTime.convertTimeToSeconds(position.exerciseClockValue.text.toString()).toString(),
+                    ConvertTime.convertTimeToSeconds(position.restClockValue.text.toString()).toString()
                 )
                 if (updateExerciseData)
                     Toast.makeText(context, "Exercise Updated", Toast.LENGTH_SHORT).show()
             }
             binding.totalTime.text =
-                convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
+                ConvertTime.convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
 
             if (listAdapter.totalTime(rounds) > 0) {
                 binding.totalTimeTextView.setTextColor(
@@ -269,7 +277,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                         "Animate Add Position = $getLastPositionForAddViewAnimation"
             )
             binding.totalTime.text =
-                convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
+                ConvertTime.convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
             dialog.dismiss()
         }
 
@@ -277,58 +285,42 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
     override fun roundsCount() {
-        val dateTimeUtils = DateTimeUtils()
         rounds--
         iterator = 0
-        //if (rounds < 1) rounds = 1
+
         binding.roundsEdit.value = rounds
         Log.d(
             "MAIN",
-            "Rounds Total: $rounds, isStartWorkout $isStartWorkout isPauseWorkout $isPauseWorkout -- ${dateTimeUtils.getCurrentTime()}"
+            "Rounds Total: $rounds, isStartWorkout $isStartWorkout isPauseWorkout $isPauseWorkout -- ${DateTimeUtils.getCurrentTime()}"
         )
-        Log.d("MAIN", "iterator = $iterator rounds = $rounds -- ${dateTimeUtils.getCurrentTime()}")
+        Log.d(
+            "MAIN",
+            "iterator = $iterator rounds = $rounds -- ${DateTimeUtils.getCurrentTime()}"
+        )
         if (workoutName == "")
             return
 
         if (listAdapter.totalTime(rounds) == 0) {
-            //binding.roundsEdit.textColor = Color.RED
-            roundPickerColor(binding.roundsEdit, Color.RED)
+            binding.roundsEdit.textColor = Color.RED
+            //RoundsPickerFunctions.roundPickerColor(binding.roundsEdit, Color.RED)
             binding.roundsEdit.value = 1
             onEndOfWorkout()
             return
         }
 
+        if(rounds == 1){
+            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertTime.convertTimeToDigitalClock("0")
+        }
+
         Log.d(
             "MAIN",
-            "Start Timer Position = $iterator rounds = $rounds -- ${dateTimeUtils.getCurrentTime()}"
+            "Start Timer Position = $iterator rounds = $rounds -- ${DateTimeUtils.getCurrentTime()}"
         )
         listAdapter.startExerciseTimer(iterator)
     }
 
-    private fun onEndOfWorkout() {
-        val dateTimeUtils = DateTimeUtils()
-        binding.playPauseButton.background =
-            getDrawable(requireContext(), R.drawable.ic_play_button)
-        isStartWorkout = false
-        isPauseWorkout = true
-
-        calendarDB = CalendarDB(context)
-        this.dateTimeUtils = DateTimeUtils()
-        Log.d("CountDown", "rounds == 0 ${dateTimeUtils.getCurrentTime()}")
-
-        val monthYear =
-            "${dateTimeUtils.getCurrentMonth()} ${dateTimeUtils.getCurrentYear()}".replace(" ", "_")
-        //monthYearTable: String, date: String, workoutName:  totalTime: String, totalWorkingTime: String
-        calendarDB.insertCalendarDetails(
-            monthYear,
-            dateTimeUtils.getDate(),
-            startTime,
-            dateTimeUtils.getCurrentTime(),
-            workoutName,
-            convertTimeToDigitalClock(listAdapter.totalTime(5).toString()),
-            convertTimeToDigitalClock(listAdapter.totalWorkingTime(5).toString())
-        )
-        startTime = ""
+    override fun scrollToPosition() {
+        recyclerView.smoothScrollToPosition(iterator)
     }
 
     override fun loadRecyclerViews() {
@@ -351,7 +343,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
                 workCountDown = object : CountDownTimer(0, 1000) {
                     override fun onTick(millsUntilFinish: Long) {
-                        restTimeInMillis = millsUntilFinish
+                        workTimeInMillis = millsUntilFinish
                     }
 
                     override fun onFinish() {}
@@ -365,8 +357,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 }
 
                 exerciseName.text = cursor.getString(1)
-                exerciseClock.text = convertTimeToDigitalClock(cursor.getInt(2).toString())
-                restClock.text = convertTimeToDigitalClock(cursor.getInt(3).toString())
+                exerciseClock.text = ConvertTime.convertTimeToDigitalClock(cursor.getInt(2).toString())
+                restClock.text = ConvertTime.convertTimeToDigitalClock(cursor.getInt(3).toString())
 
                 dataList.add(
                     Elements(
@@ -390,8 +382,186 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
-    override fun scrollToPosition() {
-        recyclerView.smoothScrollToPosition(iterator)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putLong("prepareCountdownInMillis", prepareCountdownInMillis)
+        outState.putBoolean("isPrepareCountdown", isPrepareCountdown)
+
+
+        outState.putBoolean("isStartWorkout", isStartWorkout)
+        outState.putInt("iterator", iterator)
+        outState.putInt("rounds", rounds)
+
+        outState.putLong("totalTimeInMillis", totalTimeInMillis)
+        outState.putLong("workTimeInMillis" ,workTimeInMillis)
+        outState.putLong("restTimeInMillis", restTimeInMillis)
+        outState.putLong("endTime", endTime)
+    }
+
+    private fun onSavedInstance(savedInstanceState: Bundle?){
+        if (savedInstanceState != null) {
+            prepareCountdownInMillis = savedInstanceState.getLong("prepareCountdownInMillis", 0)
+            isPrepareCountdown = savedInstanceState.getBoolean("isPrepareCountdown", true)
+
+            isStartWorkout = savedInstanceState.getBoolean("isStartWorkout")
+            iterator = savedInstanceState.getInt("iterator")
+            rounds = savedInstanceState.getInt("rounds")
+
+            totalTimeInMillis = savedInstanceState.getLong("totalTimeInMillis")
+            workTimeInMillis = savedInstanceState.getLong("workTimeInMillis")
+            restTimeInMillis = savedInstanceState.getLong("restTimeInMillis")
+
+            if(dataList[iterator].wTimerIsRunning) {
+                endTime = savedInstanceState.getLong("endTime")
+                totalTimeInMillis = endTimeTotalTimer - System.currentTimeMillis()
+                workTimeInMillis = endTime - System.currentTimeMillis()
+                startTotalTimer()
+                listAdapter.startExerciseTimer(iterator)
+            }
+
+            if(dataList[iterator].rTimerIsRunning){
+                restTimeInMillis = endTime - System.currentTimeMillis()
+                startTotalTimer()
+                listAdapter.startRestTimer(iterator)
+
+            }
+        } else {
+//            prepareCountdownInMillis = 1000
+//            isPrepareCountdown = true
+//            isStartWorkout = true
+//            iterator=0
+//
+//            rounds=0
+//            totalTimeInMillis=0L
+//            workTimeInMillis=0L
+//            restTimeInMillis=0L
+//            endTime=0L
+//            totalTimeInMillis=0L
+//            workTimeInMillis=0L
+//            restTimeInMillis=0L
+        }
+    }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        if (savedInstanceState != null) {
+//            prepareCountdownInMillis = savedInstanceState.getLong("prepareCountdownInMillis", 0)
+//            isPrepareCountdown = savedInstanceState.getBoolean("isPrepareCountdown")
+//        }
+//    }
+
+    private fun init() {
+        sharedPreferences = requireContext().getSharedPreferences("Rounds", Context.MODE_PRIVATE)
+        rounds = sharedPreferences.getInt("roundsInt", -1)
+        dataList = ArrayList()
+        recyclerView = binding.recyclerView//findViewById(R.id.recycler_view)
+        listAdapter = UserAddActivityAdapter(requireContext(), this, dataList)
+        workoutDB = WorkoutDB(requireActivity().applicationContext)
+        recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        recyclerView.adapter = listAdapter
+
+    }
+
+    private fun workoutInit() {
+
+        binding.addLayout.setOnClickListener {
+            addExercise()
+            return@setOnClickListener
+        }
+
+        binding.playPauseButton.setOnClickListener {
+
+            if (rounds == 0) {
+                iterator = 0
+                pickerTextWarning(binding.roundsEdit, rounds)
+                return@setOnClickListener
+            }
+
+            if (listAdapter.itemCount == 0 || listAdapter.totalTime(rounds) == 0) {
+                binding.totalTimeTextView.setTextColor(Color.RED)
+                textViewWarning(binding.totalTime)
+                return@setOnClickListener
+            }
+
+            isStartWorkout = !isStartWorkout
+            isPauseWorkout = !isPauseWorkout
+            Log.d("isPauseWorkout", (isPauseWorkout).toString())
+
+            if (isStartWorkout) {
+
+                if (isPrepareCountdown) {
+                    prepareForWorkoutTimer()
+                    return@setOnClickListener
+                }
+
+                binding.playPauseButton.background =
+                    getDrawable(requireContext(), R.drawable.ic_pause_button)
+                startTotalTimer()
+                listAdapter.startExerciseTimer(iterator)
+
+                return@setOnClickListener
+            }
+
+            val position = dataList[iterator]
+            if (position.wTimerIsRunning) listAdapter.pauseExerciseTimer(
+                iterator,
+                resources.getString(R.string.exercise_paused)
+            )
+
+            if (position.rTimerIsRunning) listAdapter.pauseRestTimer(
+                iterator,
+                resources.getString(R.string.rest_paused)
+            )
+
+            pauseTotalTimer()
+            binding.playPauseButton.background =
+                getDrawable(requireContext(), R.drawable.ic_play_button)
+            return@setOnClickListener
+        }
+
+    }
+
+    private fun onEndOfWorkout() {
+
+        binding.playPauseButton.background =
+            getDrawable(requireContext(), R.drawable.ic_play_button)
+        isStartWorkout = false
+        isPauseWorkout = true
+        isPrepareCountdown = true
+
+        calendarDB = CalendarDB(context)
+        this.dateTimeUtils = DateTimeUtils()
+        Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
+
+        val monthYear =
+            "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
+
+        calendarDB.insertCalendarDetails(
+            monthYear,
+            DateTimeUtils.getDate(),
+            startTime,
+            DateTimeUtils.getCurrentTime(),
+            workoutName,
+            ConvertTime.convertTimeToDigitalClock(
+                listAdapter.totalTime(
+                    sharedPreferences.getInt(
+                        "roundsInt",
+                        -1
+                    )
+                ).toString()
+            ),
+            ConvertTime.convertTimeToDigitalClock(
+                listAdapter.totalWorkingTime(
+                    sharedPreferences.getInt(
+                        "roundsInt",
+                        -1
+                    )
+                ).toString()
+            )
+        )
+        startTime = ""
+        isPrepareCountdown = true
     }
 
     private fun addExercise() {
@@ -421,14 +591,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (workoutName.isEmpty() || workoutName == "temp") {
                 val exerciseClock: TextView = viewRecycler.findViewById(R.id.countdown_work)
-                exerciseClock.text = convertTimeToDigitalClock(workTimeEdit.text.toString())
+                exerciseClock.text = ConvertTime.convertTimeToDigitalClock(workTimeEdit.text.toString())
 
                 val restClock: TextView = viewRecycler.findViewById(R.id.countdown_rest)
-                restClock.text = convertTimeToDigitalClock(restTimeEdit.text.toString())
+                restClock.text = ConvertTime.convertTimeToDigitalClock(restTimeEdit.text.toString())
 
                 workCountDown = object : CountDownTimer(0, 1000) {
                     override fun onTick(millsUntilFinish: Long) {
-                        restTimeInMillis = millsUntilFinish
+                        workTimeInMillis = millsUntilFinish
                     }
 
                     override fun onFinish() {}
@@ -458,7 +628,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 //                    Toast.makeText(context, "Exercise Added", Toast.LENGTH_SHORT).show()
 
                 binding.totalTime.text =
-                    convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
+                    ConvertTime.convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
                 dialog.dismiss()
                 return@setOnClickListener
             }
@@ -469,14 +639,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 editTextWarning(exerciseNameEdit, "Exercise already registered")
             else {
                 val exerciseClock: TextView = viewRecycler.findViewById(R.id.countdown_work)
-                exerciseClock.text = convertTimeToDigitalClock(workTimeEdit.text.toString())
+                exerciseClock.text = ConvertTime.convertTimeToDigitalClock(workTimeEdit.text.toString())
 
                 val restClock: TextView = viewRecycler.findViewById(R.id.countdown_rest)
-                restClock.text = convertTimeToDigitalClock(restTimeEdit.text.toString())
+                restClock.text = ConvertTime.convertTimeToDigitalClock(restTimeEdit.text.toString())
 
                 workCountDown = object : CountDownTimer(0, 1000) {
                     override fun onTick(millsUntilFinish: Long) {
-                        restTimeInMillis = millsUntilFinish
+                        workTimeInMillis = millsUntilFinish
                     }
 
                     override fun onFinish() {}
@@ -506,7 +676,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     Toast.makeText(context, "Exercise Inserted", Toast.LENGTH_SHORT).show()
 
                 binding.totalTime.text =
-                    convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
+                    ConvertTime.convertTimeToDigitalClock((listAdapter.totalTime(rounds)).toString())
                 dialog.dismiss()
             }
 
@@ -515,21 +685,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         cancelButton.setOnClickListener {
             dialog.dismiss()
         }
-
-    }
-
-    private fun dipToPx(dipValue: Float, context: Context): Int {
-        return (dipValue * context.resources.displayMetrics.density).toInt()
-    }
-
-    private fun init() {
-
-        dataList = ArrayList()
-        recyclerView = binding.recyclerView//findViewById(R.id.recycler_view)
-        listAdapter = UserAddActivityAdapter(requireContext(), this, dataList)
-        workoutDB = WorkoutDB(requireActivity().applicationContext)
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-        recyclerView.adapter = listAdapter
 
     }
 
@@ -546,86 +701,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
-    private fun refreshTotalTimeOnRoundsChanged(timeDifference: Int): Int {
-        return (listAdapter.totalTime(rounds)) - timeDifference
-    }
-
-    private fun roundsPicker() {
-
-        binding.roundsEdit.minValue = 1
-        binding.roundsEdit.maxValue = 20
-        binding.roundsEdit.value = rounds
-
-        Log.d(TAG_NUMPICKER, "${binding.roundsEdit.value}")
-
-        binding.roundsEdit.setOnScrollListener { view, scrollState ->
-            when (scrollState) {
-                NumberPicker.OnScrollListener.SCROLL_STATE_IDLE -> onScrollIdle(view)
-                NumberPicker.OnScrollListener.SCROLL_STATE_FLING -> onScrollFlying()
-                NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL -> onScrollTouched(view)
-            }
-        }
-
-    }
-
-    private fun onScrollIdle(scrollView: NumberPicker) {
-
-        Log.i(TAG_NUMPICKER, "Scroll Idle")
-
-        var oldValue = rounds
-        Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
-
-        rounds = scrollView.value
-        saveRoundsValueToPreferences(scrollView)
-        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
-
-        timeDifference = timeDifference(listAdapter.totalTime(oldValue))
-        binding.totalTime.text =
-            convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
-
-        if (isStartWorkout) {
-            pauseTotalTimer()
-            startTotalTimer()
-        }
-
-        if (scrollView.value == 0) roundPickerColor(binding.roundsEdit, Color.RED)//binding.roundsEdit.textColor = Color.RED
-        else roundPickerColor(binding.roundsEdit, getColor(
-            requireContext(),
-            R.color.number_picker_scroll_idle))
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_idle
-//        )
-
-    }
-
-    private fun onScrollFlying() {
-        Log.i("NumberPicker", "Scroll Flying")
-        roundPickerColor(binding.roundsEdit, getColor(
-            requireContext(),
-            R.color.number_picker_scroll_flying))
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_flying
-//        )
-    }
-
-    private fun onScrollTouched(scrollView: NumberPicker) {
-        Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
-        roundPickerColor(binding.roundsEdit, getColor(
-            requireContext(),
-            R.color.number_picker_scroll_touched))
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_touched
-//        )
-    }
-
-    private fun saveRoundsValueToPreferences(scrollView: NumberPicker) {
-        val save = sharedPreferences.edit()
-        save.putInt("roundsInt", scrollView.value)
-        save.apply()
-        Log.i(TAG_NUMPICKER, "Round Value Saved: New Value = ${scrollView.value}")
+    private fun dipToPx(dipValue: Float, context: Context): Int {
+        return (dipValue * context.resources.displayMetrics.density).toInt()
     }
 
     private fun setItemTouchHelper() {
@@ -722,128 +799,5 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
         }).apply { attachToRecyclerView(recyclerView) }
     }
-
-    private fun timeDifference(totalTime: Int): Int {
-        val currentTotalTime: Int = convertTimeToSeconds(binding.totalTime.text.toString()).toInt()
-        return totalTime - currentTotalTime
-    }
-
-    private fun startTotalTimer() {
-
-        totalTimeInMillis = convertTimeToMillis(binding.totalTime.text.toString())
-
-        totalTimer = object : CountDownTimer(totalTimeInMillis, 1000) {
-            override fun onTick(millsUntilFinish: Long) {
-                totalTimeInMillis = millsUntilFinish
-
-                updateTotalTimerUI()
-            }
-
-            override fun onFinish() {
-            }
-        }.start()
-    }
-
-    private fun pauseTotalTimer() {
-        totalTimer.cancel()
-    }
-
-    private fun updateTotalTimerUI() {
-        val minutesWork = (totalTimeInMillis / 1000) / 60
-        val secondsWork = (totalTimeInMillis / 1000) % 60
-        val totalCount: String =
-            String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
-        binding.totalTime.text = totalCount
-    }
-
-    private fun workoutInit() {
-
-        binding.addLayout.setOnClickListener {
-            addExercise()
-            return@setOnClickListener
-        }
-
-        binding.playPauseButton.setOnClickListener {
-
-            if (rounds == 0) {
-                iterator = 0
-                pickerTextWarning(binding.roundsEdit, rounds)
-                return@setOnClickListener
-            }
-
-            if (listAdapter.itemCount == 0 || listAdapter.totalTime(rounds) == 0) {
-                binding.totalTimeTextView.setTextColor(Color.RED)
-                textViewWarning(binding.totalTime)
-                return@setOnClickListener
-            }
-
-            isStartWorkout = !isStartWorkout
-            isPauseWorkout = !isPauseWorkout
-            Log.d("isPauseWorkout", (isPauseWorkout).toString())
-
-            if (isStartWorkout) {
-
-                binding.playPauseButton.background =
-                    getDrawable(requireContext(), R.drawable.ic_pause_button)
-                startTotalTimer()
-                listAdapter.startExerciseTimer(iterator)
-
-                return@setOnClickListener
-            }
-
-            val position = dataList[iterator]
-            if (position.wTimerIsRunning) listAdapter.pauseExerciseTimer(
-                iterator,
-                resources.getString(R.string.exercise_paused)
-            )
-            if (position.rTimerIsRunning) listAdapter.pauseRestTimer(
-                iterator,
-                resources.getString(R.string.rest_paused)
-            )
-
-            pauseTotalTimer()
-            binding.playPauseButton.background =
-                getDrawable(requireContext(), R.drawable.ic_play_button)
-            return@setOnClickListener
-        }
-
-    }
-
-    private fun roundPickerColor(numberPicker: NumberPicker, color: Int){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            numberPicker.textColor = color
-        }
-        else {
-            val count = numberPicker.childCount
-            for (i in 0 until count) {
-                val child = numberPicker.getChildAt(i)
-                if (child is EditText) {
-                    try {
-                        child.setTextColor(color)
-                        numberPicker.invalidate()
-                        val fieldSelectorWheelPaint: Field =
-                            numberPicker.javaClass.getDeclaredField("mSelectorWheelPaint")
-                        var isAccessible: Boolean = fieldSelectorWheelPaint.isAccessible
-                        fieldSelectorWheelPaint.isAccessible = true
-                        val paint: Paint = fieldSelectorWheelPaint.get(numberPicker) as Paint
-                        if (paint != null) {
-                            paint.color = color
-                            fieldSelectorWheelPaint.isAccessible = isAccessible
-                            numberPicker.invalidate()
-                        }
-                        val fieldSelectionDivider: Field =
-                            numberPicker.javaClass.getDeclaredField("mSelectorWheelPaint")
-                        isAccessible = fieldSelectionDivider.isAccessible
-                        fieldSelectionDivider.isAccessible = true
-                        fieldSelectionDivider.set(numberPicker, null)
-                        fieldSelectionDivider.isAccessible = isAccessible
-                        numberPicker.invalidate()
-                    } catch (ex: Exception) {
-                        Log.e("NumberPickerColor", "Field Selection Exception")
-                    }
-                }
-            }
-        }
-   }
 
 }

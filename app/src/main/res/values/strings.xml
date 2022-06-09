@@ -28,6 +28,7 @@
     <string name="rounds_edit">0</string>
     <string name="total_time">Total Time:</string>
     <string name="initial_remaining_time">-</string>
+    <string name="prepare_for_workout"> </string>
     <!--  __________________________________________________  -->
     <!--  ________________Navigation Drawer_________________  -->
     <string name="open">Open</string>
@@ -52,15 +53,16 @@
     <string name="cancel_button">Cancel</string>
     <string name="ok_button">OK</string>
     <string name="rename">Rename</string>
+    <string name="content_description_images">Image</string>
     <!--  __________________________________________________  -->
     <!--  _________________Timer Text Speak_________________  -->
-    <string name="workout_start">start</string>
-    <string name="workout_rest">rest</string>
-    <string name="exercise_paused">exercise paused</string>
-    <string name="rest_paused">rest paused</string>
-    <string name="workout_stopped">workout stopped</string>
-    <string name="rest_interval">rest interval</string>
-    <string name="workout_completed">workout completed</string>
+    <string name="workout_start">START</string>
+    <string name="workout_rest">Rest</string>
+    <string name="exercise_paused">Exercise paused</string>
+    <string name="rest_paused">Rest paused</string>
+    <string name="workout_stopped">Workout stopped</string>
+    <string name="rest_interval">Rest interval</string>
+    <string name="workout_completed">Workout completed</string>
     <!--  __________________________________________________  -->
 
     <string name="delete_exercise_dialog_text">Delete this exercise?</string>

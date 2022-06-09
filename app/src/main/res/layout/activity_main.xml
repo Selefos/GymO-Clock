@@ -32,14 +32,15 @@
             android:layout_gravity="start"
             android:layout_marginTop="@dimen/nav_header_height"
             android:background="@color/custom_transparent"
+            android:childDivider="@drawable/list_child_divider"
             android:childIndicator="@color/custom_text_color"
-            android:divider="#4FFFFFFF"
+            android:childIndicatorStart="1dp"
+            android:divider="@drawable/list_divider"
             android:dividerHeight="1dp"
             android:fitsSystemWindows="true"
             android:groupIndicator="@null"
             android:indicatorLeft="?android:expandableListPreferredChildIndicatorLeft"
-            android:longClickable="true"
-            app:dividerInsetEnd="13dp" />
+            android:longClickable="true" />
     </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

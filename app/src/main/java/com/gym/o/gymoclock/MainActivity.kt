@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -27,18 +28,16 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
-import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.editTextWarning
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.workoutName
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings.editTextWarning
+import com.gym.o.gymoclock.functionality.workout_pr.workoutName
 import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -201,29 +200,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onDestroy() {
-        TextToSpeechUtils.getInstance(this).stopTTS()
+        //TextToSpeechUtils.getInstance(this).stopTTS()
         Log.i("Main", "onDestroy")
         super.onDestroy()
     }
 
-    private fun calendarDBInit(){
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        TextToSpeechUtils.getInstance(this)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        TextToSpeechUtils.getInstance(this)
+    }
+
+    private fun calendarDBInit() {
         val calendarDB = CalendarDB(this)
         val calendarMonths: List<String> = calendarDB.loadCalendarTableNames()
-        val dateTimeUtils = DateTimeUtils()
+        //val dateTimeUtils = DateTimeUtils()
 
-//        dateTimeUtils.getCurrentYear()
-//        dateTimeUtils.getCurrentMonth()
-//        dateTimeUtils.setCalendarTableName()
-//        dateTimeUtils.getDate()
-//        dateTimeUtils.getCurrentTime()
+        DateTimeUtils.getCurrentYear()
+        DateTimeUtils.getCurrentMonth()
+        DateTimeUtils.setCalendarTableName()
+        DateTimeUtils.getDate()
+        DateTimeUtils.getCurrentTime()
 
         for (month in calendarMonths)
-            if (dateTimeUtils.setCalendarTableName() == month){
+            if (DateTimeUtils.setCalendarTableName() == month) {
                 Log.e("Calendar Database", "Occurrence Found")
                 return
             }
 
-        calendarDB.addCalendarTable(dateTimeUtils.setCalendarTableName())
+        calendarDB.addCalendarTable(DateTimeUtils.setCalendarTableName())
 
     }
 
@@ -281,7 +290,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         expandableListView.setOnGroupCollapseListener {
-            fun onGroupCollapse(groupPosition: Int): Unit {
+            fun onGroupCollapse(groupPosition: Int) {
                 supportActionBar?.title = "GymO'Clock";
             }
         }
@@ -327,7 +336,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
                     val groupPosition = ExpandableListView.getPackedPositionGroup(id)
                     val childPosition = ExpandableListView.getPackedPositionChild(id)
-                    val selectedItem = listChild[listTitle[groupPosition]]?.get(childPosition).toString()
+                    val selectedItem =
+                        listChild[listTitle[groupPosition]]?.get(childPosition).toString()
 
                     editWorkoutName(selectedItem)
                     return@OnItemLongClickListener true
@@ -377,7 +387,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         addButton.setOnClickListener {
             if (checkIfEmptyOrHasSymbolsOrNumbers(workoutNameAdd).isNotEmpty()) {
-                checkIfEmptyOrHasSymbolsOrNumbers(workoutNameAdd).let { add -> workoutDB.addWorkoutTable(add) }
+                checkIfEmptyOrHasSymbolsOrNumbers(workoutNameAdd).let { add ->
+                    workoutDB.addWorkoutTable(
+                        add
+                    )
+                }
                 prepareMenuData()
                 expandableAdapter.notifyDataSetChanged()
                 dialog.dismiss()
@@ -409,7 +423,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         updateWorkoutButton.setOnClickListener {
             if (checkIfEmptyOrHasSymbolsOrNumbers(renameWorkout).isNotEmpty()) {
-                checkIfEmptyOrHasSymbolsOrNumbers(renameWorkout).let { rnm -> workoutDB.renameWorkoutTable(workoutName.replace(" ", "_"), rnm) }
+                checkIfEmptyOrHasSymbolsOrNumbers(renameWorkout).let { rnm ->
+                    workoutDB.renameWorkoutTable(
+                        workoutName.replace(" ", "_"),
+                        rnm
+                    )
+                }
                 //workoutDB.renameTable(workoutName.replace(" ", "_"), prepareWorkoutValue(renameWorkout)) // alternative update
 
                 prepareMenuData()
@@ -429,7 +448,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun checkIfEmptyOrHasSymbolsOrNumbers(editValue: EditText): String {
         var value: String = editValue.text.toString().trim()
-        val findSymbol: Pattern = Pattern.compile("[1234567890`~!@#$%^&*()+=;΄¨':\"\\\\/.,|<>?{}\\[\\]-]")
+        val findSymbol: Pattern =
+            Pattern.compile("[1234567890`~!@#$%^&*()+=;΄¨':\"\\\\/.,|<>?{}\\[\\]-]")
         val inspectChar: Matcher = findSymbol.matcher(value)
         val checkForSymbol: Boolean = inspectChar.find()
 

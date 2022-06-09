@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,23 +14,26 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
-import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.restTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.*
+import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.rounds
+import com.gym.o.gymoclock.functionality.workout_pr.workoutName
+import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.DateTimeUtils
-import java.util.*
 import kotlin.properties.Delegates
 
 
-class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: RecyclerViewInterface, val dataList: ArrayList<Elements>) :
+class UserAddActivityAdapter(
+    var context: Context,
+    val mRecyclerViewInterface: RecyclerViewInterface,
+    val dataList: ArrayList<Elements>
+) :
     RecyclerView.Adapter<UserAddActivityAdapter.ViewHolder>() {
 
-
     private lateinit var workoutDB: WorkoutDB
-    lateinit var calendarDB: CalendarDB
     private lateinit var db: SQLiteDatabase
-    lateinit var dateTimeUtils: DateTimeUtils
 
     lateinit var res: Resources
 
@@ -83,7 +87,14 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
 
         setOnAddViewAnimation(holder.itemView, position)
 
-        holder.removeView.setOnClickListener{ mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition) }
+        holder.removeView.setOnClickListener {
+            mRecyclerViewInterface.removeExercise(
+                holder.itemView,
+                holder.adapterPosition
+            )
+        }
+
+
 
 //        holder.exerciseImg.setOnClickListener {
 //            if (newList.wTimerIsRunning) pauseExerciseTimer(position)
@@ -168,7 +179,8 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
     private fun setOnAddViewAnimation(viewToAnimate: View, position: Int) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > getLastPositionForAddViewAnimation) {
-            val anim = ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+            val anim = ScaleAnimation(
+                0.0f, 1.0f, 0.0f, 1.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f
             )
@@ -178,10 +190,11 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
         }
     }
 
-    fun setOnRemoveViewAnimation(viewToAnimate: View, position: Int){
+    fun setOnRemoveViewAnimation(viewToAnimate: View, position: Int) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > getLastPositionForRemoveViewAnimation) {
-            val anim = ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
+            val anim = ScaleAnimation(
+                1.0f, 0.0f, 1.0f, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f
             )
@@ -198,14 +211,4 @@ class UserAddActivityAdapter(var context: Context, val mRecyclerViewInterface: R
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-
-
-//       if(totalTime(rounds) == 0) {
-//            tts.stop()
-//            tts.shutdown()
-//            Log.d("RecyclerAdapter", "TTS SHUTDOWN")
-//        }
-        super.onViewDetachedFromWindow(holder)
-    }
 }

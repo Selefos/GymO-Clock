@@ -81,7 +81,7 @@ class CalendarDB (context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, 
 
         const val DATABASE_NAME = "Calendar.db"
         @RequiresApi(Build.VERSION_CODES.Q)
-        var TABLE_CALENDAR = dateTimeUtils.setCalendarTableName()
+        var TABLE_CALENDAR = DateTimeUtils.setCalendarTableName()
         const val COL_ID = "ID"
         const val COL_DATE = "DATE"
         const val COL_START_TIME = "START_TIME"

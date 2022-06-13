@@ -48,14 +48,14 @@
             android:textAlignment="center"
             android:textColor="@color/custom_text_color"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/rounds_edit"
+            app:layout_constraintBottom_toTopOf="@+id/rounds_picker"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <NumberPicker
-            android:id="@+id/rounds_edit"
+            android:id="@+id/rounds_picker"
             android:layout_width="50dp"
             android:layout_height="100dp"
             android:layout_weight="1"

@@ -16,18 +16,17 @@ import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import java.lang.reflect.Field
 import kotlin.properties.Delegates
 
-
 private var timeDifference by Delegates.notNull<Int>()
 
 fun WorkoutFragment.roundsPicker() {
 
-    binding.roundsEdit.minValue = 1
-    binding.roundsEdit.maxValue = 20
-    binding.roundsEdit.value = rounds
+    binding.roundsPicker.minValue = 1
+    binding.roundsPicker.maxValue = 20
+    binding.roundsPicker.value = rounds
 
-    Log.d(TAG_NUMPICKER, "${binding.roundsEdit.value}")
+    Log.d(TAG_NUMPICKER, "${binding.roundsPicker.value}")
 
-    binding.roundsEdit.setOnScrollListener { view, scrollState ->
+    binding.roundsPicker.setOnScrollListener { view, scrollState ->
         when (scrollState) {
             NumberPicker.OnScrollListener.SCROLL_STATE_IDLE -> onScrollIdle(view)
             NumberPicker.OnScrollListener.SCROLL_STATE_FLING -> onScrollFlying()
@@ -35,76 +34,70 @@ fun WorkoutFragment.roundsPicker() {
         }
     }
 
-}
+    binding.roundsPicker.setOnValueChangedListener { picker, oldVal, newVal ->
+        Log.i(TAG_NUMPICKER, "Scroll Idle")
 
-fun WorkoutFragment.onScrollIdle(scrollView: NumberPicker) {
+        val oldValue = rounds
+        Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
 
-    Log.i(TAG_NUMPICKER, "Scroll Idle")
+        rounds = picker.value
+        saveRoundsValueToPreferences(picker)
+        Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
 
-    val oldValue = rounds
-    Log.d(TAG_NUMPICKER, "OldValue= $oldValue")
+        timeDifference = timeDifference(listAdapter.totalTime(oldValue))
+        binding.totalTime.text =
+            ConvertTime.convertTimeToDigitalClock(
+                refreshTotalTimeOnRoundsChanged(timeDifference).toString()
+            )
 
-    rounds = scrollView.value
-    saveRoundsValueToPreferences(scrollView)
-    Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
+        if (isStartWorkout) {
+            pauseTotalTimer()
+            startTotalTimer()
+        }
 
-    timeDifference = timeDifference(listAdapter.totalTime(oldValue))
-    binding.totalTime.text =
-        ConvertTime.convertTimeToDigitalClock(refreshTotalTimeOnRoundsChanged(timeDifference).toString())
+        if (picker.value == 1) {
+            dataList[listAdapter.itemCount - 1].restClockValue.text =
+                ConvertTime.convertTimeToDigitalClock("0")
+        }
 
-    if (isStartWorkout) {
-        pauseTotalTimer()
-        startTotalTimer()
     }
 
-    if (scrollView.value == 0) roundPickerColor(
-        binding.roundsEdit,
+}
+
+fun WorkoutFragment.onScrollIdle(scrollView: NumberPicker?) {
+
+
+    if (scrollView!!.value == 0) roundPickerColor(
+        binding.roundsPicker,
         Color.RED
-    )//binding.roundsEdit.textColor = Color.RED
+    )
     else roundPickerColor(
-        binding.roundsEdit, ContextCompat.getColor(
+        binding.roundsPicker, ContextCompat.getColor(
             requireContext(),
             R.color.number_picker_scroll_idle
         )
     )
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_idle
-//        )
-
-    if (scrollView.value == 1) {
-        dataList[listAdapter.itemCount - 1].restClockValue.text =
-            ConvertTime.convertTimeToDigitalClock("0")
-    }
 
 }
 
 fun WorkoutFragment.onScrollFlying() {
-    Log.i("NumberPicker", "Scroll Flying")
+    Log.i("NumberPickerDialogs", "Scroll Flying")
     roundPickerColor(
-        binding.roundsEdit, ContextCompat.getColor(
+        binding.roundsPicker, ContextCompat.getColor(
             requireContext(),
             R.color.number_picker_scroll_flying
         )
     )
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_flying
-//        )
 }
 
 fun WorkoutFragment.onScrollTouched() {
     Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
     roundPickerColor(
-        binding.roundsEdit, ContextCompat.getColor(
+        binding.roundsPicker, ContextCompat.getColor(
             requireContext(),
             R.color.number_picker_scroll_touched
         )
     )
-//        binding.roundsEdit.textColor = getColor(
-//            requireContext(),
-//            R.color.number_picker_scroll_touched
-//        )
 }
 
 fun WorkoutFragment.saveRoundsValueToPreferences(scrollView: NumberPicker) {

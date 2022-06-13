@@ -23,9 +23,15 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
                     "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
         db.execSQL(createWorkoutTable)
 
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '0', '0')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '0', '0')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '0', '0')")
+        db.execSQL(
+            "INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '45', '30')"
+        )
+        db.execSQL(
+            "INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '45', '30')"
+        )
+        db.execSQL(
+            "INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '45', '30')"
+        )
 
         db.close()
     }

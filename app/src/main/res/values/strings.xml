@@ -37,8 +37,8 @@
     <!--  ________________edit_workout layout_______________  -->
     <string name="edit_info">Edit Workout Info</string>
     <string name="edit_exercise_name">Exercise Name</string>
-    <string name="edit_workout_timer">Workout Timer</string>
-    <string name="edit_rest_timer">Rest Timer</string>
+    <string name="edit_workout_timer">Workout Time</string>
+    <string name="edit_rest_timer">Rest Time</string>
     <!--  __________________________________________________  -->
     <!--  ___________delete_rename_workout layout___________  -->
     <string name="edit_indicator">Edit</string>
@@ -67,23 +67,12 @@
 
     <string name="delete_exercise_dialog_text">Delete this exercise?</string>
 
-    <integer-array name="seconds">
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
-        <item>25</item>
-        <item>30</item>
-        <item>35</item>
-        <item>40</item>
-        <item>45</item>
-        <item>50</item>
-        <item>55</item>
-        <item>60</item>
-    </integer-array>
 
-    <!-- time_edit_mins_secs_scroll-->
+    <!--  __________________________________________________  -->
+    <!-- exercise_number_pickers -->
     <string name="minutes">MIN</string>
     <string name="seconds">SEC</string>
-
+    <string name="setNumberPicker">Set</string>
+    <string name="digital_format">00:00</string>
+    <!--  __________________________________________________  -->
 </resources>

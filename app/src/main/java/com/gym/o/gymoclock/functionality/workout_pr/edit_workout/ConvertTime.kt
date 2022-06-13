@@ -1,20 +1,34 @@
 package com.gym.o.gymoclock.functionality.workout_pr.edit_workout
 
 import java.util.*
-import kotlin.properties.Delegates
 
 object ConvertTime {
-    private var minutes by Delegates.notNull<Long>()
-    private var seconds by Delegates.notNull<Long>()
+    private var minutes: Long = 0L
+    private var seconds: Long = 0L
 
     fun convertTimeToDigitalClock(time: String): String {
-        var convertedWorkTime: String = String.format("%02d:%02d", 0, 0)
+        var convertedTime: String = String.format("%02d:%02d", 0, 0)
         return if (time.isNotEmpty()) {
             minutes = time.toLong() / 60
             seconds = time.toLong() % 60
-            convertedWorkTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-            convertedWorkTime
-        } else convertedWorkTime
+            convertedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+            convertedTime
+        } else convertedTime
+    }
+
+    fun convertTimeToDigitalClockMinutes(time: String): String {
+        minutes = time.toLong()
+
+        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+
+    }
+
+    fun convertTimeToDigitalClockSeconds(time: String): String {
+        seconds = time.toLong()
+
+        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+
+
     }
 
     fun convertTimeToMillis(time: String): Long {

@@ -1,6 +1,7 @@
 package com.gym.o.gymoclock
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
@@ -29,7 +30,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
 import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings.editTextWarning
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings
+import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.workoutName
 import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
@@ -50,12 +52,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var expandableListView: ExpandableListView
     private lateinit var expandableAdapter: CustomExpandableListAdapter
 
-    private lateinit var workoutDB: WorkoutDB
+    private var workoutDB: WorkoutDB = WorkoutDB(this)
     private var listTitle: MutableList<String> = ArrayList()
     private var listChild = HashMap<String, List<String>?>()
 
     private lateinit var dialogBuilder: AlertDialog.Builder
     private lateinit var dialog: AlertDialog
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +70,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //setSupportActionBar(binding.appBarMain.toolbar)
 
         TextToSpeechUtils.getInstance(this)
+
+        sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
+        if(sharedPreferences.getString("workoutName", "").toString().isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
+            workoutName = sharedPreferences.getString("workoutName", "").toString()
+
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -314,7 +323,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when (selectedItem) {
                 selectedItem -> {
                     workoutName = selectedItem.replace(" ", "_")
-                    //Toast.makeText(this, "Main: $selectedItem", Toast.LENGTH_SHORT).show()
+                    saveWorkoutNameToPreferences(workoutName)
+
                     changeFragment(WorkoutFragment::class.java)
                 }
             }
@@ -345,6 +355,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 false
             }
+    }
+
+    private fun saveWorkoutNameToPreferences(workoutNameString: String){
+        val save = sharedPreferences.edit()
+        save.putString("workoutName", workoutNameString)
+        save.apply()
+
     }
 
     private fun changeNavHeaderText(selectedItem: String) {
@@ -454,10 +471,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val checkForSymbol: Boolean = inspectChar.find()
 
         return if (value.isEmpty()) {
-            editTextWarning(editValue, "Enter Name")
+            WidgetsWarnings.editTextWarning(editValue, "Enter Name")
             ""
         } else if (checkForSymbol) {
-            editTextWarning(editValue, "No symbols or numbers")
+            WidgetsWarnings.editTextWarning(editValue, "No symbols or numbers")
             ""
         } else {
             value = value.replace(" ", "_")

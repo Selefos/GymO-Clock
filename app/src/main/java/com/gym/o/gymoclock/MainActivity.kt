@@ -3,16 +3,13 @@ package com.gym.o.gymoclock
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.AdapterView.OnItemLongClickListener
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -27,11 +24,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.gym.o.gymoclock.databases.CalendarDB
+import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
-import com.gym.o.gymoclock.functionality.calendar_pr.database.CalendarDB
-import com.gym.o.gymoclock.functionality.workout_pr.database.WorkoutDB
 import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings
-import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.workoutName
 import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
@@ -72,7 +68,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TextToSpeechUtils.getInstance(this)
 
         sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
-        if(sharedPreferences.getString("workoutName", "").toString().isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
+        if (sharedPreferences.getString("workoutName", "").toString()
+                .isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty()
+        )
             workoutName = sharedPreferences.getString("workoutName", "").toString()
 
 
@@ -169,7 +167,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerToggle.onConfigurationChanged(Configuration())
     }
 
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+/*    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val v: View? = currentFocus
             if (v is EditText) {
@@ -184,7 +182,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         return super.dispatchTouchEvent(event)
-    }
+    }*/
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -237,7 +235,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         for (month in calendarMonths)
             if (DateTimeUtils.setCalendarTableName() == month) {
-                Log.e("Calendar Database", "Occurrence Found")
+                Log.d("Calendar Database", "Occurrence Found")
                 return
             }
 
@@ -291,7 +289,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             false
         }
 
-
         expandableListView.setOnGroupExpandListener {
             fun onGroupExpand(groupPosition: Int) {
                 supportActionBar?.title = listTitle[groupPosition].toString()
@@ -300,7 +297,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         expandableListView.setOnGroupCollapseListener {
             fun onGroupCollapse(groupPosition: Int) {
-                supportActionBar?.title = "GymO'Clock";
+                supportActionBar?.title = "GymO'Clock"
             }
         }
 
@@ -333,7 +330,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         expandableListView.onItemLongClickListener =
             OnItemLongClickListener { parent, view, position, id ->
-                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                if (ExpandableListView.getPackedPositionType(
+                        id
+                    ) == ExpandableListView.PACKED_POSITION_TYPE_GROUP
+                ) {
                     // You now have everything that you would as if this was an OnChildClickListener()
                     // Add your logic here.
                     // Return true as we are handling the event.
@@ -343,7 +343,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     return@OnItemLongClickListener true
                 }
 
-                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+                if (ExpandableListView.getPackedPositionType(
+                        id
+                    ) == ExpandableListView.PACKED_POSITION_TYPE_CHILD
+                ) {
                     val groupPosition = ExpandableListView.getPackedPositionGroup(id)
                     val childPosition = ExpandableListView.getPackedPositionChild(id)
                     val selectedItem =
@@ -357,7 +360,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
     }
 
-    private fun saveWorkoutNameToPreferences(workoutNameString: String){
+    private fun saveWorkoutNameToPreferences(workoutNameString: String) {
         val save = sharedPreferences.edit()
         save.putString("workoutName", workoutNameString)
         save.apply()
@@ -393,7 +396,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun addWorkoutTable() {
         dialogBuilder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
         val inflater = layoutInflater//LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.add_new_workout, null)
+        val view = inflater.inflate(R.layout.dialog_add_new_workout, null)
         val workoutNameAdd = view.findViewById<EditText>(R.id.workout_name)
         val addButton = view.findViewById<Button>(R.id.add_workout_button)
         val cancelButton = view.findViewById<Button>(R.id.cancel_add_workout_button)
@@ -422,7 +425,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun editWorkoutName(workoutName: String) {
         dialogBuilder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
         val inflater = layoutInflater//LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.delete_rename_workout, null)
+        val view = inflater.inflate(R.layout.dialog_delete_rename_workout, null)
         val editIndicator = view.findViewById<TextView>(R.id.edit_indicator)
         val renameWorkout = view.findViewById<EditText>(R.id.rename_text_workout)
         val updateWorkoutButton = view.findViewById<Button>(R.id.rename_workout)

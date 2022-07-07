@@ -6,15 +6,15 @@ import android.os.Build
 import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.TextView
-import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import java.lang.reflect.Field
 
 class WidgetsWarnings {
 
     companion object {
+
         fun editTextWarning(editText: EditText, warning: String) {
             editText.clearFocus()
-            if(editText.text.isNotBlank())
+            if (editText.text.isNotBlank())
                 editText.setText("")
             editText.setHintTextColor(Color.RED)
             editText.hint = warning

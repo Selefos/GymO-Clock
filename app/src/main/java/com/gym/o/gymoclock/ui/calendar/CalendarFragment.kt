@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.gym.o.gymoclock.databinding.FragmentCalendarBinding
+import com.gym.o.gymoclock.utils.DateTimeUtils
 
 
 class CalendarFragment : Fragment() {
@@ -33,20 +34,23 @@ class CalendarFragment : Fragment() {
 
             binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
                 val month = month + 1
-                Log.d("TAG", "onDateSet: mm/dd/yyy: $dayOfMonth/$month/$year"
-                )
+                Log.d("TAG", "onDateSet: mm/dd/yyy: $dayOfMonth/$month/$year ${DateTimeUtils.setCalendarTableName()}")
+                DateTimeUtils.setCalendarTableName()
+
 
                 val date = "$month/$dayOfMonth/$year"
+
+
+
             }
 
-            mDateSetListener =
-                OnDateSetListener { datePicker, year, month, day ->
-                    var month = month
-                    month = month + 1
-                    Log.d("TAG", "onDateSet: mm/dd/yyy: $month/$day/$year")
-                    val date = "$month/$day/$year"
-                    mDisplayDate?.text = date
-                }
+//            mDateSetListener = OnDateSetListener { datePicker, year, month, day ->
+//                    var month = month
+//                    month = month + 1
+//                    Log.d("TAG", "onDateSet: mm/dd/yyy: $month/$day/$year")
+//                    val date = "$month/$day/$year"
+//                    mDisplayDate?.text = date
+//                }
         }
 
         return root

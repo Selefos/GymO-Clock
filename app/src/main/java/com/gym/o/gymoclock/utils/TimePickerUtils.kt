@@ -8,24 +8,32 @@ import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.ConvertTime
+import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.ConvertDigitalClocks
 
-class TimePickerUtils(context: Context)  {
+class TimePickerUtils(context: Context) {
 
     var context: Context? = null
 
-    init{
+    init {
         this.context = context
     }
 
-    fun numberPickerTimeDialog(digitalTime: TextView?){
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context!!, R.style.CustomAlertDialog)
+    fun numberPickerTimeDialog(digitalTime: TextView?) {
+        val dialogBuilder: AlertDialog.Builder =
+            AlertDialog.Builder(
+                context!!,
+                R.style.CustomAlertDialog)
         val inflater: LayoutInflater = LayoutInflater.from(context)
-        val viewAddOrEditExercise: View = inflater.inflate(R.layout.exercise_number_pickers, null)
+        val viewAddOrEditExercise: View = inflater.inflate(
+            R.layout.exercise_number_pickers,
+            null)
 
-        val numberPickerMinutes = viewAddOrEditExercise.findViewById<NumberPicker>(R.id.numberPicker_minutes)
-        val numberPickerSeconds = viewAddOrEditExercise.findViewById<NumberPicker>(R.id.numberPicker_seconds)
-        val timeDigitalFormatTextView = viewAddOrEditExercise.findViewById<TextView>(R.id.time_digital_format)
+        val numberPickerMinutes =
+            viewAddOrEditExercise.findViewById<NumberPicker>(R.id.numberPicker_minutes)
+        val numberPickerSeconds =
+            viewAddOrEditExercise.findViewById<NumberPicker>(R.id.numberPicker_seconds)
+        val timeDigitalFormatTextView =
+            viewAddOrEditExercise.findViewById<TextView>(R.id.time_digital_format)
         val setNumberPicker = viewAddOrEditExercise.findViewById<Button>(R.id.set_numberPicker)
         val cancelTimePicker = viewAddOrEditExercise.findViewById<Button>(R.id.cancel_numberPicker)
 
@@ -35,17 +43,21 @@ class TimePickerUtils(context: Context)  {
         numberPickerSeconds.maxValue = 59
         numberPickerSeconds.value = 0
 
-        timeDigitalFormatTextView.text = ConvertTime.convertTimeToDigitalClockMinutes(numberPickerMinutes.value.toString())
-        timeDigitalFormatTextView.text = ConvertTime.convertTimeToDigitalClockSeconds(numberPickerSeconds.value.toString())
+        timeDigitalFormatTextView.text =
+            ConvertDigitalClocks.convertTimeToDigitalClockMinutes(numberPickerMinutes.value.toString())
+        timeDigitalFormatTextView.text =
+            ConvertDigitalClocks.convertTimeToDigitalClockSeconds(numberPickerSeconds.value.toString())
 
         numberPickerMinutes.setOnValueChangedListener { picker, oldVal, newVal ->
 
-            timeDigitalFormatTextView.text = ConvertTime.convertTimeToDigitalClockMinutes(newVal.toString())
+            timeDigitalFormatTextView.text =
+                ConvertDigitalClocks.convertTimeToDigitalClockMinutes(newVal.toString())
         }
 
         numberPickerSeconds.setOnValueChangedListener { picker, oldVal, newVal ->
 
-            timeDigitalFormatTextView.text = ConvertTime.convertTimeToDigitalClockSeconds(newVal.toString())
+            timeDigitalFormatTextView.text =
+                ConvertDigitalClocks.convertTimeToDigitalClockSeconds(newVal.toString())
         }
 
         dialogBuilder.setView(viewAddOrEditExercise)

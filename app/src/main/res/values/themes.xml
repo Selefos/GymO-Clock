@@ -48,6 +48,7 @@
 
     <style name="NumberPicker">
         <item name="android:textSize">22sp</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="colorControlNormal">@color/custom_transparent</item>
     </style>
 

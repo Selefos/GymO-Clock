@@ -11,7 +11,8 @@ import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 
 
-class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<String>, listChild: HashMap<String, List<String>?>) : BaseExpandableListAdapter() {
+class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<String>, listChild: HashMap<String, List<String>?>) :
+    BaseExpandableListAdapter() {
     private var context: Context? = null
     private var listTitle: List<String>? = null
     private var listItem: Map<String, List<String>?>
@@ -35,7 +36,8 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<St
         var convertView = convertView
         val childText = getChild(groupPosition, childPosition)//.menuName
         if (convertView == null) {
-            val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater =
+                context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.list_item, null)
         }
         val txtListChild = convertView?.findViewById<TextView>(R.id.expandable_list_item)
@@ -63,7 +65,8 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<St
         var convertView = convertView
         val headerTitle = getGroup(groupPosition)//.menuName
         if (convertView == null) {
-            val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater =
+                context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.list_group, null)
         }
         val lblListHeader = convertView!!.findViewById<TextView>(R.id.listTitle)

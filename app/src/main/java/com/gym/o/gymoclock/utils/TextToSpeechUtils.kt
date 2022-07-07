@@ -7,7 +7,7 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import java.util.*
 
-class TextToSpeechUtils(context: Context): Application(), TextToSpeech.OnInitListener{
+class TextToSpeechUtils(context: Context) : Application(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var textToSpeak: String? = null
 
@@ -64,7 +64,7 @@ class TextToSpeechUtils(context: Context): Application(), TextToSpeech.OnInitLis
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             tts!!.speak(voiceText, TextToSpeech.QUEUE_FLUSH, null)
         else
-            tts!!.speak(voiceText, TextToSpeech.QUEUE_FLUSH, null,null)
+            tts!!.speak(voiceText, TextToSpeech.QUEUE_FLUSH, null, null)
 
     }
 
@@ -76,10 +76,10 @@ class TextToSpeechUtils(context: Context): Application(), TextToSpeech.OnInitLis
         }
     }
 
-    companion object{
+    companion object {
 
-        private  var instance: TextToSpeechUtils? = null
-        fun getInstance(context: Context): TextToSpeechUtils = synchronized(this){
+        private var instance: TextToSpeechUtils? = null
+        fun getInstance(context: Context): TextToSpeechUtils = synchronized(this) {
             if (instance == null)
                 instance = TextToSpeechUtils(context)
             return instance as TextToSpeechUtils

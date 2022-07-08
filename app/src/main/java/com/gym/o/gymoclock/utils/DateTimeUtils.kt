@@ -22,8 +22,8 @@ class DateTimeUtils {
             //val monthNameFormat = DateTimeFormatter.ofPattern("MMMM")
             //return currentDateTime.format(monthNameFormat)
             val monthName = SimpleDateFormat("MMMM", Locale.getDefault())
-            //Log.i("DateTimeUtils_Month", monthName.format(Date()))
-            return monthName.format(Date())
+            //Log.i("DateTimeUtils_Month", monthName.format(Date()).uppercase())
+            return monthName.format(Date()).uppercase()
         }
 
         fun setCalendarTableName(): String {

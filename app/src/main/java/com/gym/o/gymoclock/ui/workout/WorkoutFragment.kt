@@ -407,7 +407,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (workoutName == "")
             return
 
-        if (listAdapter.totalTimeFromDB(rounds) == 0) {
+        if (rounds == 0) {
             binding.roundsPicker.textColor = Color.RED
             //RoundsPickerFunctions.roundPickerColor(binding.roundsEdit, Color.RED)
             binding.roundsPicker.value = 1

@@ -406,12 +406,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
 
         addButton.setOnClickListener {
-            if (checkIfEmptyOrHasSymbolsOrNumbers(workoutNameAdd).isNotEmpty()) {
-                checkIfEmptyOrHasSymbolsOrNumbers(workoutNameAdd).let { add ->
-                    workoutDB.addWorkoutTable(
-                        add
-                    )
-                }
+            if (isTextEmpty(workoutNameAdd).isNotEmpty() && isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty() && isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
+                workoutDB.addWorkoutTable(workoutNameAdd.text.toString())
+                //isNotTextNumberOrSymbol(workoutNameAdd).let { add -> workoutDB.addWorkoutTable(add) }
                 prepareMenuData()
                 expandableAdapter.notifyDataSetChanged()
                 dialog.dismiss()
@@ -442,13 +439,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
 
         updateWorkoutButton.setOnClickListener {
-            if (checkIfEmptyOrHasSymbolsOrNumbers(renameWorkout).isNotEmpty()) {
-                checkIfEmptyOrHasSymbolsOrNumbers(renameWorkout).let { rnm ->
-                    workoutDB.renameWorkoutTable(
-                        workoutName.replace(" ", "_"),
-                        rnm
-                    )
-                }
+            if (isTextEmpty(renameWorkout).isNotEmpty() && isNotDuplicate(renameWorkout, workoutDB).isNotEmpty() && isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
+                workoutDB.renameWorkoutTable(workoutName, renameWorkout.text.toString().replace(" ", "_"))
+                //isNotTextNumberOrSymbol(renameWorkout).let { rnm -> workoutDB.renameWorkoutTable(workoutName.replace(" ", "_"), rnm) }
                 //workoutDB.renameTable(workoutName.replace(" ", "_"), prepareWorkoutValue(renameWorkout)) // alternative update
 
                 prepareMenuData()
@@ -466,17 +459,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun checkIfEmptyOrHasSymbolsOrNumbers(editValue: EditText): String {
+    private fun isNotTextNumberOrSymbol(editValue: EditText): String {
         var value: String = editValue.text.toString().trim()
         val findSymbol: Pattern =
             Pattern.compile("[1234567890`~!@#$%^&*()+=;΄¨':\"\\\\/.,|<>?{}\\[\\]-]")
         val inspectChar: Matcher = findSymbol.matcher(value)
         val checkForSymbol: Boolean = inspectChar.find()
 
-        return if (value.isEmpty()) {
-            WidgetsWarnings.editTextWarning(editValue, "Enter Name")
-            ""
-        } else if (checkForSymbol) {
+        return if (checkForSymbol) {
             WidgetsWarnings.editTextWarning(editValue, "No symbols or numbers")
             ""
         } else {
@@ -485,4 +475,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun isTextEmpty(editValue: EditText): String{
+        val value: String = editValue.text.toString().trim()
+        return value.ifEmpty {
+            WidgetsWarnings.editTextWarning(editValue, "Enter Name")
+            ""
+        }
+    }
+
+    private fun isNotDuplicate(editValue: EditText, workoutDB: WorkoutDB): String {
+        val value: String = editValue.text.toString().trim()
+        val checkForDuplicate = workoutDB.loadWorkoutTableNames()
+        for(name in checkForDuplicate){
+            if(value == name){
+                WidgetsWarnings.editTextWarning(editValue, "Workout Exists")
+                return ""
+            }
+        }
+        return value
+    }
 }

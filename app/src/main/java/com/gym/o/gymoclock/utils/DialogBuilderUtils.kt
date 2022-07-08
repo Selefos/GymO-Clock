@@ -70,8 +70,32 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         }
     }
 
+
+
+
     fun addWorkout(setCanceledOnTouchOutside: Boolean){}
 
     fun removeRenameWorkout(setCanceledOnTouchOutside: Boolean){}
+
+
+
+    private val viewCalendarWorkoutDetails: View = inflater.inflate(R.layout.dialog_calendar_workout_details, null)
+    val calendarDate: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_date)
+    val calendarStartTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_start_time)
+    val calendarEndTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_end_time)
+    val calendarWorkoutName: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_workout_name)
+    val calendarTotalTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_total_time)
+    val calendarTotalWorkingTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_total_working_time)
+    val calendarCancelButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_cancel_button)
+    fun calendarWorkoutDetails(setCanceledOnTouchOutside: Boolean){
+        dialogBuilder.setView(viewCalendarWorkoutDetails)
+        dialog = dialogBuilder.create()
+        dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
+        dialog.show()
+
+        calendarCancelButton.setOnClickListener{
+            dialog.dismiss()
+        }
+    }
 
 }

@@ -48,6 +48,12 @@ fun WorkoutFragment.roundsPicker() {
             //refreshTotalTimeOnRoundsChanged(elapsedTime, newVal).toString()
             (listAdapter.totalTimeFromDB(newVal)).toString()
         )
+
+        if (rounds == 1) {
+            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocks.convertTimeToDigitalClock("0")
+
+            Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
+        }
     }
 
 }
@@ -56,7 +62,6 @@ fun WorkoutFragment.elapsedTime(totalTimeFromDB: Int): Int {
     val currentTotalTime: Int = ConvertDigitalClocks.convertTimeToSeconds(binding.totalTime.text.toString())
     Log.i("ELAPSED_TIME", "TOTAL TIME DB: $totalTimeFromDB, CURRENT TOTAL TIME: $currentTotalTime, TOTAL TIME TXT: ${binding.totalTime.text}")
     return totalTimeFromDB - currentTotalTime
-
 }
 
 fun WorkoutFragment.refreshTotalTimeOnRoundsChanged(elapsedTime: Int, newVal: Int): Int {

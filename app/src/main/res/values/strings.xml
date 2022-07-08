@@ -67,12 +67,20 @@
 
     <string name="delete_exercise_dialog_text">Delete this exercise?</string>
 
-
     <!--  __________________________________________________  -->
-    <!-- exercise_number_pickers -->
+    <!--  ______________exercise_number_pickers_____________  -->
     <string name="minutes">MIN</string>
     <string name="seconds">SEC</string>
     <string name="setNumberPicker">Set</string>
     <string name="digital_format">00:00</string>
+    <!--  __________________________________________________  -->
+
+    <!--  __________________________________________________  -->
+    <!--  __________dialog_calendar_workout_details_________  -->
+    <string name="calendar_start_time_string">START TIME</string>
+    <string name="calendar_end_time_string">END TIME</string>
+    <string name="calendar_workout_name_string">WORKOUT NAME</string>
+    <string name="calendar_total_time_string">TOTAL TIME</string>
+    <string name="calendar_total_working_time_string">TOTAL WORKING TIME</string>
     <!--  __________________________________________________  -->
 </resources>

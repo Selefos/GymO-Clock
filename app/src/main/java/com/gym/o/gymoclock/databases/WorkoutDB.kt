@@ -1,12 +1,10 @@
-package com.gym.o.gymoclock.functionality.workout_pr.database
+package com.gym.o.gymoclock.databases
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-
-
 
 class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
 
@@ -15,25 +13,24 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_WORKOUT")
         onCreate(db)
+        db.close()
     }
 
     fun addWorkoutTable(WorkoutName: String) {
         val db = writableDatabase
         val createWorkoutTable = "CREATE TABLE IF NOT EXISTS " + WorkoutName + " (ID INTEGER PRIMARY KEY , " +
-                "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
+                    "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
         db.execSQL(createWorkoutTable)
 
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '0', '0')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '0', '0')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '0', '0')")
-
+        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '45', '30')")
+        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '45', '30')")
+        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '45', '30')")
         db.close()
     }
 
     fun renameWorkoutTable(tableName: String, WorkoutNameUpdate: String) {
         val db = this.writableDatabase
-        val updateTableWorkoutName =
-            "ALTER TABLE $tableName RENAME TO $WorkoutNameUpdate"
+        val updateTableWorkoutName = "ALTER TABLE $tableName RENAME TO $WorkoutNameUpdate"
         db.execSQL(updateTableWorkoutName)
         db.close()
     }
@@ -41,12 +38,12 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     fun deleteWorkoutTable(tableName: String) {
         val db = this.writableDatabase
         db.execSQL("DROP TABLE IF EXISTS $tableName")
+        db.close()
     }
 
     fun loadWorkoutTableNames(): List<String> {
         val db = this.writableDatabase
-        val selectTables =
-            "SELECT name FROM sqlite_master WHERE type='table' AND name!='android_metadata'"
+        val selectTables = "SELECT name FROM sqlite_master WHERE type='table' AND name!='android_metadata'"
         val cursor = db.rawQuery(selectTables, null)
         val result: MutableList<String> = ArrayList()
         if (cursor.moveToFirst()) {
@@ -59,7 +56,7 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result
     }
 
-    fun insertExerciseDetails(tableName: String, exerciseName: String, workTime: String, restTime: String): Boolean{
+    fun insertExerciseDetails(tableName: String, exerciseName: String, workTime: String, restTime: String): Boolean {
         val db = this.writableDatabase
         val exerciseDetails = ContentValues()
         exerciseDetails.put(COL_EXERCISE_NAME, exerciseName)
@@ -76,7 +73,8 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         exerciseDetails.put(COL_EXERCISE_NAME, newExerciseName)
         exerciseDetails.put(COL_WORK_TIME, workTime)
         exerciseDetails.put(COL_REST_TIME, restTime)
-        val result = db.update(tableName, exerciseDetails, "$COL_EXERCISE_NAME = ?", arrayOf(nameToReplace))
+        val result =
+            db.update(tableName, exerciseDetails, "$COL_EXERCISE_NAME = ?", arrayOf(nameToReplace))
         db.close()
         return result != 1
     }
@@ -88,9 +86,7 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result != -1
     }
 
-    fun loadRecyclerElements(tableName: String): Cursor {
-
-        val db: SQLiteDatabase = readableDatabase
+    fun loadRecyclerElements(tableName: String, db: SQLiteDatabase): Cursor {
         return db.query(tableName, null, null, null, null, null, null)
     }
 

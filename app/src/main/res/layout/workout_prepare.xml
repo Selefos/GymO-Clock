@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="220dp"
+    android:background="@drawable/delete_rename_workout_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:theme="@style/CustomAlertDialog">
+
+    <TextView
+        android:id="@+id/prepare_countdown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:elevation="15dp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/prepare_for_workout"
+        android:textColor="@color/custom_text_color"
+        android:textSize="100sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

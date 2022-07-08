@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.gym.o.gymoclock.databinding.FragmentSlideshowBinding
-import com.gym.o.gymoclock.ui.slideshow.SlideshowViewModel
 
 class SlideshowFragment : Fragment() {
 

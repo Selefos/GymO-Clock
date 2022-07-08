@@ -1,9 +1,9 @@
-package com.gym.o.gymoclock
+package com.gym.o.gymoclock.interfaces
 
 import android.view.View
 
 
-interface RecyclerViewInterface{
+interface RecyclerViewInterface {
 
     fun editExercise(dataPosition: Int)
 

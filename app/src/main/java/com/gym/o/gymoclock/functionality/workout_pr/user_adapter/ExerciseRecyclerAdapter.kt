@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.ConvertDigitalClocks
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.workoutName
@@ -159,7 +159,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         cursor.close()
         db.close()
 
-        return (totalTime * rounds) - ConvertDigitalClocks.convertTimeToSeconds(position.restClockValue.text.toString())
+        return (totalTime * rounds) - ConvertDigitalClocksUtils.convertTimeToSeconds(position.restClockValue.text.toString())
     }
 
     fun totalTimeFromView(rounds: Int): Int {
@@ -167,8 +167,8 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         lateinit var position: ExerciseElements
         for (view: Int in 0 until itemCount) {
             position = dataList[view]
-            totalTimeFromView += ConvertDigitalClocks.convertTimeToSeconds(position.exerciseClockValue.text.toString())
-            totalTimeFromView += ConvertDigitalClocks.convertTimeToSeconds(position.restClockValue.text.toString())
+            totalTimeFromView += ConvertDigitalClocksUtils.convertTimeToSeconds(position.exerciseClockValue.text.toString())
+            totalTimeFromView += ConvertDigitalClocksUtils.convertTimeToSeconds(position.restClockValue.text.toString())
         }
 
         return totalTimeFromView * rounds

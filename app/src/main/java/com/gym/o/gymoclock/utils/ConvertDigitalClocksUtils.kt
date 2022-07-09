@@ -1,8 +1,8 @@
-package com.gym.o.gymoclock.functionality.workout_pr.edit_workout
+package com.gym.o.gymoclock.utils
 
 import java.util.*
 
-object ConvertDigitalClocks {
+object ConvertDigitalClocksUtils {
     private var minutes: Long = 0L
     private var seconds: Long = 0L
 
@@ -14,6 +14,14 @@ object ConvertDigitalClocks {
             convertedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
             convertedTime
         } else convertedTime
+    }
+
+    fun convertTimeMinSecFormat(time: String): String {
+        val units = time.split(":")
+        val min = Integer.parseInt(units[0])
+        val secs = Integer.parseInt(units[1])
+
+        return "$min min, $secs secs"
     }
 
     fun convertTimeToDigitalClockMinutes(time: String): String {

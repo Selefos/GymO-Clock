@@ -1,4 +1,4 @@
-package com.gym.o.gymoclock.functionality.workout_pr.edit_workout
+package com.gym.o.gymoclock.utils
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -8,7 +8,7 @@ import android.widget.NumberPicker
 import android.widget.TextView
 import java.lang.reflect.Field
 
-class WidgetsWarnings {
+class WidgetsWarningsUtils {
 
     companion object {
 

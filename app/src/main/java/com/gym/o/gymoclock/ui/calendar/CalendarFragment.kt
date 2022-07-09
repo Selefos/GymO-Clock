@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databinding.FragmentCalendarBinding
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.DialogBuilderUtils
 import java.time.Month
@@ -108,8 +109,8 @@ class CalendarFragment : Fragment() {
                     dialogBuilderUtils.calendarStartTime.text = cursor.getString(1)
                     dialogBuilderUtils.calendarEndTime.text = cursor.getString(2)
                     dialogBuilderUtils.calendarWorkoutName.text = cursor.getString(3).replace("_", " ")
-                    dialogBuilderUtils.calendarTotalTime.text = cursor.getString(4)
-                    dialogBuilderUtils.calendarTotalWorkingTime.text = cursor.getString(5)
+                    dialogBuilderUtils.calendarTotalTime.text = ConvertDigitalClocksUtils.convertTimeMinSecFormat(cursor.getString(4))
+                    dialogBuilderUtils.calendarTotalWorkingTime.text = ConvertDigitalClocksUtils.convertTimeMinSecFormat(cursor.getString(5))
                 } while (cursor.moveToNext())
             }
             cursor.close()

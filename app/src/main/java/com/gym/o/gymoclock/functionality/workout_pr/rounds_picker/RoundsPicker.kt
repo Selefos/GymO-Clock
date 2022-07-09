@@ -8,7 +8,7 @@ import android.widget.EditText
 import android.widget.NumberPicker
 import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.ConvertDigitalClocks
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import java.lang.reflect.Field
@@ -43,14 +43,14 @@ fun WorkoutFragment.roundsPicker() {
 
         val position = dataList[listAdapter.itemCount - 1]
         //elapsedTime = elapsedTime(listAdapter.totalTimeFromDB(oldVal))
-        binding.totalTime.text = ConvertDigitalClocks.convertTimeToDigitalClock(
+        binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(
             //listAdapter.totalTimeFromView(rounds).toString()
             //refreshTotalTimeOnRoundsChanged(elapsedTime, newVal).toString()
             (listAdapter.totalTimeFromDB(newVal)).toString()
         )
 
         if (rounds == 1) {
-            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocks.convertTimeToDigitalClock("0")
+            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock("0")
 
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         }
@@ -59,7 +59,7 @@ fun WorkoutFragment.roundsPicker() {
 }
 
 fun WorkoutFragment.elapsedTime(totalTimeFromDB: Int): Int {
-    val currentTotalTime: Int = ConvertDigitalClocks.convertTimeToSeconds(binding.totalTime.text.toString())
+    val currentTotalTime: Int = ConvertDigitalClocksUtils.convertTimeToSeconds(binding.totalTime.text.toString())
     Log.i("ELAPSED_TIME", "TOTAL TIME DB: $totalTimeFromDB, CURRENT TOTAL TIME: $currentTotalTime, TOTAL TIME TXT: ${binding.totalTime.text}")
     return totalTimeFromDB - currentTotalTime
 }

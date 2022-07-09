@@ -30,8 +30,8 @@ import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
 import com.gym.o.gymoclock.functionality.workout_pr.*
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.*
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.ConvertDigitalClocks
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
+import com.gym.o.gymoclock.utils.WidgetsWarningsUtils
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.user_adapter.ExerciseRecyclerAdapter
@@ -59,7 +59,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         onSavedInstance(savedInstanceState)
         if (workoutName.isNotEmpty()) {
             loadRecyclerViews()
-            binding.totalTime.text = ConvertDigitalClocks.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         }
 
         setItemTouchHelper()
@@ -182,13 +182,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         binding.playPauseButton.setOnClickListener {
             if (rounds == 0) {
                 recyclerPosition = 0
-                WidgetsWarnings.pickerTextWarning(binding.roundsPicker, rounds)
+                WidgetsWarningsUtils.pickerTextWarning(binding.roundsPicker, rounds)
                 return@setOnClickListener
             }
 
             if (listAdapter.itemCount == 0 || listAdapter.totalTimeFromDB(rounds) == 0) {
                 binding.totalTimeTextView.setTextColor(Color.RED)
-                WidgetsWarnings.textViewWarning(binding.totalTime)
+                WidgetsWarningsUtils.textViewWarning(binding.totalTime)
                 return@setOnClickListener
             }
 
@@ -249,13 +249,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             exerciseName = dialogBuilderUtils.exerciseNameEdit.text.toString().trim()
 
         if (nameIsNotDuplicate(exerciseName))
-            WidgetsWarnings.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
+            WidgetsWarningsUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
         else {
             val exerciseClock: TextView = dialogBuilderUtils.viewRecycler.findViewById(R.id.countdown_work)
-            exerciseClock.text = dialogBuilderUtils.workDigitalTime.text.toString()//ConvertDigitalClocks.convertTimeToDigitalClock(dialogBuilderExercise.workTimePicker.text.toString())
+            exerciseClock.text = dialogBuilderUtils.workDigitalTime.text.toString()//ConvertDigitalClocksUtils.convertTimeToDigitalClock(dialogBuilderExercise.workTimePicker.text.toString())
 
             val restClock: TextView = dialogBuilderUtils.viewRecycler.findViewById(R.id.countdown_rest)
-            restClock.text = dialogBuilderUtils.restDigitalTime.text.toString()//ConvertDigitalClocks.convertTimeToDigitalClock(dialogBuilderExercise.restTimePicker.text.toString())
+            restClock.text = dialogBuilderUtils.restDigitalTime.text.toString()//ConvertDigitalClocksUtils.convertTimeToDigitalClock(dialogBuilderExercise.restTimePicker.text.toString())
 
             workCountDown = object : CountDownTimer(0, 1000) {
                 override fun onTick(millsUntilFinish: Long) {
@@ -282,7 +282,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             listAdapter.notifyDataSetChanged()
 
-            binding.totalTime.text = ConvertDigitalClocks.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
             dialogBuilderUtils.dialog.dismiss()
         }
     }
@@ -308,7 +308,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         workoutDB = WorkoutDB(requireContext())
 
         if (nameIsNotDuplicate(dialogBuilderUtils.exerciseNameEdit.text.toString()))
-            WidgetsWarnings.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
+            WidgetsWarningsUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
         else {
             val oldExerciseName = position.exerciseNameValue
 
@@ -318,18 +318,18 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
 
             if (dialogBuilderUtils.workDigitalTime.text.toString().isNotEmpty()) {
-                position.exerciseClockValue.text = dialogBuilderUtils.workDigitalTime.text.toString()//ConvertDigitalClocks.convertTimeToDigitalClock(dialogBuilderUtils.workTimePicker.text.toString())
+                position.exerciseClockValue.text = dialogBuilderUtils.workDigitalTime.text.toString()//ConvertDigitalClocksUtils.convertTimeToDigitalClock(dialogBuilderUtils.workTimePicker.text.toString())
                 listAdapter.notifyItemChanged(dataPosition, position.exerciseClockValue)
             }
 
             if (dialogBuilderUtils.restDigitalTime.text.toString().isNotEmpty()) {
-                position.restClockValue.text = dialogBuilderUtils.restDigitalTime.text.toString()//ConvertDigitalClocks.convertTimeToDigitalClock(dialogBuilderUtils.restTimePicker.text.toString())
+                position.restClockValue.text = dialogBuilderUtils.restDigitalTime.text.toString()//ConvertDigitalClocksUtils.convertTimeToDigitalClock(dialogBuilderUtils.restTimePicker.text.toString())
                 listAdapter.notifyItemChanged(dataPosition, position.restClockValue)
             }
 
             saveExerciseValues("update", oldExerciseName, position.exerciseNameValue, position.exerciseClockValue, position.restClockValue)
 
-            binding.totalTime.text = ConvertDigitalClocks.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
 
             if (listAdapter.totalTimeFromDB(rounds) > 0) {
                 binding.totalTimeTextView.setTextColor(getColor(requireContext(), R.color.custom_text_color))
@@ -344,8 +344,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (addOrUpdate == "add") {
             val insertExerciseData = workoutDB.insertExerciseDetails(
                 workoutName, exerciseName,
-                ConvertDigitalClocks.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
-                ConvertDigitalClocks.convertTimeToSeconds(restClock.text.toString()).toString()
+                ConvertDigitalClocksUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
+                ConvertDigitalClocksUtils.convertTimeToSeconds(restClock.text.toString()).toString()
             )
 
             if (insertExerciseData)
@@ -355,8 +355,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (addOrUpdate == "update") {
             val updateExerciseData = workoutDB.updateExerciseDetails(
                 workoutName, oldExerciseName, exerciseName,
-                ConvertDigitalClocks.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
-                ConvertDigitalClocks.convertTimeToSeconds(restClock.text.toString()).toString()
+                ConvertDigitalClocksUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
+                ConvertDigitalClocksUtils.convertTimeToSeconds(restClock.text.toString()).toString()
             )
             if (updateExerciseData)
                 Toast.makeText(context, "Exercise Updated", Toast.LENGTH_SHORT).show()
@@ -391,7 +391,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             Log.e("WorkoutFrag", "Item Position = $dataPosition, Animate Delete Position = $getLastPositionForRemoveViewAnimation" + " " +
                     "Animate Add Position = $getLastPositionForAddViewAnimation"
             )
-            binding.totalTime.text = ConvertDigitalClocks.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
             dialogBuilderUtils.dialog.dismiss()
         }
         dialogBuilderUtils.cancelButtonRemoveExercise.setOnClickListener { dialogBuilderUtils.dialog.dismiss() }
@@ -416,7 +416,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
 
         if (rounds == 1) {
-            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocks.convertTimeToDigitalClock("0")
+            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock("0")
 
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         }
@@ -461,8 +461,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 }
 
                 exerciseName.text = cursor.getString(1)
-                exerciseClock.text = ConvertDigitalClocks.convertTimeToDigitalClock(cursor.getInt(2).toString())
-                restClock.text = ConvertDigitalClocks.convertTimeToDigitalClock(cursor.getInt(3).toString())
+                exerciseClock.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(cursor.getInt(2).toString())
+                restClock.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(cursor.getInt(3).toString())
 
                 dataList.add(
                     ExerciseElements(
@@ -559,8 +559,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutName,
-            ConvertDigitalClocks.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(sharedPreferences.getInt("roundsInt", -1)).toString()),
-            ConvertDigitalClocks.convertTimeToDigitalClock(listAdapter.totalWorkingTime(sharedPreferences.getInt("roundsInt", -1)).toString())
+            ConvertDigitalClocksUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(sharedPreferences.getInt("roundsInt", -1)).toString()),
+            ConvertDigitalClocksUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(sharedPreferences.getInt("roundsInt", -1)).toString())
         )
         startTime = ""
     }

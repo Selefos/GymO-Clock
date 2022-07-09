@@ -27,7 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings
+import com.gym.o.gymoclock.utils.WidgetsWarningsUtils
 import com.gym.o.gymoclock.functionality.workout_pr.workoutName
 import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
@@ -467,7 +467,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val checkForSymbol: Boolean = inspectChar.find()
 
         return if (checkForSymbol) {
-            WidgetsWarnings.editTextWarning(editValue, "No symbols or numbers")
+            WidgetsWarningsUtils.editTextWarning(editValue, "No symbols or numbers")
             ""
         } else {
             value = value.replace(" ", "_")
@@ -478,7 +478,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun isTextEmpty(editValue: EditText): String{
         val value: String = editValue.text.toString().trim()
         return value.ifEmpty {
-            WidgetsWarnings.editTextWarning(editValue, "Enter Name")
+            WidgetsWarningsUtils.editTextWarning(editValue, "Enter Name")
             ""
         }
     }
@@ -488,7 +488,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val checkForDuplicate = workoutDB.loadWorkoutTableNames()
         for(name in checkForDuplicate){
             if(value == name){
-                WidgetsWarnings.editTextWarning(editValue, "Workout Exists")
+                WidgetsWarningsUtils.editTextWarning(editValue, "Workout Exists")
                 return ""
             }
         }

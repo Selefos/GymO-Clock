@@ -1,6 +1,5 @@
 package com.gym.o.gymoclock.utils
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,7 +43,7 @@ class DateTimeUtils {
 //        val startTimeFormat = DateTimeFormatter.ofPattern("HH:mm:ss")
 //        return currentDateTime.format(statTimeFormat)
             val startTimeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-           //Log.i("DateTimeUtils_Time", startTimeFormat.format(Date()))
+            //Log.i("DateTimeUtils_Time", startTimeFormat.format(Date()))
             return startTimeFormat.format(Date())
         }
     }

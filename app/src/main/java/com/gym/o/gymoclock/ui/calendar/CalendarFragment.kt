@@ -54,7 +54,7 @@ class CalendarFragment : Fragment() {
     }
 
 
-    private fun onDateChangeListener(){
+    private fun onDateChangeListener() {
 
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             val month = month + 1
@@ -70,7 +70,7 @@ class CalendarFragment : Fragment() {
 
     }
 
-    private fun showWorkoutDetails(tableName: String, date: String){
+    private fun showWorkoutDetails(tableName: String, date: String) {
 
         val calendarDB = CalendarDB(context)
         val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
@@ -86,7 +86,7 @@ class CalendarFragment : Fragment() {
 
     }
 
-    private fun addButton(workoutID: String, workoutText: String, tableName: String){
+    private fun addButton(workoutID: String, workoutText: String, tableName: String) {
 
         val button = Button(context)
         button.background = AppCompatResources.getDrawable(requireContext(), R.drawable.buttons_background)
@@ -96,7 +96,7 @@ class CalendarFragment : Fragment() {
         button.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         binding.buttonPopLayout.addView(button)
 
-        button.setOnClickListener{
+        button.setOnClickListener {
 
             val calendarDB = CalendarDB(context)
             val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
@@ -105,7 +105,7 @@ class CalendarFragment : Fragment() {
 
             if (cursor.moveToFirst()) {
                 do {
-                    dialogBuilderUtils.calendarDate.text =  cursor.getString(0)
+                    dialogBuilderUtils.calendarDate.text = cursor.getString(0)
                     dialogBuilderUtils.calendarStartTime.text = cursor.getString(1)
                     dialogBuilderUtils.calendarEndTime.text = cursor.getString(2)
                     dialogBuilderUtils.calendarWorkoutName.text = cursor.getString(3).replace("_", " ")

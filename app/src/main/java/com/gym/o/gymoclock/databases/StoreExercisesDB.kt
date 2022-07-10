@@ -1,4 +1,5 @@
 package com.gym.o.gymoclock.databases
 
-class StoreExercisesDB {
-}
+import android.content.Context
+
+class StoreExercisesDB(context: Context?)

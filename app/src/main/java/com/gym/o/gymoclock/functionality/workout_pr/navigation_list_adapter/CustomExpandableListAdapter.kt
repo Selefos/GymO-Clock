@@ -1,4 +1,4 @@
-package com.gym.o.gymoclock.navigation_list_adapter
+package com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter
 
 import android.content.Context
 import android.graphics.Typeface

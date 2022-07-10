@@ -8,13 +8,14 @@ import android.widget.EditText
 import android.widget.NumberPicker
 import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import java.lang.reflect.Field
 import kotlin.properties.Delegates
 
 private var elapsedTime by Delegates.notNull<Int>()
+
 
 fun WorkoutFragment.roundsPicker() {
 
@@ -38,10 +39,11 @@ fun WorkoutFragment.roundsPicker() {
         Log.d(TAG_NUMPICKER, "OldValue= $oldVal")
 
         rounds = picker.value
-        saveRoundsValueToPreferences(picker)
+
+        sharedPreferencesUtils.saveRoundsValueToPreferences(picker)
         Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
 
-        val position = dataList[listAdapter.itemCount - 1]
+
         //elapsedTime = elapsedTime(listAdapter.totalTimeFromDB(oldVal))
         binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(
             //listAdapter.totalTimeFromView(rounds).toString()
@@ -49,20 +51,18 @@ fun WorkoutFragment.roundsPicker() {
             (listAdapter.totalTimeFromDB(newVal)).toString()
         )
 
-        if (rounds == 1) {
-            dataList[listAdapter.itemCount - 1].restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock("0")
-
-            Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
-        }
+        lastRestTimeCheck()
     }
 
 }
+
 
 fun WorkoutFragment.elapsedTime(totalTimeFromDB: Int): Int {
     val currentTotalTime: Int = ConvertDigitalClocksUtils.convertTimeToSeconds(binding.totalTime.text.toString())
     Log.i("ELAPSED_TIME", "TOTAL TIME DB: $totalTimeFromDB, CURRENT TOTAL TIME: $currentTotalTime, TOTAL TIME TXT: ${binding.totalTime.text}")
     return totalTimeFromDB - currentTotalTime
 }
+
 
 fun WorkoutFragment.refreshTotalTimeOnRoundsChanged(elapsedTime: Int, newVal: Int): Int {
     Log.i("REFRESH_TIME", "NEW VAL: $newVal,  ELAPSED TIME: $elapsedTime")
@@ -71,27 +71,24 @@ fun WorkoutFragment.refreshTotalTimeOnRoundsChanged(elapsedTime: Int, newVal: In
     return listAdapter.totalTimeFromDB(newVal) - elapsedTime
 }
 
+
 fun WorkoutFragment.onScrollIdle(scrollView: NumberPicker?) {
     if (scrollView!!.value == 0) roundPickerColor(binding.roundsPicker, Color.RED)
     else roundPickerColor(binding.roundsPicker, ContextCompat.getColor(requireContext(), R.color.number_picker_scroll_idle))
 }
+
 
 fun WorkoutFragment.onScrollFlying() {
     Log.i("NumberPickerDialogs", "Scroll Flying")
     roundPickerColor(binding.roundsPicker, ContextCompat.getColor(requireContext(), R.color.number_picker_scroll_flying))
 }
 
+
 fun WorkoutFragment.onScrollTouched() {
     Log.i(TAG_NUMPICKER, "Scroll Touch Scroll")
     roundPickerColor(binding.roundsPicker, ContextCompat.getColor(requireContext(), R.color.number_picker_scroll_touched))
 }
 
-fun WorkoutFragment.saveRoundsValueToPreferences(scrollView: NumberPicker) {
-    val save = sharedPreferences.edit()
-    save.putInt("roundsInt", scrollView.value)
-    save.apply()
-    Log.i(TAG_NUMPICKER, "Round Value Saved: New Value = ${scrollView.value}")
-}
 
 fun roundPickerColor(numberPicker: NumberPicker, color: Int) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

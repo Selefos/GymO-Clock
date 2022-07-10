@@ -1,8 +1,8 @@
 package com.gym.o.gymoclock.functionality.workout_pr.countdown_functions
 
 import android.os.CountDownTimer
-import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
 import java.util.*
 
 private lateinit var totalTimer: CountDownTimer

@@ -22,11 +22,11 @@ class TimePickerUtils(context: Context) {
         val inflater: LayoutInflater = LayoutInflater.from(context)
         val viewAddOrEditExercise: View = inflater.inflate(R.layout.exercise_number_pickers, null)
 
-        val numberPickerMinutes:NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_minutes)
-        val numberPickerSeconds:NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_seconds)
-        val timeDigitalFormatTextView:TextView = viewAddOrEditExercise.findViewById(R.id.time_digital_format)
-        val setNumberPicker:Button = viewAddOrEditExercise.findViewById(R.id.set_numberPicker)
-        val cancelTimePicker:Button = viewAddOrEditExercise.findViewById(R.id.cancel_numberPicker)
+        val numberPickerMinutes: NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_minutes)
+        val numberPickerSeconds: NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_seconds)
+        val timeDigitalFormatTextView: TextView = viewAddOrEditExercise.findViewById(R.id.time_digital_format)
+        val setNumberPicker: Button = viewAddOrEditExercise.findViewById(R.id.set_numberPicker)
+        val cancelTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.cancel_numberPicker)
 
         numberPickerMinutes.maxValue = 59
         numberPickerMinutes.value = 0

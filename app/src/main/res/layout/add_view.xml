@@ -26,7 +26,7 @@
         android:textAlignment="center"
         android:textColor="@color/custom_text_color"
         android:textColorHint="@color/custom_text_color"
-        android:textSize="20sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textColor="@color/custom_text_color"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/exercise_img"
         app:layout_constraintEnd_toEndOf="@+id/exercise_img"
         app:layout_constraintStart_toStartOf="@+id/exercise_img"
@@ -79,20 +79,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textColor="@color/custom_text_color"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/rest_img"
         app:layout_constraintEnd_toEndOf="@+id/rest_img"
         app:layout_constraintStart_toStartOf="@+id/rest_img"
         app:layout_constraintTop_toTopOf="@+id/rest_img" />
-
-    <TextView
-        android:id="@+id/chosen_workout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/rest_img"
-        app:layout_constraintStart_toEndOf="@+id/exercise_img" />
 
     <ImageButton
         android:id="@+id/remove_view"

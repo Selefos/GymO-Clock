@@ -4,9 +4,9 @@ import android.os.CountDownTimer
 import android.util.Log
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
-import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
-import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
+import com.gym.o.gymoclock.functionality.workout_pr.rounds
+import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import java.util.*
@@ -18,7 +18,7 @@ var endTime: Long = 0 // by Delegates.notNull<Long>()
 
 fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
-    workTimeInMillis = ConvertDigitalClocksUtils.convertTimeToMillis(position.exerciseClockValue.text.toString())
+    workTimeInMillis = FormatUtils.convertTimeToMillis(position.exerciseClockValue.text.toString())
     endTime = System.currentTimeMillis() + workTimeInMillis
 
     if (startTime.isEmpty())
@@ -82,7 +82,7 @@ fun ExerciseRecyclerAdapter.pauseExerciseTimer(positionData: Int, speakText: Str
 
 fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
     val position = dataList[positionData]
-    restTimeInMillis = ConvertDigitalClocksUtils.convertTimeToMillis(position.restClockValue.text.toString())
+    restTimeInMillis = FormatUtils.convertTimeToMillis(position.restClockValue.text.toString())
     endTime = System.currentTimeMillis() + restTimeInMillis
     Log.i(
         "CountDown",

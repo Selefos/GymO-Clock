@@ -18,6 +18,7 @@ import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAni
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
+import com.gym.o.gymoclock.utils.FormatUtils
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -37,8 +38,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
         val removeView: ImageButton = itemView.findViewById(R.id.remove_view)
 
-        private var chosenWorkout: TextView = itemView.findViewById(R.id.chosen_workout)
-
         var mwTimerIsRunning by Delegates.notNull<Boolean>()
         var mwTimerIsPaused by Delegates.notNull<Boolean>()
         var mrTimerIsRunning by Delegates.notNull<Boolean>()
@@ -50,7 +49,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
         init {
             res = itemView.context.resources
-            chosenWorkout.text = workoutTableName.replace("_", " ")
             //val playPause: ImageButton = itemView.findViewById(R.id.play_pause)
 //            playPause.setOnClickListener {
 //
@@ -91,11 +89,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
         setOnAddViewAnimation(holder.itemView, position)
 
-        holder.removeView.setOnClickListener {
-            mRecyclerViewInterface.removeExercise(
-                holder.itemView,
-                holder.adapterPosition
-            )
+        holder.removeView.setOnClickListener { mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
         }
 
     }
@@ -108,24 +102,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
     fun totalTimeFromDB(rounds: Int): Int {
 
-//        val position = dataList[itemCount - 1]
-//        var totalTime = 0
-//        workoutDB = WorkoutDB(context)
-//        db = workoutDB.readableDatabase
-//        val cursor: Cursor = workoutDB.loadRecyclerElements(workoutName, db)
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                totalTime += cursor.getInt(2)
-//                totalTime += cursor.getInt(3)
-//            } while (cursor.moveToNext())
-//        }
-//        cursor.close()
-//        db.close()
-//
-//        return (totalTime * rounds) - ConvertDigitalClocksUtils.convertTimeToSeconds(position.restClockValue.text.toString())
-
-        val position = dataList[itemCount - 1]
         workoutDB = WorkoutDB(context)
 
         val totalTime = workoutDB.totalTimeFromWorkoutDB(workoutTableName, rounds)

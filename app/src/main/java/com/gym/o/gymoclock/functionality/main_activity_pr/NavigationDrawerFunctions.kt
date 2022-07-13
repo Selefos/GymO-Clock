@@ -7,13 +7,15 @@ import android.widget.ExpandableListView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
-import com.google.android.material.navigation.NavigationView
 import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.addWorkoutTable
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.editWorkoutName
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.FormatUtils
 
 private var listTitle: MutableList<String> = ArrayList()
 private var listChild = HashMap<String, List<String>?>()
@@ -96,19 +98,18 @@ fun MainActivity.populateList() {
         //drawerLayout.closeDrawer(GravityCompat.START)
         when (selectedItem) {
             selectedItem -> {
-                setWorkoutTableName(selectedItem.replace(" ", "_"))
+
+                sharedPreferencesUtils.saveWorkoutTableNameToPreferences(selectedItem)
+                //setWorkoutTableName(FormatUtils.prepareWorkoutTableStringSpDs(selectedItem))
+
                 changeFragment(WorkoutFragment::class.java)
             }
         }
         return true
     }))
 
-    expandableListView.onItemLongClickListener =
-        AdapterView.OnItemLongClickListener { parent, view, position, id ->
-            if (ExpandableListView.getPackedPositionType(
-                    id
-                ) == ExpandableListView.PACKED_POSITION_TYPE_GROUP
-            ) {
+    expandableListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { parent, view, position, id ->
+            if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
                 // You now have everything that you would as if this was an OnChildClickListener()
                 // Add your logic here.
                 // Return true as we are handling the event.
@@ -123,7 +124,7 @@ fun MainActivity.populateList() {
                 val childPosition = ExpandableListView.getPackedPositionChild(id)
                 val selectedItem = listChild[listTitle[groupPosition]]?.get(childPosition).toString()
 
-                editWorkoutName(selectedItem)
+                editWorkoutName(FormatUtils.prepareWorkoutTableStringSpDs(selectedItem))
                 return@OnItemLongClickListener true
             }
 
@@ -135,5 +136,5 @@ fun MainActivity.populateList() {
 fun MainActivity.changeNavHeaderText(workoutName: String) {
     val headerView = binding.navView.getHeaderView(0)//navigationView.getHeaderView(0)
     val navUsername = headerView.findViewById(R.id.exercise_name_navigation_view) as TextView
-    navUsername.text = workoutName
+    navUsername.text = FormatUtils.prepareWorkoutTableStringDsSp(workoutName)
 }

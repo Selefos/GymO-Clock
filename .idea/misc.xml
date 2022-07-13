@@ -8,6 +8,7 @@
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/delete_rename_workout_background.xml" value="0.3135" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/divider_list.xml" value="0.235" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/divider_list_child.xml" value="0.235" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/divider_recycler_view.xml" value="0.199" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_buttons_background.xml" value="0.235" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_rounds_background.xml" value="0.245" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/drawable/edit_workout_layout_background.xml" value="0.245" />
@@ -42,6 +43,7 @@
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/delete_exercise.xml" value="0.3640625" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/delete_rename_workout.xml" value="0.33" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/dialog_add_new_workout.xml" value="0.3640625" />
+        <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/dialog_calendar_workout_details.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/dialog_delete_rename_workout.xml" value="0.3640625" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/dialog_edit_workout.xml" value="0.3651041666666667" />
         <entry key="..\:/Users/Andreas/Documents/Programming/Android_Studio_Projects/GymOClock/app/src/main/res/layout/edit_workout.xml" value="0.3651041666666667" />

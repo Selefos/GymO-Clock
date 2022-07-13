@@ -2,7 +2,7 @@ package com.gym.o.gymoclock.functionality.workout_pr.countdown_functions
 
 import android.os.CountDownTimer
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
-import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
+import com.gym.o.gymoclock.utils.FormatUtils
 import java.util.*
 
 private lateinit var totalTimer: CountDownTimer
@@ -11,7 +11,7 @@ var endTimeTotalTimer: Long = 0//by Delegates.notNull<Long>()
 
 fun WorkoutFragment.startTotalTimer() {
 
-    totalTimeInMillis = ConvertDigitalClocksUtils.convertTimeToMillis(binding.totalTime.text.toString())
+    totalTimeInMillis = FormatUtils.convertTimeToMillis(binding.totalTime.text.toString())
     endTimeTotalTimer = System.currentTimeMillis() + totalTimeInMillis
 
     totalTimer = object : CountDownTimer(totalTimeInMillis, 1000) {

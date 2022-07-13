@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ExpandableListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -65,7 +64,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         sharedPreferencesUtils = SharedPreferencesUtils(this)
         if (sharedPreferencesUtils.getWorkoutTableNameFromPreferences().isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
             workoutTableName = sharedPreferencesUtils.getWorkoutTableNameFromPreferences()
-
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)

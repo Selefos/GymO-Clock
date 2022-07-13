@@ -27,7 +27,7 @@ fun MainActivity.isNotTextNumberOrSymbol(editValue: EditText): String {
 fun MainActivity.isTextEmpty(editValue: EditText): String {
     val value: String = editValue.text.toString().trim()
     return value.ifEmpty {
-        WidgetsWarningsUtils.editTextWarning(editValue, "Enter Name")
+        WidgetsWarningsUtils.editTextWarning(editValue, "Empty Name")
         ""
     }
 }

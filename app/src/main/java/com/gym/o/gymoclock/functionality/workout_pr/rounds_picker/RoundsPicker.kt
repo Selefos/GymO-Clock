@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
-import com.gym.o.gymoclock.utils.ConvertDigitalClocksUtils
+import com.gym.o.gymoclock.utils.FormatUtils
 import java.lang.reflect.Field
 import kotlin.properties.Delegates
 
@@ -45,7 +45,7 @@ fun WorkoutFragment.roundsPicker() {
 
 
         //elapsedTime = elapsedTime(listAdapter.totalTimeFromDB(oldVal))
-        binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(
+        binding.totalTime.text = FormatUtils.convertTimeToDigitalClock(
             //listAdapter.totalTimeFromView(rounds).toString()
             //refreshTotalTimeOnRoundsChanged(elapsedTime, newVal).toString()
             (listAdapter.totalTimeFromDB(newVal)).toString()
@@ -58,7 +58,7 @@ fun WorkoutFragment.roundsPicker() {
 
 
 fun WorkoutFragment.elapsedTime(totalTimeFromDB: Int): Int {
-    val currentTotalTime: Int = ConvertDigitalClocksUtils.convertTimeToSeconds(binding.totalTime.text.toString())
+    val currentTotalTime: Int = FormatUtils.convertTimeToSeconds(binding.totalTime.text.toString())
     Log.i("ELAPSED_TIME", "TOTAL TIME DB: $totalTimeFromDB, CURRENT TOTAL TIME: $currentTotalTime, TOTAL TIME TXT: ${binding.totalTime.text}")
     return totalTimeFromDB - currentTotalTime
 }

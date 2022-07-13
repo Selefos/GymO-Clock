@@ -25,12 +25,12 @@ import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
 import com.gym.o.gymoclock.functionality.workout_pr.*
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.*
-import com.gym.o.gymoclock.functionality.workout_pr.recycler_items_swipe.setItemTouchHelper
-import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
-import com.gym.o.gymoclock.functionality.workout_pr.workout_db_calls.addEditExercise
-import com.gym.o.gymoclock.functionality.workout_pr.workout_db_calls.updateExerciseValues
+import com.gym.o.gymoclock.functionality.workout_pr.recycler_items_swipe.setItemTouchHelper
+import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.*
 
@@ -53,7 +53,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         onSavedInstance(savedInstanceState)
         if (workoutTableName.isNotEmpty()) {
             loadRecyclerViews()
-            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         }
 
         setItemTouchHelper()
@@ -64,6 +64,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         if (listAdapter.itemCount != 0)
             roundsPicker()
+
+        binding.workoutWorkoutName.text = FormatUtils.prepareWorkoutTableStringDsSp(workoutTableName)
 
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
@@ -145,8 +147,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         dialogBuilderUtils.onClickListener(
             { updateExerciseValues(dataPosition) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime) }
+            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
+            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
         )
     }
 
@@ -169,7 +171,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             Handler(Looper.getMainLooper()).postDelayed(
                 {
                     dataList.removeAt(dataPosition)
-                    listAdapter.notifyItemRemoved(dataPosition)
+                    //listAdapter.notifyItemRemoved(dataPosition)
                     //listAdapter.notifyDataSetChanged()
                 }, 500)
 
@@ -177,9 +179,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             getLastPositionForRemoveViewAnimation = -1
 
             Log.e("WorkoutFrag", "Item Position = $dataPosition, Animate Delete Position = $getLastPositionForRemoveViewAnimation" + " " +
-                    "Animate Add Position = $getLastPositionForAddViewAnimation"
-            )
-            binding.totalTime.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+                    "Animate Add Position = $getLastPositionForAddViewAnimation")
+
+            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    loadRecyclerViews()
+                }, 500)
             dialogBuilderUtils.dialog.dismiss()
         }
         dialogBuilderUtils.cancelButtonRemoveExercise.setOnClickListener { dialogBuilderUtils.dialog.dismiss() }
@@ -205,7 +211,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
 
         if (rounds == 1) {
-            lastRecyclerPosition.restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock("0")
+            lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock("0")
 
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         }
@@ -255,8 +261,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 }
 
                 exerciseName.text = cursor.getString(1)
-                exerciseClock.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(cursor.getInt(2).toString())
-                restClock.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(cursor.getInt(3).toString())
+                exerciseClock.text = FormatUtils.convertTimeToDigitalClock(cursor.getInt(2).toString())
+                restClock.text = FormatUtils.convertTimeToDigitalClock(cursor.getInt(3).toString())
 
                 dataList.add(
                     ExerciseElements(
@@ -273,7 +279,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         db.close()
         listAdapter.notifyDataSetChanged()
 
-        lastRestTimeCheck()
+        if(listAdapter.itemCount > 0)
+            lastRestTimeCheck()
 
     }
 
@@ -454,8 +461,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutTableName,
-            ConvertDigitalClocksUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString()),
-            ConvertDigitalClocksUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString())
+            FormatUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString()),
+            FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString())
         )
         startTime = ""
     }
@@ -463,13 +470,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     private fun addExerciseRecyclerView() {
         dialogBuilderUtils = DialogBuilderUtils(requireContext())
-        dialogBuilderUtils.addOrEditExercise(false)
         timePickerUtils = TimePickerUtils(requireContext())
+
+        dialogBuilderUtils.addOrEditExercise(false)
 
         dialogBuilderUtils.onClickListener(
             { addEditExercise() },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime) }
+            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
+            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
         )
     }
 
@@ -488,12 +496,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     fun lastRestTimeCheck() {
         val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
-        if (rounds == 1) {
-            lastRecyclerPosition.restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock("0")
+        if (rounds <= 1) {
+            lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock("0")
             listAdapter.notifyDataSetChanged()
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         } else {
-            lastRecyclerPosition.restClockValue.text = ConvertDigitalClocksUtils.convertTimeToDigitalClock(workoutDB.lastRestTime(workoutTableName).toString())
+            lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock(
+                workoutDB.lastRestTime(workoutTableName).toString()
+            )
             listAdapter.notifyDataSetChanged()
         }
 

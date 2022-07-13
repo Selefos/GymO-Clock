@@ -61,7 +61,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </TableRow>
 
         <TableRow android:padding="5dp">
@@ -72,7 +73,8 @@
                 android:padding="10sp"
                 android:text="@string/calendar_start_time_string"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
 
             <TextView
@@ -81,7 +83,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
         </TableRow>
 
@@ -93,7 +96,8 @@
                 android:padding="10sp"
                 android:text="@string/calendar_end_time_string"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/calendar_end_time"
@@ -101,7 +105,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </TableRow>
 
         <TableRow android:padding="5dp">
@@ -112,7 +117,8 @@
                 android:padding="10sp"
                 android:text="@string/calendar_workout_name_string"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/calendar_workout_name"
@@ -120,7 +126,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </TableRow>
 
         <TableRow android:padding="5dp">
@@ -131,7 +138,8 @@
                 android:padding="10sp"
                 android:text="@string/calendar_total_time_string"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/calendar_total_time"
@@ -139,7 +147,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </TableRow>
 
         <TableRow android:padding="5dp">
@@ -150,7 +159,8 @@
                 android:padding="10sp"
                 android:text="@string/calendar_total_working_time_string"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/calendar_total_working_time"
@@ -158,7 +168,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10sp"
                 android:textAlignment="textStart"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </TableRow>
 
 

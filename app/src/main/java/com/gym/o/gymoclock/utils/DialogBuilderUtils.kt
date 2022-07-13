@@ -1,6 +1,9 @@
 package com.gym.o.gymoclock.utils
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -8,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
 
 
@@ -28,17 +32,34 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
     private val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
 
-    private val okButtonAddOrEdit: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
-    private val cancelButtonAddOrEdit: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
+    val verifyButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
+    private val cancelButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
 
     private val viewRemoveExercise: View = inflater.inflate(R.layout.delete_exercise, null)
-
     val okButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.verify_exercise_delete)
-
     val cancelButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.cancel_exercise_delete)
 
 
     fun addOrEditExercise(setCanceledOnTouchOutside: Boolean) {
+
+        exerciseNameEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                Log.i("Editable", TimePickerUtils.timePicked.toString())
+                if(s.toString().isNotEmpty())
+                    verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.custom_text_color))
+                else if(s.toString().isEmpty() && !TimePickerUtils.timePicked)
+                    verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+            }
+        })
+
         dialogBuilder.setView(viewAddOrEditExercise)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
@@ -52,12 +73,13 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
-    fun onClickListener(addEditExercise: () -> Unit, numberPickerTimeDialogWork: () -> Unit, numberPickerTimeDialogRest: () -> Unit) {
-        okButtonAddOrEdit.setOnClickListener {
-            addEditExercise()
+    fun onClickListener(editExercise: () -> Unit, numberPickerTimeDialogWork: () -> Unit, numberPickerTimeDialogRest: () -> Unit) {
+        verifyButtonEditExercise.setOnClickListener {
+            editExercise()
         }
 
-        cancelButtonAddOrEdit.setOnClickListener {
+        cancelButtonEditExercise.setOnClickListener {
+            TimePickerUtils.isTimePicked(false)
             dialog.dismiss()
         }
 

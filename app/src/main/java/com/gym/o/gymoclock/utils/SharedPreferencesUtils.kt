@@ -3,6 +3,7 @@ package com.gym.o.gymoclock.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.NumberPicker
+import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 
 class SharedPreferencesUtils(context: Context) {
     private lateinit var sharedPreferences: SharedPreferences
@@ -25,9 +26,10 @@ class SharedPreferencesUtils(context: Context) {
     }
 
     fun saveWorkoutTableNameToPreferences(workoutName: String) {
+        workoutTableName = FormatUtils.prepareWorkoutTableStringSpDs(workoutName)
         sharedPreferences = context!!.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
         val save = sharedPreferences.edit()
-        save.putString("workoutName", workoutName)
+        save.putString("workoutName", FormatUtils.prepareWorkoutTableStringSpDs(workoutName))
         save.apply()
     }
 

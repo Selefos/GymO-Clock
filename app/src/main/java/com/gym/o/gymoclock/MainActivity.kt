@@ -1,19 +1,15 @@
 package com.gym.o.gymoclock
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Handler
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
-import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.ExpandableListView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -27,35 +23,32 @@ import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
-import com.gym.o.gymoclock.functionality.workout_pr.edit_workout.WidgetsWarnings
-import com.gym.o.gymoclock.functionality.workout_pr.workoutName
-import com.gym.o.gymoclock.navigation_list_adapter.CustomExpandableListAdapter
-import com.gym.o.gymoclock.ui.calendar.CalendarFragment
+import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
+import com.gym.o.gymoclock.functionality.main_activity_pr.populateList
+import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
+import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
+import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
+import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var drawerToggle: ActionBarDrawerToggle
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var drawerToggle: ActionBarDrawerToggle
 
-    private lateinit var expandableListView: ExpandableListView
-    private lateinit var expandableAdapter: CustomExpandableListAdapter
+    lateinit var expandableListView: ExpandableListView
+    lateinit var expandableAdapter: CustomExpandableListAdapter
 
-    private var workoutDB: WorkoutDB = WorkoutDB(this)
-    private var listTitle: MutableList<String> = ArrayList()
-    private var listChild = HashMap<String, List<String>?>()
+    var workoutDB: WorkoutDB = WorkoutDB(this)
 
-    private lateinit var dialogBuilder: AlertDialog.Builder
-    private lateinit var dialog: AlertDialog
 
-    private lateinit var sharedPreferences: SharedPreferences
+    lateinit var sharedPreferencesUtils: SharedPreferencesUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,16 +60,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         TextToSpeechUtils.getInstance(this)
 
-        sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
-        if (sharedPreferences.getString("workoutName", "").toString()
-                .isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty()
-        )
-            workoutName = sharedPreferences.getString("workoutName", "").toString()
-
+        //sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
+        sharedPreferencesUtils = SharedPreferencesUtils(this)
+        if (sharedPreferencesUtils.getWorkoutTableNameFromPreferences().isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
+            workoutTableName = sharedPreferencesUtils.getWorkoutTableNameFromPreferences()
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+                    .setAction("Action", null).show()
         }
 
         calendarDBInit()
@@ -106,6 +97,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //val headerView: View = layoutInflater.inflate(R.layout.nav_header_main,null, false)
         // expandableListView.addHeaderView(headerView)
+
+        changeNavHeaderText(sharedPreferencesUtils.getWorkoutTableNameFromPreferences())
 
 //        binding.root.setOnTouchListener {
 //                _, event ->
@@ -147,6 +140,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id: Int = item.itemId
 //        if (id == R.id.nav_workout)
@@ -157,10 +151,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -184,6 +180,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.dispatchTouchEvent(event)
     }*/
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         // Handle navigation view item clicks here.
@@ -197,6 +194,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
     override fun onBackPressed() {
         val drawer = findViewById<View>(R.id.drawer_layout) as DrawerLayout
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -206,21 +204,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onDestroy() {
         //TextToSpeechUtils.getInstance(this).stopTTS()
         Log.i("Main", "onDestroy")
         super.onDestroy()
     }
 
+
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         TextToSpeechUtils.getInstance(this)
     }
 
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         TextToSpeechUtils.getInstance(this)
     }
+
 
     private fun calendarDBInit() {
         val calendarDB = CalendarDB(this)
@@ -243,140 +245,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private fun setupDrawer() {
-        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.closed)
-        drawerLayout.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
 
-    }
-
-    private fun prepareMenuData() {
-
-        listTitle.clear()
-        workoutDB = WorkoutDB(this)
-        val workoutNames: List<String> = workoutDB.loadWorkoutTableNames()
-        var childModelsList: MutableList<String> = ArrayList()
-        var childModel: String//MenuModel
-
-        var menuModel = "Workout"//MenuModel("Workout") //Menu of Android Tutorial. No sub menus
-        listTitle.add(menuModel)
-        for (i in workoutNames) {
-            childModel = i.replace("_", " ")
-            childModelsList.add(childModel)
-        }
-
-        //if (menuModel.hasChildren) {
-        listChild[menuModel] = childModelsList
-        //}
-        //childModelsList = ArrayList()
-        menuModel = "Calendar"//MenuModel("Calendar")
-        listTitle.add(menuModel)
-
-    }
-
-    private fun populateList() {
-        expandableAdapter = CustomExpandableListAdapter(this, listTitle, listChild)
-        expandableListView.setAdapter(expandableAdapter)
-
-        expandableListView.setOnGroupClickListener { parent, v, groupPosition, id ->
-            when (id) {
-                1L -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    changeFragment(CalendarFragment::class.java)
-                }
-            }
-            //Toast.makeText(this, "Pressed", Toast.LENGTH_SHORT).show()
-            false
-        }
-
-        expandableListView.setOnGroupExpandListener {
-            fun onGroupExpand(groupPosition: Int) {
-                supportActionBar?.title = listTitle[groupPosition].toString()
-            }
-        }
-
-        expandableListView.setOnGroupCollapseListener {
-            fun onGroupCollapse(groupPosition: Int) {
-                supportActionBar?.title = "GymO'Clock"
-            }
-        }
-
-        expandableListView.setOnChildClickListener(ExpandableListView.OnChildClickListener(fun(
-            parent: ExpandableListView,
-            v: View,
-            groupPosition: Int,
-            childPosition: Int,
-            id: Long
-        ): Boolean {
-
-            val selectedItem = listChild[listTitle[groupPosition]]?.get(childPosition).toString()
-            supportActionBar?.title = childPosition.toString()
-
-            supportActionBar?.title = selectedItem
-            val handler = Handler()
-            changeNavHeaderText(selectedItem)
-            handler.postDelayed(Runnable { drawerLayout.closeDrawer(GravityCompat.START) }, 500)
-            //drawerLayout.closeDrawer(GravityCompat.START)
-            when (selectedItem) {
-                selectedItem -> {
-                    workoutName = selectedItem.replace(" ", "_")
-                    saveWorkoutNameToPreferences(workoutName)
-
-                    changeFragment(WorkoutFragment::class.java)
-                }
-            }
-            return true
-        }))
-
-        expandableListView.onItemLongClickListener =
-            OnItemLongClickListener { parent, view, position, id ->
-                if (ExpandableListView.getPackedPositionType(
-                        id
-                    ) == ExpandableListView.PACKED_POSITION_TYPE_GROUP
-                ) {
-                    // You now have everything that you would as if this was an OnChildClickListener()
-                    // Add your logic here.
-                    // Return true as we are handling the event.
-                    when (id) {
-                        0L -> addWorkoutTable()
-                    }
-                    return@OnItemLongClickListener true
-                }
-
-                if (ExpandableListView.getPackedPositionType(
-                        id
-                    ) == ExpandableListView.PACKED_POSITION_TYPE_CHILD
-                ) {
-                    val groupPosition = ExpandableListView.getPackedPositionGroup(id)
-                    val childPosition = ExpandableListView.getPackedPositionChild(id)
-                    val selectedItem =
-                        listChild[listTitle[groupPosition]]?.get(childPosition).toString()
-
-                    editWorkoutName(selectedItem)
-                    return@OnItemLongClickListener true
-                }
-
-                false
-            }
-    }
-
-    private fun saveWorkoutNameToPreferences(workoutNameString: String) {
-        val save = sharedPreferences.edit()
-        save.putString("workoutName", workoutNameString)
-        save.apply()
-
-    }
-
-    private fun changeNavHeaderText(selectedItem: String) {
-
-        val navigationView = findViewById<View>(R.id.nav_view) as NavigationView
-        val headerView = navigationView.getHeaderView(0)
-        val navUsername = headerView.findViewById(R.id.exercise_name_navigation_view) as TextView
-        navUsername.text = selectedItem
-
-    }
-
-    private fun changeFragment(fragmentChoice: Class<*>) {
+    fun changeFragment(fragmentChoice: Class<*>) {
         //Toast.makeText(this, "Pressed", Toast.LENGTH_SHORT).show()
         var fragment: Fragment? = null
         var fragmentClass: Class<*>
@@ -393,105 +263,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentManager.beginTransaction().replace(R.id.app_bar_main, fragment!!).commit()
     }
 
-    private fun addWorkoutTable() {
-        dialogBuilder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
-        val inflater = layoutInflater//LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_add_new_workout, null)
-        val workoutNameAdd = view.findViewById<EditText>(R.id.workout_name)
-        val addButton = view.findViewById<Button>(R.id.add_workout_button)
-        val cancelButton = view.findViewById<Button>(R.id.cancel_add_workout_button)
-
-        dialogBuilder.setView(view)
-        dialog = dialogBuilder.create()
-        dialog.show()
-
-        addButton.setOnClickListener {
-            if (isTextEmpty(workoutNameAdd).isNotEmpty() && isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty() && isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
-                workoutDB.addWorkoutTable(workoutNameAdd.text.toString())
-                //isNotTextNumberOrSymbol(workoutNameAdd).let { add -> workoutDB.addWorkoutTable(add) }
-                prepareMenuData()
-                expandableAdapter.notifyDataSetChanged()
-                dialog.dismiss()
-            }
-        }
-
-        cancelButton.setOnClickListener { dialog.dismiss() }
-
-    }
-
-    private fun editWorkoutName(workoutName: String) {
-        dialogBuilder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
-        val inflater = layoutInflater//LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_delete_rename_workout, null)
-        val editIndicator = view.findViewById<TextView>(R.id.edit_indicator)
-        val renameWorkout = view.findViewById<EditText>(R.id.rename_text_workout)
-        val updateWorkoutButton = view.findViewById<Button>(R.id.rename_workout)
-        val deleteWorkoutButton = view.findViewById<Button>(R.id.delete_workout)
-
-        val updateTextView: String = getString(R.string.edit_indicator) + " " + workoutName
-        editIndicator.text = updateTextView
-
-        val updateEditTextHint: String = getString(R.string.rename) + " \"" + workoutName + "\""
-        renameWorkout.hint = updateEditTextHint
-
-        dialogBuilder.setView(view)
-        dialog = dialogBuilder.create()
-        dialog.show()
-
-        updateWorkoutButton.setOnClickListener {
-            if (isTextEmpty(renameWorkout).isNotEmpty() && isNotDuplicate(renameWorkout, workoutDB).isNotEmpty() && isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
-                workoutDB.renameWorkoutTable(workoutName, renameWorkout.text.toString().replace(" ", "_"))
-                //isNotTextNumberOrSymbol(renameWorkout).let { rnm -> workoutDB.renameWorkoutTable(workoutName.replace(" ", "_"), rnm) }
-                //workoutDB.renameTable(workoutName.replace(" ", "_"), prepareWorkoutValue(renameWorkout)) // alternative update
-
-                prepareMenuData()
-                expandableAdapter.notifyDataSetChanged()
-                dialog.dismiss()
-            }
-        }
-
-        deleteWorkoutButton.setOnClickListener {
-            workoutDB.deleteWorkoutTable(workoutName.replace(" ", "_"))
-            prepareMenuData()
-            expandableAdapter.notifyDataSetChanged()
-            //Toast.makeText(this, "Deleted  $workoutName", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
-    }
-
-    private fun isNotTextNumberOrSymbol(editValue: EditText): String {
-        var value: String = editValue.text.toString().trim()
-        val findSymbol: Pattern =
-            Pattern.compile("[1234567890`~!@#$%^&*()+=;΄¨':\"\\\\/.,|<>?{}\\[\\]-]")
-        val inspectChar: Matcher = findSymbol.matcher(value)
-        val checkForSymbol: Boolean = inspectChar.find()
-
-        return if (checkForSymbol) {
-            WidgetsWarnings.editTextWarning(editValue, "No symbols or numbers")
-            ""
-        } else {
-            value = value.replace(" ", "_")
-            value
-        }
-    }
-
-    private fun isTextEmpty(editValue: EditText): String{
-        val value: String = editValue.text.toString().trim()
-        return value.ifEmpty {
-            WidgetsWarnings.editTextWarning(editValue, "Enter Name")
-            ""
-        }
-    }
-
-    private fun isNotDuplicate(editValue: EditText, workoutDB: WorkoutDB): String {
-        val value: String = editValue.text.toString().trim()
-        val checkForDuplicate = workoutDB.loadWorkoutTableNames()
-        for(name in checkForDuplicate){
-            if(value == name){
-                WidgetsWarnings.editTextWarning(editValue, "Workout Exists")
-                return ""
-            }
-        }
-        return value
-    }
 }

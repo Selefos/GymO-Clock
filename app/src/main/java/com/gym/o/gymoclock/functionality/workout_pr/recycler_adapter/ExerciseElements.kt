@@ -1,4 +1,4 @@
-package com.gym.o.gymoclock.functionality.workout_pr.user_adapter
+package com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter
 
 import android.os.CountDownTimer
 import android.widget.TextView

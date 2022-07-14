@@ -19,7 +19,7 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
     fun addCalendarTable(monthYearTable: String) {
         val db = writableDatabase
-        val createCalendarTable = "CREATE TABLE IF NOT EXISTS $monthYearTable (ID INTEGER PRIMARY KEY , $COL_DATE DATE , $COL_START_TIME INTEGER, $COL_END_TIME INTEGER, $COL_WORKOUT_NAME TEXT, $COL_TOTAL_TIME INTEGER, $COL_TOTAL_WORKING_TIME INTEGER)"
+        val createCalendarTable = "CREATE TABLE IF NOT EXISTS $monthYearTable (ID INTEGER PRIMARY KEY , $COL_DATE DATE , $COL_START_TIME TEXT, $COL_END_TIME TEXT, $COL_WORKOUT_NAME TEXT, $COL_TOTAL_TIME TEXT, $COL_TOTAL_WORKING_TIME TEXT)"
         db.execSQL(createCalendarTable)
         db.close()
     }
@@ -47,7 +47,6 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
     }
 
     fun getCalendarWorkoutID(tableName: String, date: String, sqlDB: SQLiteDatabase): Cursor {
-
         val getData = arrayOf(COL_ID, COL_WORKOUT_NAME)
         val select = "$COL_DATE LIKE ?"
         val selection = arrayOf(date)

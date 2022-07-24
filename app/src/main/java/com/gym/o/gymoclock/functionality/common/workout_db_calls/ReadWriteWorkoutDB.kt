@@ -11,13 +11,14 @@ import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.functionality.main_activity_pr.*
-import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.restTimeInMillis
-import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.workTimeInMillis
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.restTimeInMillis
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.workTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.FormatUtils
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.WidgetsWarningsUtils
 
         /*=========================================*/
@@ -158,14 +159,14 @@ fun MainActivity.addWorkoutTable() {
         if (isTextEmpty(workoutNameAdd).isNotEmpty() && isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty()
             && isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
 
-            workoutDB.addWorkoutTable(FormatUtils.prepareWorkoutTableStringSpDs(workoutNameAdd.text.toString()))
+            workoutDB.addWorkoutTable(FormatUtils.stringSpaceToUnderscore(workoutNameAdd.text.toString()))
 
-            sharedPreferencesUtils.saveWorkoutTableNameToPreferences(workoutNameAdd.text.toString())
+            SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, workoutNameAdd.text.toString())
 
             //setWorkoutTableName(FormatUtils.prepareWorkoutTableStringSpDs(workoutNameAdd.text.toString()))
             changeFragment(WorkoutFragment::class.java)
 
-            changeNavHeaderText(sharedPreferencesUtils.getWorkoutTableNameFromPreferences())
+            changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
             prepareMenuData()
             expandableAdapter.notifyDataSetChanged()
 
@@ -204,10 +205,10 @@ fun MainActivity.editWorkoutName(workoutName: String) {
             workoutDB.renameWorkoutTable(workoutName, renameWorkout.text.toString().replace(" ", "_"))
 
             //setWorkoutTableName(FormatUtils.prepareWorkoutTableStringSpDs(renameWorkout.text.toString()))
-            sharedPreferencesUtils.saveWorkoutTableNameToPreferences(renameWorkout.text.toString())
+            SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, renameWorkout.text.toString())
             changeFragment(WorkoutFragment::class.java)
 
-            changeNavHeaderText(sharedPreferencesUtils.getWorkoutTableNameFromPreferences())
+            changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
             prepareMenuData()
             expandableAdapter.notifyDataSetChanged()
 
@@ -216,13 +217,13 @@ fun MainActivity.editWorkoutName(workoutName: String) {
     }
 
     deleteWorkoutButton.setOnClickListener {
-        workoutDB.deleteWorkoutTable(FormatUtils.prepareWorkoutTableStringSpDs(workoutName))
+        workoutDB.deleteWorkoutTable(FormatUtils.stringSpaceToUnderscore(workoutName))
 
         //setWorkoutTableName(workoutDB.loadLastWorkoutTable())
-        sharedPreferencesUtils.saveWorkoutTableNameToPreferences(FormatUtils.prepareWorkoutTableStringSpDs(workoutDB.loadLastWorkoutTable()))
+        SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, FormatUtils.stringSpaceToUnderscore(workoutDB.loadLastWorkoutTable()))
         changeFragment(WorkoutFragment::class.java)
 
-        changeNavHeaderText(sharedPreferencesUtils.getWorkoutTableNameFromPreferences())
+        changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
         prepareMenuData()
         expandableAdapter.notifyDataSetChanged()
 
@@ -233,5 +234,5 @@ fun MainActivity.editWorkoutName(workoutName: String) {
 
 fun MainActivity.setWorkoutTableName(workoutName: String) {
     workoutTableName = workoutName
-    sharedPreferencesUtils.saveWorkoutTableNameToPreferences(workoutTableName)
+    SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, workoutTableName)
 }

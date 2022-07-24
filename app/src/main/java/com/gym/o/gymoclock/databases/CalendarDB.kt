@@ -53,6 +53,20 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
         return sqlDB.query(tableName, getData, select, selection, null, null, null)
     }
 
+    fun getCalendarWorkoutDetailsForScreening(tableName: String, date: String, sqlDB: SQLiteDatabase): Cursor {
+        val getData = arrayOf(COL_ID, COL_WORKOUT_NAME)
+        val select = "$COL_DATE LIKE ?"
+        val selection = arrayOf(date)
+        return sqlDB.query(tableName, getData, select, selection, null, null, null)
+    }
+
+    fun getCalendarWorkoutDate(tableName: String, workoutName: String, sqlDB: SQLiteDatabase): Cursor {
+        val getData = arrayOf(COL_ID, COL_DATE, COL_WORKOUT_NAME)
+        val select = "$COL_WORKOUT_NAME LIKE ?"
+        val selection = arrayOf(workoutName)
+        return sqlDB.query(tableName, getData, select, selection, null, null, null)
+    }
+
     fun insertCalendarDetails(monthYearTable: String, date: String, startTime: String, endTime: String, workoutName: String, totalTime: String, totalWorkingTime: String): Boolean {
         val db = this.writableDatabase
         val calendarDetails = ContentValues()

@@ -22,9 +22,9 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
                 "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
         db.execSQL(createWorkoutTable)
 
-        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '5', '3')")
-        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '5', '3')")
-        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '5', '3')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '1', '1')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '1', '1')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '1', '1')")
         db.close()
     }
 
@@ -131,7 +131,6 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
             } while (cursor.moveToNext())
         }
 
-
         cursor.close()
         db.close()
 
@@ -140,7 +139,6 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     }
 
     fun lastRestTime(workoutName: String): Int {
-        //db.query(workoutName, null, null, null, null, null, "$COL_REST_TIME DESC", "1");//
         val db = this.readableDatabase
         val selectQuery = "SELECT $COL_REST_TIME FROM $workoutName WHERE ID = (SELECT MAX(ID) FROM $workoutName)"
         val cursorLastRestTime = db.rawQuery(selectQuery, null)

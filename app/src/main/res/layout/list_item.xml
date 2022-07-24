@@ -7,13 +7,12 @@
 
     <ImageView
         android:id="@+id/sub_items_icon"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="center"
         android:layout_marginHorizontal="20dp"
         android:layout_marginLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:layout_marginRight="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:background="@drawable/ic_menu_subitem"
         android:backgroundTint="@color/custom_text_color"
         android:contentDescription="@string/content_description_images" />
 

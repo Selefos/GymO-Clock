@@ -11,6 +11,7 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.FormatUtils
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import java.lang.reflect.Field
 import kotlin.properties.Delegates
 
@@ -40,7 +41,7 @@ fun WorkoutFragment.roundsPicker() {
 
         rounds = picker.value
 
-        sharedPreferencesUtils.saveRoundsValueToPreferences(picker)
+        SharedPreferencesUtils.saveRoundsValueToPreferences(requireContext(), picker)
         Log.d(TAG_NUMPICKER, "Value rounds = $rounds")
 
 

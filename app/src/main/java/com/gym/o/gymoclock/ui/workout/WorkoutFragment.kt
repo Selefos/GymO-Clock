@@ -21,16 +21,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.CalendarDB
+import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.FragmentWorkoutBinding
+import com.gym.o.gymoclock.enums.EnumPrepareTimerState
+import com.gym.o.gymoclock.enums.PrepareTimerState
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
+import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
-import com.gym.o.gymoclock.functionality.workout_pr.countdown_functions.*
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_items_swipe.setItemTouchHelper
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
-import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
-import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.*
 
@@ -41,8 +44,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private var _binding: FragmentWorkoutBinding? = null
     val binding get() = _binding!!
 
-    private var isStartWorkout: Boolean = false
-    private var isPauseWorkout: Boolean = true
+    private var isTimerRunning: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
@@ -65,7 +67,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (listAdapter.itemCount != 0)
             roundsPicker()
 
-        binding.workoutWorkoutName.text = FormatUtils.prepareWorkoutTableStringDsSp(workoutTableName)
+        binding.workoutWorkoutName.text = FormatUtils.stringUnderscoreToSpace(workoutTableName)
 
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
@@ -145,7 +147,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialogBuilderUtils.workDigitalTime.text = position.exerciseClockValue.text
         dialogBuilderUtils.restDigitalTime.text = position.restClockValue.text
 
-        dialogBuilderUtils.onClickListener(
+        dialogBuilderUtils.onClickListenerWorkoutScope(
             { updateExerciseValues(dataPosition) },
             { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
             { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
@@ -197,7 +199,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         recyclerPosition = 0
         val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
         binding.roundsPicker.value = rounds
-        Log.d("MAIN", "Rounds Total: $rounds, isStartWorkout $isStartWorkout isPauseWorkout $isPauseWorkout -- ${DateTimeUtils.getCurrentTime()}")
+        Log.d("MAIN", "Rounds Total: $rounds, isStartWorkout $isTimerRunning -- ${DateTimeUtils.getCurrentTime()}")
         Log.d("MAIN", "iterator = $recyclerPosition rounds = $rounds -- ${DateTimeUtils.getCurrentTime()}")
         if (workoutTableName == "")
             return
@@ -291,7 +293,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         outState.putLong("prepareCountdownInMillis", prepareCountdownInMillis)
         outState.putBoolean("isPrepareCountdown", isPrepareCountdown)
 
-        outState.putBoolean("isStartWorkout", isStartWorkout)
+        outState.putBoolean("isStartWorkout", isTimerRunning)
         outState.putInt("iterator", recyclerPosition)
         outState.putInt("rounds", rounds)
 
@@ -307,11 +309,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             prepareCountdownInMillis = savedInstanceState.getLong(
                 "prepareCountdownInMillis",
                 0)
-            isPrepareCountdown = savedInstanceState.getBoolean(
-                "isPrepareCountdown",
-                true)
+            isPrepareCountdown = savedInstanceState.getBoolean("isPrepareCountdown", true)
 
-            isStartWorkout = savedInstanceState.getBoolean("isStartWorkout")
+            isTimerRunning = savedInstanceState.getBoolean("isStartWorkout")
             recyclerPosition = savedInstanceState.getInt("iterator")
             rounds = savedInstanceState.getInt("rounds")
 
@@ -356,12 +356,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     lateinit var recyclerView: RecyclerView
     lateinit var dataList: ArrayList<ExerciseElements>
     lateinit var workoutDB: WorkoutDB
-    lateinit var sharedPreferencesUtils: SharedPreferencesUtils
+
 
     private fun init() {
-        sharedPreferencesUtils = SharedPreferencesUtils(requireContext())
-
-        rounds = sharedPreferencesUtils.getRoundsValueFromPreferences()
+        if(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
+            rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
+        if (SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext()) != null)
+            prepareCountdownInMillis = SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext())
         dataList = ArrayList()
         recyclerView = binding.recyclerView//findViewById(R.id.recycler_view)
         listAdapter = ExerciseRecyclerAdapter(requireContext(), this, dataList)
@@ -372,7 +373,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             addItemDecoration(dividerItemDecoration)
         }
         binding.swipeRefreshRecycler.setOnRefreshListener {
-            if (!isStartWorkout) {
+            if (!isTimerRunning) {
                 getLastPositionForAddViewAnimation = -1
                 getLastPositionForRemoveViewAnimation = -1
                 loadRecyclerViews()
@@ -391,7 +392,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private fun workoutInit() {
         binding.addLayout.setOnClickListener {
             if (workoutTableName.isEmpty()) {
-                Toast.makeText(context, "No workout available. Please add workout in order to register an exercise.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "No exercise available. Please add exercise in order to register an exercise.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             addExerciseRecyclerView()
@@ -411,15 +412,12 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 return@setOnClickListener
             }
 
-            isStartWorkout = !isStartWorkout
-            isPauseWorkout = !isPauseWorkout
+            isTimerRunning = !isTimerRunning
+            Log.d("isStartWorkout", (isTimerRunning).toString())
 
-            Log.d("isPauseWorkout", (isPauseWorkout).toString())
-            Log.d("isStartWorkout", (isStartWorkout).toString())
+            if (isTimerRunning) {
 
-            if (isStartWorkout) {
-
-                if (isPrepareCountdown) {
+                if(PrepareTimerState.prepareTimerState == EnumPrepareTimerState.Preparing){
                     prepareForWorkoutTimer()
                     return@setOnClickListener
                 }
@@ -446,25 +444,54 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
 
     private lateinit var calendarDB: CalendarDB
-
+    private lateinit var exercisesScreenDB: ExercisesScreenDB
     private fun onEndOfWorkout() {
         binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
-        isStartWorkout = false
-        isPauseWorkout = true
-        isPrepareCountdown = true
-        binding.roundsPicker.isEnabled = true
+        isTimerRunning = false
+        PrepareTimerState.prepareTimerState = EnumPrepareTimerState.Preparing
+        buttonsStateOnWorkout(true)
+
         calendarDB = CalendarDB(context)
-
         Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
-
         val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
 
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutTableName,
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString()),
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(sharedPreferencesUtils.getRoundsValueFromPreferences()).toString())
+            FormatUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
+            FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
         )
+
+        saveExercisesList(monthYear)
+
         startTime = ""
+    }
+
+
+    private fun saveExercisesList(monthYear: String){
+        val workoutDB = WorkoutDB(context)
+        db = workoutDB.readableDatabase
+        val cursorWorkoutDB = workoutDB.loadRecyclerElements(workoutTableName, db)
+
+        var exercisesList = ""
+        if (cursorWorkoutDB.moveToFirst()) {
+            do {
+                exercisesList += cursorWorkoutDB.getString(1)
+                if(!cursorWorkoutDB.isLast)
+                    exercisesList += FormatUtils.strSeparator
+            } while (cursorWorkoutDB.moveToNext())
+        }
+        cursorWorkoutDB.close()
+        db.close()
+
+        exercisesScreenDB = ExercisesScreenDB(context)
+        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+        val cursorCalendarDB: Cursor = calendarDB.getCalendarWorkoutDate(monthYear, workoutTableName, sqlDB)
+        cursorCalendarDB.moveToLast()
+        exercisesScreenDB.insertScreenDBDetails(cursorCalendarDB.getString(0), cursorCalendarDB.getString(1),
+            cursorCalendarDB.getString(2), exercisesList)
+
+        cursorCalendarDB.close()
+        sqlDB.close()
     }
 
 
@@ -474,7 +501,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         dialogBuilderUtils.addOrEditExercise(false)
 
-        dialogBuilderUtils.onClickListener(
+        dialogBuilderUtils.onClickListenerWorkoutScope(
             { addEditExercise() },
             { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
             { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }

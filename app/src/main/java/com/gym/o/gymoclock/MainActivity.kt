@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.itemId
+        //val id: Int = item.itemId
 //        if (id == R.id.nav_workout)
 //            return true
         if (drawerToggle.onOptionsItemSelected(item))

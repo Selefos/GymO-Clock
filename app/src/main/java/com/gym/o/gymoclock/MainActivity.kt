@@ -1,6 +1,8 @@
 package com.gym.o.gymoclock
 
 import android.content.res.Configuration
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
@@ -21,6 +23,7 @@ import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
+import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
@@ -32,6 +35,7 @@ import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
+
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -48,8 +52,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var workoutDB: WorkoutDB = WorkoutDB(this)
 
 
-    lateinit var sharedPreferencesUtils: SharedPreferencesUtils
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,9 +63,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TextToSpeechUtils.getInstance(this)
 
         //sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
-        sharedPreferencesUtils = SharedPreferencesUtils(this)
-        if (sharedPreferencesUtils.getWorkoutTableNameFromPreferences().isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
-            workoutTableName = sharedPreferencesUtils.getWorkoutTableNameFromPreferences()
+
+        if (SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this).isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
+            workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -98,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //val headerView: View = layoutInflater.inflate(R.layout.nav_header_main,null, false)
         // expandableListView.addHeaderView(headerView)
 
-        changeNavHeaderText(sharedPreferencesUtils.getWorkoutTableNameFromPreferences())
+        changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
 
 //        binding.root.setOnTouchListener {
 //                _, event ->
@@ -127,7 +129,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            }
 //            true
 //        }
-
+//        val calendarDB = CalendarDB(this)
+//        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+//        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
+//        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
+//
+//        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
+//        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")
     }
 
     /* init  {

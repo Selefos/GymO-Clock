@@ -3,6 +3,7 @@ package com.gym.o.gymoclock.utils
 import java.util.*
 
 class FormatUtils {
+
     companion object {
 
         private var minutes: Long = 0L
@@ -50,13 +51,31 @@ class FormatUtils {
             return 60 * min + secs
         }
 
-        fun prepareWorkoutTableStringSpDs(tableName: String): String {
+        fun stringSpaceToUnderscore(tableName: String): String {
             return tableName.replace(" ", "_")
         }
 
-        fun prepareWorkoutTableStringDsSp(tableName: String): String {
+        fun stringUnderscoreToSpace(tableName: String): String {
             return tableName.replace("_", " ")
         }
 
+        var strSeparator = ","
+        fun convertArrayToString(array: Array<String>): String {
+            var str = ""
+            for (i in array.indices) {
+                str += array[i]
+                // Do not append comma at the end of last element
+                if (i < array.size - 1) {
+                    str += strSeparator
+                }
+            }
+            return str
+        }
+
+        fun convertStringToArray(str: String): Array<String> {
+            return str.split(strSeparator).toTypedArray()
+        }
+
     }
+
 }

@@ -1,30 +1,35 @@
-package com.gym.o.gymoclock.navigation_list_adapter
+package com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
+import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 
 
-class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<String>, listChild: HashMap<String, List<String>?>) :
-    BaseExpandableListAdapter() {
+class CustomExpandableListAdapter(mainActivity: MainActivity, listIcon:  List<MenuModel>, listTitle: List<MenuModel>, listChild: HashMap<MenuModel, List<MenuModel>?>) : BaseExpandableListAdapter() {
     private var context: Context? = null
-    private var listTitle: List<String>? = null
-    private var listItem: Map<String, List<String>?>
+    private var listIcon: List<MenuModel>? = null
+    private var listTitle: List<MenuModel>? = null
+    private var listItem: Map<MenuModel, List<MenuModel>?>
 
     init {
         this.context = mainActivity
+        this.listIcon = listIcon
         this.listTitle = listTitle
         this.listItem = listChild
     }
 
 
-    override fun getChild(groupPosition: Int, childPosititon: Int): String {
+    override fun getChild(groupPosition: Int, childPosititon: Int): MenuModel {
         return this.listItem[this.listTitle?.get(groupPosition)]!![childPosititon]
     }
 
@@ -34,14 +39,19 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<St
 
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View? {
         var convertView = convertView
-        val childText = getChild(groupPosition, childPosition)//.menuName
+        val childText = getChild(groupPosition, childPosition).menuName
+        val childIcon = getChild(groupPosition,childPosition).itemIcon
         if (convertView == null) {
             val inflater =
                 context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.list_item, null)
         }
+
+        val childDrawable = convertView?.findViewById<ImageView>(R.id.sub_items_icon)
+        childDrawable?.background = childIcon
         val txtListChild = convertView?.findViewById<TextView>(R.id.expandable_list_item)
         txtListChild!!.text = childText
+
         return convertView
     }
 
@@ -49,7 +59,7 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<St
         return if (this.listTitle?.let { this.listItem[it[groupPosition]] } == null) 0 else this.listItem[this.listTitle!![groupPosition]]!!.size
     }
 
-    override fun getGroup(groupPosition: Int): String {
+    override fun getGroup(groupPosition: Int): MenuModel {
         return this.listTitle!![groupPosition]
     }
 
@@ -63,12 +73,16 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<St
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
         var convertView = convertView
-        val headerTitle = getGroup(groupPosition)//.menuName
+        val itemIcon = getGroup(groupPosition).itemIcon
+        val headerTitle = getGroup(groupPosition).menuName
         if (convertView == null) {
             val inflater =
                 context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.list_group, null)
         }
+        val childDrawable = convertView?.findViewById<ImageView>(R.id.group_items_icon)
+        childDrawable?.background = itemIcon
+
         val lblListHeader = convertView!!.findViewById<TextView>(R.id.listTitle)
         lblListHeader.setTypeface(null, Typeface.BOLD)
         lblListHeader.text = headerTitle

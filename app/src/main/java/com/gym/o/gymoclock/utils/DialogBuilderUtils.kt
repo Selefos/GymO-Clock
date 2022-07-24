@@ -1,13 +1,15 @@
 package com.gym.o.gymoclock.utils
 
 import android.content.Context
+import android.graphics.Color
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
 
 
@@ -28,17 +30,34 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
     private val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
 
-    private val okButtonAddOrEdit: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
-    private val cancelButtonAddOrEdit: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
+    val verifyButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
+    private val cancelButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
 
     private val viewRemoveExercise: View = inflater.inflate(R.layout.delete_exercise, null)
-
     val okButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.verify_exercise_delete)
-
     val cancelButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.cancel_exercise_delete)
 
 
     fun addOrEditExercise(setCanceledOnTouchOutside: Boolean) {
+
+        exerciseNameEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                Log.i("Editable", TimePickerUtils.timePicked.toString())
+                if(s.toString().isNotEmpty())
+                    verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.custom_text_color))
+                else if(s.toString().isEmpty() && !TimePickerUtils.timePicked)
+                    verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+            }
+        })
+
         dialogBuilder.setView(viewAddOrEditExercise)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
@@ -52,12 +71,13 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
-    fun onClickListener(addEditExercise: () -> Unit, numberPickerTimeDialogWork: () -> Unit, numberPickerTimeDialogRest: () -> Unit) {
-        okButtonAddOrEdit.setOnClickListener {
-            addEditExercise()
+    fun onClickListenerWorkoutScope(editExercise: () -> Unit, numberPickerTimeDialogWork: () -> Unit, numberPickerTimeDialogRest: () -> Unit) {
+        verifyButtonEditExercise.setOnClickListener {
+            editExercise()
         }
 
-        cancelButtonAddOrEdit.setOnClickListener {
+        cancelButtonEditExercise.setOnClickListener {
+            TimePickerUtils.isTimePicked(false)
             dialog.dismiss()
         }
 
@@ -71,29 +91,63 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     }
 
 
+    fun addWorkout(setCanceledOnTouchOutside: Boolean) {}
 
-
-    fun addWorkout(setCanceledOnTouchOutside: Boolean){}
-
-    fun removeRenameWorkout(setCanceledOnTouchOutside: Boolean){}
-
+    fun removeRenameWorkout(setCanceledOnTouchOutside: Boolean) {}
 
 
     private val viewCalendarWorkoutDetails: View = inflater.inflate(R.layout.dialog_calendar_workout_details, null)
-    val calendarDate: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_date)
-    val calendarStartTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_start_time)
-    val calendarEndTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_end_time)
-    val calendarWorkoutName: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_workout_name)
-    val calendarTotalTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_total_time)
-    val calendarTotalWorkingTime: TextView = viewCalendarWorkoutDetails.findViewById(R.id.calendar_total_working_time)
-    val calendarCancelButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_cancel_button)
-    fun calendarWorkoutDetails(setCanceledOnTouchOutside: Boolean){
+    private val calendarCircleChangeButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_change_to_exercises_button)
+    private val calendarCancelButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_cancel_button)
+    private val scrollView: ScrollView = viewCalendarWorkoutDetails.findViewById(R.id.scroll_view_change)
+
+    private val tableLayout: View = inflater.inflate(R.layout.table_layout_workout_details, null)
+    val calendarDate: TextView = tableLayout.findViewById(R.id.calendar_date)
+    val calendarStartTime: TextView = tableLayout.findViewById(R.id.calendar_start_time)
+    val calendarEndTime: TextView = tableLayout.findViewById(R.id.calendar_end_time)
+    val calendarWorkoutName: TextView = tableLayout.findViewById(R.id.calendar_workout_name)
+    val calendarTotalTime: TextView = tableLayout.findViewById(R.id.calendar_total_time)
+    val calendarTotalWorkingTime: TextView = tableLayout.findViewById(R.id.calendar_total_working_time)
+
+    fun calendarWorkoutDetails(setCanceledOnTouchOutside: Boolean) {
+
         dialogBuilder.setView(viewCalendarWorkoutDetails)
+        scrollView.addView(tableLayout)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
         dialog.show()
+    }
 
-        calendarCancelButton.setOnClickListener{
+
+    private val viewCalendarExerciseScreenList = inflater.inflate(R.layout.dialog_exercise_screen_list, null)//findViewById(R.id.dialog_exercise_screen_list) as View
+    val exerciseScreenListLayout: LinearLayout = viewCalendarExerciseScreenList.findViewById(R.id.exercise_screen_list)
+    private var isViewOnWorkoutDetails = true
+    private var isListForLoad = true
+    
+    fun onClickListenerCalendarScope(workoutID: String, populateTextViews: (workoutID: String) -> Unit){
+
+        calendarCircleChangeButton.setOnClickListener{
+            isViewOnWorkoutDetails = !isViewOnWorkoutDetails
+
+
+            scrollView.removeAllViews()
+            Log.i("IsOnDetails", isViewOnWorkoutDetails.toString())
+            Log.i("FLAG", isListForLoad.toString())
+            if(isViewOnWorkoutDetails){
+                calendarCircleChangeButton.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                scrollView.addView(tableLayout)
+            }
+
+            if(!isViewOnWorkoutDetails) {
+                if(isListForLoad)
+                    populateTextViews(workoutID)
+                isListForLoad = false
+                calendarCircleChangeButton.background.setTint(Color.WHITE)
+                scrollView.addView(viewCalendarExerciseScreenList)
+            }
+        }
+
+        calendarCancelButton.setOnClickListener {
             dialog.dismiss()
         }
     }

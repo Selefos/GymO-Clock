@@ -16,28 +16,28 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         db.close()
     }
 
-    fun addWorkoutTable(WorkoutName: String) {
+    fun addWorkoutTable(workoutName: String) {
         val db = writableDatabase
-        val createWorkoutTable = "CREATE TABLE IF NOT EXISTS " + WorkoutName + " (ID INTEGER PRIMARY KEY , " +
-                    "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
+        val createWorkoutTable = "CREATE TABLE IF NOT EXISTS " + workoutName + " (ID INTEGER PRIMARY KEY , " +
+                "$COL_EXERCISE_NAME TEXT, $COL_WORK_TIME INTEGER, $COL_REST_TIME INTEGER)"
         db.execSQL(createWorkoutTable)
 
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '45', '30')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '45', '30')")
-        db.execSQL("INSERT INTO $WorkoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '45', '30')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise One', '1', '1')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Two', '1', '1')")
+        db.execSQL("INSERT INTO $workoutName ($COL_EXERCISE_NAME, $COL_WORK_TIME, $COL_REST_TIME) VALUES ('Exercise Three', '1', '1')")
         db.close()
     }
 
-    fun renameWorkoutTable(tableName: String, WorkoutNameUpdate: String) {
+    fun renameWorkoutTable(workoutName: String, WorkoutNameUpdate: String) {
         val db = this.writableDatabase
-        val updateTableWorkoutName = "ALTER TABLE $tableName RENAME TO $WorkoutNameUpdate"
+        val updateTableWorkoutName = "ALTER TABLE $workoutName RENAME TO $WorkoutNameUpdate"
         db.execSQL(updateTableWorkoutName)
         db.close()
     }
 
-    fun deleteWorkoutTable(tableName: String) {
+    fun deleteWorkoutTable(workoutName: String) {
         val db = this.writableDatabase
-        db.execSQL("DROP TABLE IF EXISTS $tableName")
+        db.execSQL("DROP TABLE IF EXISTS $workoutName")
         db.close()
     }
 
@@ -56,45 +56,56 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result
     }
 
-    fun insertExerciseDetails(tableName: String, exerciseName: String, workTime: String, restTime: String): Boolean {
+    fun loadLastWorkoutTable(): String {
+        val db = this.writableDatabase
+        val selectTables = "SELECT name FROM sqlite_master WHERE type='table' AND name!='android_metadata'"
+        val cursor = db.rawQuery(selectTables, null)
+        var result = ""
+        if (cursor.moveToLast()) {
+            result = cursor.getString(0)
+        }
+
+        return result
+    }
+
+    fun insertExerciseDetails(workoutName: String, exerciseName: String, workTime: String, restTime: String): Boolean {
         val db = this.writableDatabase
         val exerciseDetails = ContentValues()
         exerciseDetails.put(COL_EXERCISE_NAME, exerciseName)
         exerciseDetails.put(COL_WORK_TIME, workTime)
         exerciseDetails.put(COL_REST_TIME, restTime)
-        val result: Long = db.insert(tableName, null, exerciseDetails)
+        val result: Long = db.insert(workoutName, null, exerciseDetails)
         db.close()
         return result != -1L
     }
 
-    fun updateExerciseDetails(tableName: String, nameToReplace: String, newExerciseName: String, workTime: String, restTime: String): Boolean {
+    fun updateExerciseDetails(workoutName: String, nameToReplace: String, newExerciseName: String, workTime: String, restTime: String): Boolean {
         val db: SQLiteDatabase = this.writableDatabase
         val exerciseDetails = ContentValues()
         exerciseDetails.put(COL_EXERCISE_NAME, newExerciseName)
         exerciseDetails.put(COL_WORK_TIME, workTime)
         exerciseDetails.put(COL_REST_TIME, restTime)
-        val result =
-            db.update(tableName, exerciseDetails, "$COL_EXERCISE_NAME = ?", arrayOf(nameToReplace))
+        val result = db.update(workoutName, exerciseDetails, "$COL_EXERCISE_NAME = ?", arrayOf(nameToReplace))
         db.close()
         return result != 1
     }
 
-    fun deleteWorkoutDetails(tableName: String, exerciseName: String): Boolean {
+    fun deleteWorkoutDetails(workoutName: String, exerciseName: String): Boolean {
         val db = this.writableDatabase
-        val result = db.delete(tableName, "EXERCISE_NAME = ?", arrayOf(exerciseName))
+        val result = db.delete(workoutName, "$COL_EXERCISE_NAME = ?", arrayOf(exerciseName))
         db.close()
         return result != -1
     }
 
-    fun loadRecyclerElements(tableName: String, db: SQLiteDatabase): Cursor {
-        return db.query(tableName, null, null, null, null, null, null)
+    fun loadRecyclerElements(workoutName: String, db: SQLiteDatabase): Cursor {
+        return db.query(workoutName, null, null, null, null, null, null)
     }
 
-    fun checkForDuplicateNames(TableName: String): List<String> {
+    fun checkForDuplicateNames(workoutName: String): List<String> {
         /*------------------- SELECT ALL QUERIES -------------------*/
         val list: MutableList<String> = ArrayList()
         val db = this.readableDatabase
-        val selectQuery = "SELECT * FROM $TableName"
+        val selectQuery = "SELECT * FROM $workoutName"
         val cursor = db.rawQuery(selectQuery, null)
 
         /*-------- Loops through all rows and adds to list ---------*/
@@ -107,6 +118,39 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         cursor.close()
         db.close()
         return list
+    }
+
+    fun totalTimeFromWorkoutDB(workoutName: String, rounds: Int): String {
+        val db = writableDatabase
+
+        val cursor = db.rawQuery("SELECT SUM($COL_WORK_TIME) + SUM($COL_REST_TIME) AS TOTAL FROM $workoutName", null)
+        var total = 0
+        if (cursor.moveToFirst()) {
+            do {
+                total += cursor.getInt(cursor.getColumnIndex("TOTAL"))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        val sum = (total * rounds) - lastRestTime(workoutName)
+        return sum.toString()
+    }
+
+    fun lastRestTime(workoutName: String): Int {
+        val db = this.readableDatabase
+        val selectQuery = "SELECT $COL_REST_TIME FROM $workoutName WHERE ID = (SELECT MAX(ID) FROM $workoutName)"
+        val cursorLastRestTime = db.rawQuery(selectQuery, null)
+        var lastRestTime = 0
+        if (cursorLastRestTime.moveToLast()) {
+            lastRestTime = cursorLastRestTime.getInt(cursorLastRestTime.getColumnIndex(COL_REST_TIME))
+        }
+
+        cursorLastRestTime.close()
+        db.close()
+
+        return lastRestTime
     }
 
     companion object {

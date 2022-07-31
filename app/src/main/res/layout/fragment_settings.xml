@@ -11,8 +11,8 @@
         android:id="@+id/settings_prepare_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/custom_transparent"
-        android:text="Set Prepare Time"
+        android:background="@drawable/buttons_background"
+        android:text="@string/settings_set_prepare_time"
         android:textColor="@color/custom_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,14 +21,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
-    <TextView
+    <Button
         android:id="@+id/settings_work_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/custom_transparent"
-        android:text="Work Timer"
+        android:background="@drawable/buttons_background"
+        android:text="@string/settings_global_work_time"
         android:textColor="@color/custom_text_color"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.051"
@@ -36,14 +35,13 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_prepare_time"
         app:layout_constraintVertical_bias="0.028" />
 
-    <TextView
+    <Button
         android:id="@+id/settings_rest_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/custom_transparent"
-        android:text="Rest Timer"
+        android:background="@drawable/buttons_background"
+        android:text="@string/settings_global_rest_time"
         android:textColor="@color/custom_text_color"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.047"
@@ -51,19 +49,32 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_work_time"
         app:layout_constraintVertical_bias="0.028" />
 
-    <TextView
+    <Button
         android:id="@+id/settings_voice_assist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/custom_transparent"
-        android:text="Voice Assist"
+        android:background="@drawable/buttons_background"
+        android:text="@string/settings_voice_assist"
         android:textColor="@color/custom_text_color"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_rest_time"
+        app:layout_constraintVertical_bias="0.037" />
+
+    <Button
+        android:id="@+id/settings_animations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:text="@string/settings_animations"
+        android:textColor="@color/custom_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_voice_assist"
         app:layout_constraintVertical_bias="0.037" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

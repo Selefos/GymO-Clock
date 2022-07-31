@@ -23,13 +23,6 @@ class SettingsFragment : Fragment() {
 
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-
-        val timePickerUtils = TimePickerUtils(requireContext())
-
-        binding.settingsPrepareTime.setOnClickListener {
-            timePickerUtils.numberPickerTimeDialog1()
-        }
-
         return binding.root
     }
 

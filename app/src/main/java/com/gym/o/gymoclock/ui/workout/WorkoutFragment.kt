@@ -147,11 +147,26 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialogBuilderUtils.workDigitalTime.text = position.exerciseClockValue.text
         dialogBuilderUtils.restDigitalTime.text = position.restClockValue.text
 
-        dialogBuilderUtils.onClickListenerWorkoutScope(
-            { updateExerciseValues(dataPosition) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
-        )
+//        dialogBuilderUtils.onClickListenerWorkoutScope(
+//            { updateExerciseValues(dataPosition) },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
+//        )
+
+        dialogBuilderUtils.verifyButtonEditExercise.setOnClickListener {
+            updateExerciseValues(dataPosition)
+        }
+        dialogBuilderUtils.cancelButtonEditExercise.setOnClickListener {
+            TimePickerUtils.isTimePicked(false)
+            dialogBuilderUtils.dialog.dismiss()
+        }
+        dialogBuilderUtils.workTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+        dialogBuilderUtils.restTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+
     }
 
 
@@ -281,7 +296,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         db.close()
         listAdapter.notifyDataSetChanged()
 
-        if(listAdapter.itemCount > 0)
+        if (listAdapter.itemCount > 0)
             lastRestTimeCheck()
 
     }
@@ -359,10 +374,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
 
     private fun init() {
-        if(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
+        if (SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
             rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
         if (SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext()) != null)
             prepareCountdownInMillis = SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext())
+
         dataList = ArrayList()
         recyclerView = binding.recyclerView//findViewById(R.id.recycler_view)
         listAdapter = ExerciseRecyclerAdapter(requireContext(), this, dataList)
@@ -417,7 +433,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (isTimerRunning) {
 
-                if(PrepareTimerState.prepareTimerState == EnumPrepareTimerState.Preparing){
+                if (PrepareTimerState.prepareTimerState == EnumPrepareTimerState.Preparing) {
                     prepareForWorkoutTimer()
                     return@setOnClickListener
                 }
@@ -467,7 +483,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
 
-    private fun saveExercisesList(monthYear: String){
+    private fun saveExercisesList(monthYear: String) {
         val workoutDB = WorkoutDB(context)
         db = workoutDB.readableDatabase
         val cursorWorkoutDB = workoutDB.loadRecyclerElements(workoutTableName, db)
@@ -476,7 +492,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (cursorWorkoutDB.moveToFirst()) {
             do {
                 exercisesList += cursorWorkoutDB.getString(1)
-                if(!cursorWorkoutDB.isLast)
+                if (!cursorWorkoutDB.isLast)
                     exercisesList += FormatUtils.strSeparator
             } while (cursorWorkoutDB.moveToNext())
         }
@@ -501,11 +517,26 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         dialogBuilderUtils.addOrEditExercise(false)
 
-        dialogBuilderUtils.onClickListenerWorkoutScope(
-            { addEditExercise() },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
-            { timePickerUtils.numberPickerTimeDialog(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
-        )
+//        dialogBuilderUtils.onClickListenerWorkoutScope(
+//            { addEditExercise() },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
+//        )
+
+        dialogBuilderUtils.verifyButtonEditExercise.setOnClickListener {
+            addEditExercise()
+        }
+        dialogBuilderUtils.cancelButtonEditExercise.setOnClickListener {
+            TimePickerUtils.isTimePicked(false)
+            dialogBuilderUtils.dialog.dismiss()
+        }
+        dialogBuilderUtils.workTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+        dialogBuilderUtils.restTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+
     }
 
 

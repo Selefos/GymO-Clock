@@ -75,7 +75,7 @@ fun WorkoutFragment.saveExerciseValues(action: String, oldExerciseName: String, 
     }
 
     if (action == "update") {
-        val updateExerciseData = workoutDB.updateExerciseDetails(
+        val updateExerciseData = workoutDB.updateSelectedExerciseDetails(
             workoutTableName, oldExerciseName, exerciseName,
             FormatUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
             FormatUtils.convertTimeToSeconds(restClock.text.toString()).toString()
@@ -163,7 +163,6 @@ fun MainActivity.addWorkoutTable() {
 
             SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, workoutNameAdd.text.toString())
 
-            //setWorkoutTableName(FormatUtils.prepareWorkoutTableStringSpDs(workoutNameAdd.text.toString()))
             changeFragment(WorkoutFragment::class.java)
 
             changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
@@ -204,7 +203,6 @@ fun MainActivity.editWorkoutName(workoutName: String) {
 
             workoutDB.renameWorkoutTable(workoutName, renameWorkout.text.toString().replace(" ", "_"))
 
-            //setWorkoutTableName(FormatUtils.prepareWorkoutTableStringSpDs(renameWorkout.text.toString()))
             SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, renameWorkout.text.toString())
             changeFragment(WorkoutFragment::class.java)
 

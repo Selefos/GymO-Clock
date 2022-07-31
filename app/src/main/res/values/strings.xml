@@ -84,6 +84,29 @@
     <string name="calendar_total_working_time_string">TOTAL WORKING TIME</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+    <!--  __________________________________________________  -->
+    <!--  _______________________Settings___________________  -->
+    <string name="settings_workout">Workout</string>
+    <string name="settings_add_workout">Add Workout</string>
+    <string name="settings_calendar">Calendar</string>
+    <string name="settings_settings">Settings</string>
+
+    <string name="settings_set_prepare_time">Set Prepare Time</string>
+    <string name="settings_global_work_time">Work Timer</string>
+    <string name="settings_global_rest_time">Rest Timer</string>
+    <string name="settings_voice_assist">Voice Assist Helper</string>
+    <string name="settings_animations">Animations</string>
+    
+    <string name="settings_enable_voice_assist">Enable Voice Assistant</string>
+    <string name="settings_disable_voice_assist">Disable Voice Assistant</string>
+    <string name="settings_volume_control">Volume Control</string>
+    <string name="settings_test_button_play">Play</string>
+    <string name="settings_test_button_stop">Stop</string>
+    <string name="settings_test_button_text">You can adjust the volume of voice assistant at any time, by scrolling the bar above. While you have pressed the
+    PLAY button, you can hear the adjustments on real time.</string>
+    <!--  __________________________________________________  -->
+
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>

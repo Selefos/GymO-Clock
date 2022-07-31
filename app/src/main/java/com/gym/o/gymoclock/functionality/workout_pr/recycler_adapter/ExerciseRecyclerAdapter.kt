@@ -18,7 +18,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAni
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
-import com.gym.o.gymoclock.utils.FormatUtils
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -44,8 +43,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var mrTimerIsPaused by Delegates.notNull<Boolean>()
 
         private var mView = WeakReference(view)
-        private lateinit var editView: ImageButton
-
 
         init {
             res = itemView.context.resources
@@ -89,23 +86,19 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
         setOnAddViewAnimation(holder.itemView, position)
 
-        holder.removeView.setOnClickListener { mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
+        holder.removeView.setOnClickListener {
+            mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
         }
 
     }
-
 
     override fun getItemCount(): Int {
         return dataList.size
     }
 
-
     fun totalTimeFromDB(rounds: Int): Int {
-
         workoutDB = WorkoutDB(context)
-
         val totalTime = workoutDB.totalTimeFromWorkoutDB(workoutTableName, rounds)
-
         return totalTime.toInt()
     }
 

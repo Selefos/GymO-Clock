@@ -1,8 +1,6 @@
 package com.gym.o.gymoclock
 
 import android.content.res.Configuration
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
@@ -23,7 +21,6 @@ import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
-import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
@@ -35,7 +32,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
-
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -48,7 +44,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     lateinit var expandableListView: ExpandableListView
     lateinit var expandableAdapter: CustomExpandableListAdapter
-
     var workoutDB: WorkoutDB = WorkoutDB(this)
 
 
@@ -58,14 +53,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //setSupportActionBar(binding.appBarMain.toolbar)
-
         TextToSpeechUtils.getInstance(this)
-
-        //sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
 
         if (SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this).isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
             workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
+
+
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -74,68 +67,51 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         calendarDBInit()
 
-
         expandableListView = binding.expandableView
         prepareMenuData()
         populateList()
         drawerLayout = binding.drawerLayout
         setupDrawer()
 
-//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
-//        val navController = navHostFragment.navController
-        //val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.nav_workout, R.id.nav_calendar, R.id.nav_slideshow
-//            ), drawerLayout
-//        )
-        //setupActionBarWithNavController(navController, appBarConfiguration)
-
         val navView: NavigationView = binding.navView
         navView.setNavigationItemSelectedListener(this)
-        //navView.setupWithNavController(navController) //@id/nav_view
-
-        //val headerView: View = layoutInflater.inflate(R.layout.nav_header_main,null, false)
-        // expandableListView.addHeaderView(headerView)
-
         changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
 
-//        binding.root.setOnTouchListener {
-//                _, event ->
-//            val x = event.x
-//            val y = event.y
-//            binding.appBarMain.fab.x = x
-//            binding.appBarMain.fab.y = y
-////            editTextX.setText(x.toString())
-////            editTextY.setText(y.toString())
-//            true
-//        }
 
-//        binding.appBarMain.fab.setOnLongClickListener{
-//            View ->
-//            Toast.makeText(this, "Longed", Toast.LENGTH_SHORT).show()
-//            binding.root.setOnTouchListener {
-//                    _, event ->
-//                val x = event.x
-//                val y = event.y
-//                binding.appBarMain.fab.x = x
-//                binding.appBarMain.fab.y = y
-//                Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show()
-////            editTextX.setText(x.toString())
-////            editTextY.setText(y.toString())
-//                true
-//            }
-//            true
-//        }
-//        val calendarDB = CalendarDB(this)
-//        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
-//        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
-//        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
-//
-//        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
-//        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")
+/*        binding.root.setOnTouchListener {
+                _, event ->
+            val x = event.x
+            val y = event.y
+            binding.appBarMain.fab.x = x
+            binding.appBarMain.fab.y = y
+//            editTextX.setText(x.toString())
+//            editTextY.setText(y.toString())
+            true
+        }
+
+        binding.appBarMain.fab.setOnLongClickListener{
+            View ->
+            Toast.makeText(this, "Longed", Toast.LENGTH_SHORT).show()
+            binding.root.setOnTouchListener {
+                    _, event ->
+                val x = event.x
+                val y = event.y
+                binding.appBarMain.fab.x = x
+                binding.appBarMain.fab.y = y
+                Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show()
+//            editTextX.setText(x.toString())
+//            editTextY.setText(y.toString())
+                true
+            }
+            true
+        }
+        val calendarDB = CalendarDB(this)
+        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
+        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
+
+        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
+        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")*/
     }
 
     /* init  {

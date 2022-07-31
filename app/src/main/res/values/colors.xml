@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="custom_text_color">#91FBDA</color>
+    <color name="custom_button_color">#91FBDA</color>
     <color name="custom_hint_color">#3F856F</color>
     <color name="custom_clocks_color">#9091FBDA</color>
     <color name="custom_primary_color">#1E1E1E</color>

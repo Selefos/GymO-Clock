@@ -8,6 +8,7 @@ import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 class SharedPreferencesUtils() {
 
     companion object {
+
         private lateinit var sharedPreferences: SharedPreferences
         fun saveRoundsValueToPreferences(context: Context, scrollView: NumberPicker) {
             val sharedPreferences = context.getSharedPreferences("Rounds", Context.MODE_PRIVATE)
@@ -46,5 +47,30 @@ class SharedPreferencesUtils() {
             return sharedPreferences.getLong("prepareTimeLong", 0)
         }
 
+        fun saveTtsState(context: Context, prefTtsState: Boolean){
+            val sharedPreferences = context.getSharedPreferences("TtsState", Context.MODE_PRIVATE)
+            val save = sharedPreferences.edit()
+            save.putBoolean("voiceAssistState", prefTtsState)
+            save.apply()
+        }
+
+        fun getTtsState(context: Context): Boolean{
+            sharedPreferences = context.getSharedPreferences("TtsState", Context.MODE_PRIVATE)
+            return sharedPreferences.getBoolean("voiceAssistState", false)
+        }
+
+        fun saveVolume(context: Context, volume: Int){
+            val sharedPreferences = context.getSharedPreferences("Volume", Context.MODE_PRIVATE)
+            val save = sharedPreferences.edit()
+            save.putInt("volumeValue", volume)
+            save.apply()
+        }
+
+        fun getVolume(context: Context): Int{
+            sharedPreferences = context.getSharedPreferences("Volume", Context.MODE_PRIVATE)
+            return sharedPreferences.getInt("volumeValue", -1)
+        }
+
     }
+
 }

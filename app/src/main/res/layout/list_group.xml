@@ -14,7 +14,7 @@
         android:layout_marginHorizontal="6dp"
         android:layout_marginLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:layout_marginRight="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:backgroundTint="@color/custom_text_color"
+        android:backgroundTint="@color/custom_button_color"
         android:contentDescription="@string/content_description_images" />
 
     <TextView
@@ -27,7 +27,7 @@
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/custom_text_color"
+        android:textColor="@color/white"
         android:textSize="16sp" />
 
 </LinearLayout>

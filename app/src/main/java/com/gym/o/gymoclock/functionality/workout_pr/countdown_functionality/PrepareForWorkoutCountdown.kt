@@ -5,9 +5,8 @@ import android.os.CountDownTimer
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.enums.EnumPrepareTimerState
+import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.enums.PrepareTimerState
 import com.gym.o.gymoclock.functionality.workout_pr.prepareCountdownInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
@@ -47,7 +46,7 @@ fun WorkoutFragment.startPrepareTimer(textView: TextView) {
         }
 
         override fun onFinish() {
-            PrepareTimerState.prepareTimerState = EnumPrepareTimerState.Working
+            PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Working
             binding.playPauseButton.background = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_pause_button)
 
             startTotalTimer()

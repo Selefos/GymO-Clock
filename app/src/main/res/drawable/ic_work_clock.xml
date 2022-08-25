@@ -1,18 +1,16 @@
-<vector android:height="200dp" android:viewportHeight="368"
-    android:viewportWidth="368" android:width="200dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="@color/custom_clocks_color" android:pathData="M184,1.8C83.4,1.8 1.8,83.4 1.8,184S83.4,366.2 184,366.2S366.2,284.6 366.2,184S284.6,1.8 184,1.8zM184,362C85.7,362 6,282.3 6,184S85.7,6 184,6s178,79.7 178,178S282.3,362 184,362z"/>
-    <path android:fillColor="#00000000"
-        android:pathData="M184,1.8C83.4,1.8 1.8,83.4 1.8,184S83.4,366.2 184,366.2S366.2,284.6 366.2,184S284.6,1.8 184,1.8zM184,362C85.7,362 6,282.3 6,184S85.7,6 184,6s178,79.7 178,178S282.3,362 184,362z"
-        android:strokeColor="@color/custom_primary_navy_blue" android:strokeWidth="3"/>
-    <path android:fillColor="@color/custom_clocks_color" android:pathData="M184,25.5c-87.6,0 -158.5,71 -158.5,158.5s71,158.5 158.5,158.5s158.5,-71 158.5,-158.5S271.6,25.5 184,25.5zM184,331.3c-81.4,0 -147.3,-66 -147.3,-147.3S102.6,36.7 184,36.7s147.3,66 147.3,147.3S265.4,331.3 184,331.3z"/>
-    <path android:fillColor="#00000000"
-        android:pathData="M184,25.5c-87.6,0 -158.5,71 -158.5,158.5s71,158.5 158.5,158.5s158.5,-71 158.5,-158.5S271.6,25.5 184,25.5zM184,331.3c-81.4,0 -147.3,-66 -147.3,-147.3S102.6,36.7 184,36.7s147.3,66 147.3,147.3S265.4,331.3 184,331.3z"
-        android:strokeColor="@color/custom_primary_navy_blue" android:strokeWidth="3"/>
-    <path android:fillColor="#00000000" android:pathData="M184,36.7c-81.4,0 -147.3,66 -147.3,147.3s66,147.3 147.3,147.3s147.3,-66 147.3,-147.3S265.4,36.7 184,36.7zM184,313.8c-71.7,0 -129.8,-58.1 -129.8,-129.8S112.3,54.2 184,54.2S313.8,112.3 313.8,184S255.7,313.8 184,313.8z"/>
-    <path android:fillColor="#00000000"
-        android:pathData="M184,36.7c-81.4,0 -147.3,66 -147.3,147.3s66,147.3 147.3,147.3s147.3,-66 147.3,-147.3S265.4,36.7 184,36.7zM184,313.8c-71.7,0 -129.8,-58.1 -129.8,-129.8S112.3,54.2 184,54.2S313.8,112.3 313.8,184S255.7,313.8 184,313.8z"
-        android:strokeColor="@color/custom_clocks_color" android:strokeWidth="1"/>
-    <path android:fillColor="@color/custom_clocks_color"
-        android:pathData="M184,34m-17.5,0a17.5,17.5 0,1 1,35 0a17.5,17.5 0,1 1,-35 0"
-        android:strokeColor="@color/custom_primary_navy_blue" android:strokeWidth="3"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="368"
+    android:viewportHeight="368">
+  <path
+      android:pathData="M181.8,79l-11,-44.4l6.6,-21.6l13.2,0l6.6,21.6l-11,44.4z"
+      android:strokeWidth="2"
+      android:fillColor="@color/custom_clocks_color"
+      android:strokeColor="@color/custom_primary_navy_blue"/>
+  <path
+      android:pathData="M186.2,277l11,44.4l-6.6,21.6l-13.2,0l-6.6,-21.6l11,-44.4z"
+      android:strokeWidth="2"
+      android:fillColor="@color/custom_clocks_color"
+      android:strokeColor="@color/custom_primary_navy_blue"/>
 </vector>

@@ -51,12 +51,12 @@ class FormatUtils {
             return 60 * min + secs
         }
 
-        fun stringSpaceToUnderscore(tableName: String): String {
-            return tableName.replace(" ", "_")
+        fun stringSpaceToUnderscore(string: String): String {
+            return string.replace(" ", "_")
         }
 
-        fun stringUnderscoreToSpace(tableName: String): String {
-            return tableName.replace("_", " ")
+        fun stringUnderscoreToSpace(string: String): String {
+            return string.replace("_", " ")
         }
 
         var strSeparator = ","

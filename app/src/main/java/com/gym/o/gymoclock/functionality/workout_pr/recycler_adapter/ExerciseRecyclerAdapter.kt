@@ -10,15 +10,20 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
+import com.gym.o.gymoclock.enums.ClockSelected
+import com.gym.o.gymoclock.enums.ClockSelectedEnum
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.workTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
-import com.gym.o.gymoclock.utils.FormatUtils
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -28,12 +33,18 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
     private lateinit var workoutDB: WorkoutDB
     private lateinit var db: SQLiteDatabase
-    lateinit var res: Resources
+    lateinit var resources: Resources
+    private var holderList: HashMap<Int, ViewHolder> = HashMap()
+    lateinit var viewHolder : ViewHolder
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         var exerciseName: TextView = itemView.findViewById(R.id.exercise_name)
+
+        var exerciseImg: ImageView = itemView.findViewById(R.id.exercise_img)
         var exerciseClock: TextView = itemView.findViewById(R.id.countdown_work)
+
+        var restImg: ImageView = itemView.findViewById(R.id.rest_img)
         var restClock: TextView = itemView.findViewById(R.id.countdown_rest)
 
         val removeView: ImageButton = itemView.findViewById(R.id.remove_view)
@@ -44,11 +55,9 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var mrTimerIsPaused by Delegates.notNull<Boolean>()
 
         private var mView = WeakReference(view)
-        private lateinit var editView: ImageButton
-
 
         init {
-            res = itemView.context.resources
+            resources = itemView.context.resources
             //val playPause: ImageButton = itemView.findViewById(R.id.play_pause)
 //            playPause.setOnClickListener {
 //
@@ -87,11 +96,17 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         holder.mrTimerIsRunning = newList.rTimerIsRunning
         holder.mrTimerIsPaused = newList.rTimerIsPaused
 
-        setOnAddViewAnimation(holder.itemView, position)
+        //holder.setIsRecyclable(false)
+        //if(!holderList.containsKey(position))
+        holderList[holder.adapterPosition] = holder
+        viewHolder = holder
 
-        holder.removeView.setOnClickListener { mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
+        if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
+            setOnAddViewAnimation(holder.itemView, position)
+
+        holder.removeView.setOnClickListener {
+            mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
         }
-
     }
 
 
@@ -101,11 +116,8 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
 
     fun totalTimeFromDB(rounds: Int): Int {
-
         workoutDB = WorkoutDB(context)
-
         val totalTime = workoutDB.totalTimeFromWorkoutDB(workoutTableName, rounds)
-
         return totalTime.toInt()
     }
 
@@ -154,6 +166,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
             anim.duration = 1000
             viewToAnimate.startAnimation(anim)
             getLastPositionForRemoveViewAnimation = position
+
             anim.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation) {}
 
@@ -162,6 +175,11 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
                 override fun onAnimationEnd(animation: Animation) {}
             })
         }
+    }
+
+
+    fun getViewByPosition(position: Int): ExerciseRecyclerAdapter.ViewHolder? {
+        return holderList[position]
     }
 
 }

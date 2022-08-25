@@ -26,7 +26,7 @@ class CalendarFragment : DialogFragment() {
 
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
+        Log.i("CalendarFragment", "onCreateView")
         calendarViewModel.text.observe(viewLifecycleOwner) {
             //textView.text = it
         }

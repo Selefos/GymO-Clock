@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.gym.o.gymoclock.enums.ClockSelectedEnum
 
 class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
 
@@ -79,7 +80,7 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result != -1L
     }
 
-    fun updateExerciseDetails(workoutName: String, nameToReplace: String, newExerciseName: String, workTime: String, restTime: String): Boolean {
+    fun updateSelectedExerciseDetails(workoutName: String, nameToReplace: String, newExerciseName: String, workTime: String, restTime: String): Boolean {
         val db: SQLiteDatabase = this.writableDatabase
         val exerciseDetails = ContentValues()
         exerciseDetails.put(COL_EXERCISE_NAME, newExerciseName)
@@ -88,6 +89,19 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         val result = db.update(workoutName, exerciseDetails, "$COL_EXERCISE_NAME = ?", arrayOf(nameToReplace))
         db.close()
         return result != 1
+    }
+
+    fun updateAllExercisesTimer(workoutName: String, clockChoice: ClockSelectedEnum, time: Int){
+        val db: SQLiteDatabase = this.writableDatabase
+        val contentValues = ContentValues()
+
+        when(clockChoice){
+            ClockSelectedEnum.WorkClock -> contentValues.put(COL_WORK_TIME, time)
+            ClockSelectedEnum.RestClock -> contentValues.put(COL_REST_TIME, time)
+            ClockSelectedEnum.Idle      -> {}
+        }
+
+        db.update(workoutName, contentValues,null,null)
     }
 
     fun deleteWorkoutDetails(workoutName: String, exerciseName: String): Boolean {

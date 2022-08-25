@@ -1,18 +1,16 @@
 package com.gym.o.gymoclock
 
 import android.content.res.Configuration
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -23,7 +21,6 @@ import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
-import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
@@ -32,10 +29,8 @@ import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
 import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
-import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
-
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -48,7 +43,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     lateinit var expandableListView: ExpandableListView
     lateinit var expandableAdapter: CustomExpandableListAdapter
-
     var workoutDB: WorkoutDB = WorkoutDB(this)
 
 
@@ -58,11 +52,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //setSupportActionBar(binding.appBarMain.toolbar)
-
         TextToSpeechUtils.getInstance(this)
-
-        //sharedPreferences = this.getSharedPreferences("WorkoutTableName", Context.MODE_PRIVATE)
 
         if (SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this).isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
             workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
@@ -74,79 +64,56 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         calendarDBInit()
 
-
         expandableListView = binding.expandableView
         prepareMenuData()
         populateList()
         drawerLayout = binding.drawerLayout
         setupDrawer()
 
-//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
-//        val navController = navHostFragment.navController
-        //val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.nav_workout, R.id.nav_calendar, R.id.nav_slideshow
-//            ), drawerLayout
-//        )
-        //setupActionBarWithNavController(navController, appBarConfiguration)
-
         val navView: NavigationView = binding.navView
         navView.setNavigationItemSelectedListener(this)
-        //navView.setupWithNavController(navController) //@id/nav_view
-
-        //val headerView: View = layoutInflater.inflate(R.layout.nav_header_main,null, false)
-        // expandableListView.addHeaderView(headerView)
-
         changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
 
-//        binding.root.setOnTouchListener {
-//                _, event ->
-//            val x = event.x
-//            val y = event.y
-//            binding.appBarMain.fab.x = x
-//            binding.appBarMain.fab.y = y
-////            editTextX.setText(x.toString())
-////            editTextY.setText(y.toString())
-//            true
-//        }
 
-//        binding.appBarMain.fab.setOnLongClickListener{
-//            View ->
-//            Toast.makeText(this, "Longed", Toast.LENGTH_SHORT).show()
-//            binding.root.setOnTouchListener {
-//                    _, event ->
-//                val x = event.x
-//                val y = event.y
-//                binding.appBarMain.fab.x = x
-//                binding.appBarMain.fab.y = y
-//                Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show()
-////            editTextX.setText(x.toString())
-////            editTextY.setText(y.toString())
-//                true
-//            }
-//            true
-//        }
-//        val calendarDB = CalendarDB(this)
-//        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
-//        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
-//        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
-//
-//        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
-//        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")
+/*        binding.root.setOnTouchListener {
+                _, event ->
+            val x = event.x
+            val y = event.y
+            binding.appBarMain.fab.x = x
+            binding.appBarMain.fab.y = y
+//            editTextX.setText(x.toString())
+//            editTextY.setText(y.toString())
+            true
+        }
+
+        binding.appBarMain.fab.setOnLongClickListener{
+            View ->
+            Toast.makeText(this, "Longed", Toast.LENGTH_SHORT).show()
+            binding.root.setOnTouchListener {
+                    _, event ->
+                val x = event.x
+                val y = event.y
+                binding.appBarMain.fab.x = x
+                binding.appBarMain.fab.y = y
+                Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show()
+//            editTextX.setText(x.toString())
+//            editTextY.setText(y.toString())
+                true
+            }
+            true
+        }
+        val calendarDB = CalendarDB(this)
+        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
+        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
+
+        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
+        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")*/
     }
 
     /* init  {
          if (BuildConfig.DEBUG) StrictMode.enableDefaults()
      }*/
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -256,8 +223,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun changeFragment(fragmentChoice: Class<*>) {
         //Toast.makeText(this, "Pressed", Toast.LENGTH_SHORT).show()
+        val lnLayout = findViewById<CoordinatorLayout>(R.id.app_bar_main)
+        lnLayout.removeAllViewsInLayout()
+
         var fragment: Fragment? = null
         var fragmentClass: Class<*>
+
         fragmentChoice.also { fragmentClass = it }
         try {
             fragment = fragmentClass.newInstance() as Fragment
@@ -265,10 +236,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             e.printStackTrace()
         }
         val fragmentManager: FragmentManager = supportFragmentManager
-        if (fragment != null) {
-            fragmentManager.beginTransaction().remove(WorkoutFragment()).commit()
+        val fragmentToRemove = supportFragmentManager.findFragmentById(R.id.nav_workout)
+        //supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+//        transaction.remove(fragmentToRemove!!)
+//        transaction.replace(R.id.app_bar_main, fragment!!)
+//
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+        if (fragmentToRemove != null) {
+            Log.i("MainActivity", "Fragment Removed")
+            fragmentManager.beginTransaction().remove(fragmentToRemove).commit()
         }
         fragmentManager.beginTransaction().replace(R.id.app_bar_main, fragment!!).commit()
+
     }
 
 }

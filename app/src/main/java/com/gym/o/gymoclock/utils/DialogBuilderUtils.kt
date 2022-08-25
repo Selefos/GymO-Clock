@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
 
@@ -23,15 +24,18 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private val inflaterRecycler: LayoutInflater = LayoutInflater.from(context)
     val viewRecycler: View = inflaterRecycler.inflate(R.layout.add_view, null)
 
+
     val exerciseNameEdit: EditText = viewAddOrEditExercise.findViewById(R.id.exercise_name_edit)
     var workDigitalTime: TextView = viewAddOrEditExercise.findViewById(R.id.work_digital_time)
     val restDigitalTime: TextView = viewAddOrEditExercise.findViewById(R.id.rest_digital_time)
 
-    private val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
-    private val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
+
+
+    val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
+    val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
 
     val verifyButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
-    private val cancelButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
+    val cancelButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
 
     private val viewRemoveExercise: View = inflater.inflate(R.layout.delete_exercise, null)
     val okButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.verify_exercise_delete)
@@ -71,31 +75,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
-    fun onClickListenerWorkoutScope(editExercise: () -> Unit, numberPickerTimeDialogWork: () -> Unit, numberPickerTimeDialogRest: () -> Unit) {
-        verifyButtonEditExercise.setOnClickListener {
-            editExercise()
-        }
-
-        cancelButtonEditExercise.setOnClickListener {
-            TimePickerUtils.isTimePicked(false)
-            dialog.dismiss()
-        }
-
-        workTimePicker.setOnClickListener {
-            numberPickerTimeDialogWork()
-        }
-
-        restTimePicker.setOnClickListener {
-            numberPickerTimeDialogRest()
-        }
-    }
-
-
-    fun addWorkout(setCanceledOnTouchOutside: Boolean) {}
-
-    fun removeRenameWorkout(setCanceledOnTouchOutside: Boolean) {}
-
-
     private val viewCalendarWorkoutDetails: View = inflater.inflate(R.layout.dialog_calendar_workout_details, null)
     private val calendarCircleChangeButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_change_to_exercises_button)
     private val calendarCancelButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_cancel_button)
@@ -129,7 +108,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         calendarCircleChangeButton.setOnClickListener{
             isViewOnWorkoutDetails = !isViewOnWorkoutDetails
 
-
             scrollView.removeAllViews()
             Log.i("IsOnDetails", isViewOnWorkoutDetails.toString())
             Log.i("FLAG", isListForLoad.toString())
@@ -152,4 +130,32 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         }
     }
 
+    private val viewVoiceAssistSettings: View = inflater.inflate(R.layout.dialog_voice_assist, null)
+    var cancelButtonVoiceAssistSettings: ImageButton = viewVoiceAssistSettings.findViewById(R.id.voice_assist_cancel_button)
+    var voiceAssistState: SwitchCompat = viewVoiceAssistSettings.findViewById(R.id.voice_assist_state)
+    var volumeControl: SeekBar = viewVoiceAssistSettings.findViewById(R.id.volume_control)
+    val volumePercent: TextView = viewVoiceAssistSettings.findViewById(R.id.volume_percent)
+    var testVoiceVolumeButton: Button = viewVoiceAssistSettings.findViewById(R.id.test_volume_button)
+
+    fun voiceAssistScope(setCanceledOnTouchOutside: Boolean){
+        dialogBuilder.setView(viewVoiceAssistSettings)
+        scrollView.addView(tableLayout)
+        dialog = dialogBuilder.create()
+        dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
+        dialog.show()
+    }
+
+    private val viewAnimationsSettings: View = inflater.inflate(R.layout.dialog_animations, null)
+    var cancelButtonAnimationsSettings: ImageButton = viewAnimationsSettings.findViewById(R.id.animations_cancel_button)
+    var allAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.all_animations)
+    var recyclerViewAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.recycler_view_animations)
+    var clocksAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.clocks_animations)
+
+    fun animationsScope(setCanceledOnTouchOutside: Boolean){
+        dialogBuilder.setView(viewAnimationsSettings)
+        scrollView.addView(tableLayout)
+        dialog = dialogBuilder.create()
+        dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
+        dialog.show()
+    }
 }

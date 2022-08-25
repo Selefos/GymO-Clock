@@ -17,6 +17,7 @@ fun MainActivity.voiceAssist() {
     dialogBuilderUtils.voiceAssistScope(false)
 
     dialogBuilderUtils.cancelButtonVoiceAssistSettings.setOnClickListener {
+        TextToSpeechUtils.getInstance(this).stopTTS()
         dialogBuilderUtils.dialog.dismiss()
     }
 
@@ -28,7 +29,7 @@ fun MainActivity.voiceAssist() {
 
 fun MainActivity.voiceAssistantState(dialogBuilderUtils: DialogBuilderUtils){
     dialogBuilderUtils.voiceAssistState.isChecked = SharedPreferencesUtils.getTtsState(this)
-    dialogBuilderUtils.voiceAssistState.isChecked = dialogBuilderUtils.voiceAssistState.isChecked
+    //dialogBuilderUtils.voiceAssistState.isChecked = dialogBuilderUtils.voiceAssistState.isChecked
 
     if (dialogBuilderUtils.voiceAssistState.isChecked)
         dialogBuilderUtils.voiceAssistState.text = resources.getString(R.string.settings_disable_voice_assist)
@@ -63,7 +64,6 @@ fun MainActivity.voiceTestButton(dialogBuilderUtils: DialogBuilderUtils){
                         dialogBuilderUtils.testVoiceVolumeButton.text = applicationContext.resources.getString(R.string.settings_test_button_stop)
                         isPlayPressed = true
                     }
-
                 }
 
                 override fun onDone(utteranceId: String) {

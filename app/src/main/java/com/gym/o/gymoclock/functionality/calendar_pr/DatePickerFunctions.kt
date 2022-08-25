@@ -123,7 +123,7 @@ fun CalendarFragment.createTextView(exerciseName: String, exerciseScreenListLayo
     val textView = TextView(context)
     textView.text = exerciseName
     textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-    textView.background = AppCompatResources.getDrawable(context!!, R.drawable.text_views_background)
+    //textView.background = AppCompatResources.getDrawable(context!!, R.drawable.text_views_background)
     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
     textView.setTextColor(Color.WHITE)
 

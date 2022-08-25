@@ -91,9 +91,9 @@
     <string name="settings_calendar">Calendar</string>
     <string name="settings_settings">Settings</string>
 
-    <string name="settings_set_prepare_time">Set Prepare Time</string>
-    <string name="settings_global_work_time">Work Timer</string>
-    <string name="settings_global_rest_time">Rest Timer</string>
+    <string name="settings_set_prepare_time">Set Prepare Timer</string>
+    <string name="settings_global_work_time">Set Work Timers</string>
+    <string name="settings_global_rest_time">Set Rest Timers</string>
     <string name="settings_voice_assist">Voice Assist Helper</string>
     <string name="settings_animations">Animations</string>
     
@@ -104,8 +104,14 @@
     <string name="settings_test_button_stop">Stop</string>
     <string name="settings_test_button_text">You can adjust the volume of voice assistant at any time, by scrolling the bar above. While you have pressed the
     PLAY button, you can hear the adjustments on real time.</string>
-    <!--  __________________________________________________  -->
 
+    <string name="settings_enable_all_animations">Enable All Animations</string>
+    <string name="settings_disable_all_animations">Disable All Animations</string>
+    <string name="settings_enable_recycler_view_animations">Enable Layout Animations</string>
+    <string name="settings_disable_recycler_view_animations">Disable Layout Animations</string>
+    <string name="settings_enable_clock_animations">Enable Clock Animations</string>
+    <string name="settings_disable_clock_animations">Disable Clock Animations</string>
+    <!--  __________________________________________________  -->
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

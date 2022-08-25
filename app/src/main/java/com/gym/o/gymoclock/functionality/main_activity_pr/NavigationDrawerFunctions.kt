@@ -16,10 +16,7 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addWorkoutTable
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.editWorkoutName
-import com.gym.o.gymoclock.functionality.main_activity_pr.settings.prepareTimer
-import com.gym.o.gymoclock.functionality.main_activity_pr.settings.restTimer
-import com.gym.o.gymoclock.functionality.main_activity_pr.settings.voiceAssist
-import com.gym.o.gymoclock.functionality.main_activity_pr.settings.workTimer
+import com.gym.o.gymoclock.functionality.main_activity_pr.settings.*
 import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.MenuModel
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
@@ -130,6 +127,7 @@ fun MainActivity.populateList() {
             when (selectedItem) {
                 selectedItem -> {
                     SharedPreferencesUtils.saveWorkoutTableNameToPreferences(this, selectedItem)
+                    parent.collapseGroup(groupPosition)
                     changeFragment(WorkoutFragment::class.java)
                 }
             }
@@ -142,7 +140,7 @@ fun MainActivity.populateList() {
                 1L -> workTimer(parent, groupPosition, FormatUtils.stringSpaceToUnderscore(workoutTableName))
                 2L -> restTimer(parent, groupPosition, FormatUtils.stringSpaceToUnderscore(workoutTableName))
                 3L -> voiceAssist()
-                4L -> Toast.makeText(this, "$id", Toast.LENGTH_SHORT).show()
+                4L -> animations()//Toast.makeText(this, "$id", Toast.LENGTH_SHORT).show()
             }
             //Handler(Looper.getMainLooper()).postDelayed({ parent.collapseGroup(groupPosition) }, 500)
         }
@@ -180,3 +178,4 @@ fun MainActivity.changeNavHeaderText(workoutName: String) {
     val navUsername = headerView.findViewById(R.id.exercise_name_navigation_view) as TextView
     navUsername.text = FormatUtils.stringUnderscoreToSpace(workoutName)
 }
+

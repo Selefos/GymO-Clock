@@ -4,13 +4,13 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -29,7 +29,6 @@ import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
 import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
-import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
@@ -57,8 +56,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this).isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
             workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
-
-
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -117,12 +114,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /* init  {
          if (BuildConfig.DEBUG) StrictMode.enableDefaults()
      }*/
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -232,8 +223,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun changeFragment(fragmentChoice: Class<*>) {
         //Toast.makeText(this, "Pressed", Toast.LENGTH_SHORT).show()
+        val lnLayout = findViewById<CoordinatorLayout>(R.id.app_bar_main)
+        lnLayout.removeAllViewsInLayout()
+
         var fragment: Fragment? = null
         var fragmentClass: Class<*>
+
         fragmentChoice.also { fragmentClass = it }
         try {
             fragment = fragmentClass.newInstance() as Fragment
@@ -241,10 +236,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             e.printStackTrace()
         }
         val fragmentManager: FragmentManager = supportFragmentManager
-        if (fragment != null) {
-            fragmentManager.beginTransaction().remove(WorkoutFragment()).commit()
+        val fragmentToRemove = supportFragmentManager.findFragmentById(R.id.nav_workout)
+        //supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+//        transaction.remove(fragmentToRemove!!)
+//        transaction.replace(R.id.app_bar_main, fragment!!)
+//
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+        if (fragmentToRemove != null) {
+            Log.i("MainActivity", "Fragment Removed")
+            fragmentManager.beginTransaction().remove(fragmentToRemove).commit()
         }
         fragmentManager.beginTransaction().replace(R.id.app_bar_main, fragment!!).commit()
+
     }
 
 }

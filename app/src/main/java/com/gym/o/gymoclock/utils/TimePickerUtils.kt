@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.NumberPicker
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.gym.o.gymoclock.R
+
 
 class TimePickerUtils(context: Context) {
 
@@ -68,12 +70,14 @@ class TimePickerUtils(context: Context) {
             verifyButton.background.setTintList(ContextCompat.getColorStateList(context!!, R.color.custom_text_color))
 
             isTimePicked(true)
+            (viewAddOrEditExercise.parent as ViewGroup).removeView(viewAddOrEditExercise)
             dialog.dismiss()
         }
 
         cancelTimePicker.setOnClickListener {
             Log.i("DismissTime", "Clicked")
             isTimePicked(false)
+            (viewAddOrEditExercise.parent as ViewGroup).removeView(viewAddOrEditExercise)
             dialog.dismiss()
         }
     }

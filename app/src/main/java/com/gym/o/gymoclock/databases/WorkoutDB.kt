@@ -5,7 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.gym.o.gymoclock.functionality.main_activity_pr.settings.ClocksChoice
+import com.gym.o.gymoclock.enums.ClockSelectedEnum
 
 class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
 
@@ -91,13 +91,14 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result != 1
     }
 
-    fun updateAllExercisesTimer(workoutName: String, clockChoice: String, time: Int){
+    fun updateAllExercisesTimer(workoutName: String, clockChoice: ClockSelectedEnum, time: Int){
         val db: SQLiteDatabase = this.writableDatabase
         val contentValues = ContentValues()
 
         when(clockChoice){
-            ClocksChoice.workClock -> contentValues.put(COL_WORK_TIME, time)
-            ClocksChoice.restClock -> contentValues.put(COL_REST_TIME, time)
+            ClockSelectedEnum.WorkClock -> contentValues.put(COL_WORK_TIME, time)
+            ClockSelectedEnum.RestClock -> contentValues.put(COL_REST_TIME, time)
+            ClockSelectedEnum.Idle      -> {}
         }
 
         db.update(workoutName, contentValues,null,null)

@@ -24,9 +24,12 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private val inflaterRecycler: LayoutInflater = LayoutInflater.from(context)
     val viewRecycler: View = inflaterRecycler.inflate(R.layout.add_view, null)
 
+
     val exerciseNameEdit: EditText = viewAddOrEditExercise.findViewById(R.id.exercise_name_edit)
     var workDigitalTime: TextView = viewAddOrEditExercise.findViewById(R.id.work_digital_time)
     val restDigitalTime: TextView = viewAddOrEditExercise.findViewById(R.id.rest_digital_time)
+
+
 
     val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
     val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
@@ -105,7 +108,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         calendarCircleChangeButton.setOnClickListener{
             isViewOnWorkoutDetails = !isViewOnWorkoutDetails
 
-
             scrollView.removeAllViews()
             Log.i("IsOnDetails", isViewOnWorkoutDetails.toString())
             Log.i("FLAG", isListForLoad.toString())
@@ -137,6 +139,20 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
     fun voiceAssistScope(setCanceledOnTouchOutside: Boolean){
         dialogBuilder.setView(viewVoiceAssistSettings)
+        scrollView.addView(tableLayout)
+        dialog = dialogBuilder.create()
+        dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
+        dialog.show()
+    }
+
+    private val viewAnimationsSettings: View = inflater.inflate(R.layout.dialog_animations, null)
+    var cancelButtonAnimationsSettings: ImageButton = viewAnimationsSettings.findViewById(R.id.animations_cancel_button)
+    var allAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.all_animations)
+    var recyclerViewAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.recycler_view_animations)
+    var clocksAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.clocks_animations)
+
+    fun animationsScope(setCanceledOnTouchOutside: Boolean){
+        dialogBuilder.setView(viewAnimationsSettings)
         scrollView.addView(tableLayout)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)

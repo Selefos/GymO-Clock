@@ -10,13 +10,13 @@ import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.enums.PrepareTimerState
 import com.gym.o.gymoclock.functionality.workout_pr.prepareCountdownInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
+import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import java.util.*
 
 
 private lateinit var prepareTimer: CountDownTimer
-var isPrepareCountdown = true
 
 fun WorkoutFragment.prepareForWorkoutTimer() {
     dialogBuilder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
@@ -83,3 +83,4 @@ fun WorkoutFragment.buttonsStateOnWorkout(stateEnabled: Boolean){
     else
         binding.addLayout.background.setTintList(null)
 }
+

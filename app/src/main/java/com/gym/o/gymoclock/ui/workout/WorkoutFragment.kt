@@ -3,16 +3,12 @@ package com.gym.o.gymoclock.ui.workout
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
-import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -41,7 +37,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPickerDisabled
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.*
-import kotlin.math.abs
 
 
 open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
@@ -130,23 +125,21 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 //        binding.roundsEdit.isClickable = false
 //
 
-        if(listAdapter.itemCount > 0) {
+        if (listAdapter.itemCount > 0) {
             val position = dataList[recyclerPosition]
 
             if (position.wTimerIsRunning) {
                 pauseTotalTimer()
                 listAdapter.pauseExerciseTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-                stopAnimation(ClockSelected.clockSelected)
             }
 
             if (position.rTimerIsRunning) {
                 pauseTotalTimer()
                 listAdapter.pauseRestTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-                stopAnimation(ClockSelected.clockSelected)
             }
         }
         recyclerPosition = 0
-
+        PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
         Log.i("WorkFrag", "onDestroyView")
 
 
@@ -239,65 +232,47 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialogBuilderUtils.cancelButtonRemoveExercise.setOnClickListener { dialogBuilderUtils.dialog.dismiss() }
     }
 
-    private var animRotationAngle = 0f
-    private var durationTime = 0L
-    override fun animateClock(clockSelected: ClockSelectedEnum, animDuration: Long) {
+
+    override fun startClockProgressBar(clockSelected: ClockSelectedEnum, animDuration: Long) {
         if (SharedPreferencesUtils.getClocksAnimationsState(requireContext())) {
             val holder: ExerciseRecyclerAdapter.ViewHolder? = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(recyclerPosition)
             println("HOLDER: $holder $recyclerPosition")
 
-            lateinit var view: ImageView
+            lateinit var view: ProgressBar
             when (clockSelected) {
-                ClockSelectedEnum.WorkClock -> view = holder!!.exerciseImg
-                ClockSelectedEnum.RestClock -> view = holder!!.restImg
+                ClockSelectedEnum.WorkClock -> view = holder!!.exerciseProgress
+                ClockSelectedEnum.RestClock -> view = holder!!.restProgress
                 ClockSelectedEnum.Idle      -> {}
             }
 
-            Log.i("DurationTime", "$durationTime")
-            if(durationTime == 0L)
-                durationTime = animDuration
+//            val progress = FormatUtils.convertLongToInt(durationTime) - FormatUtils.convertLongToInt(animDuration)
+//            Log.i("ProgressBar", "$progress")
+//            view.max = FormatUtils.convertLongToInt(durationTime)
+//            if(progress <= view.max)
+//                view.progress = FormatUtils.convertLongToInt(durationTime) - FormatUtils.convertLongToInt(animDuration)
 
-            Log.i("DurationTime", "$durationTime")
-            Log.i("AnimationDuration", "$animDuration")
-            //view.rotation = animRotationAngle
-            //animRotationAngle = abs(view.rotation)
-
-            val degrees = (durationTime - animDuration)/1000
-            if (view.rotation > 360f) {
-                Log.i("degrees", "$degrees")
-                view.rotation = view.rotation / degrees
-            }
-            animRotationAngle = view.rotation
-
-            view.animate().apply {
-                duration = animDuration
-                interpolator = LinearInterpolator()
-                rotationBy((360f - animRotationAngle) * (animDuration / 1000))
-            }.start()
-            //view.rotation = 0f
-            //view.animate().rotationBy((360f - animRotationAngle)*(animDuration/1000)).setDuration(animDuration).setInterpolator(LinearInterpolator()).start()
-
-            Log.i("AnimRotationAngle", "$animRotationAngle")
-            Log.i("RotationValue", "${abs((360f - animRotationAngle) * (animDuration / 1000))}")
+            view.setBigMax(10)
+            view.animateTo(10, 100, animDuration)
 
         }
     }
 
-    override fun stopAnimation(clockSelected: ClockSelectedEnum) {
+
+    override fun stopClockProgressBar(clockSelected: ClockSelectedEnum) {
         if (SharedPreferencesUtils.getClocksAnimationsState(requireContext())) {
             val holder: ExerciseRecyclerAdapter.ViewHolder? = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(recyclerPosition)
-            lateinit var view: ImageView
+            println("HOLDER: $holder $recyclerPosition")
+            lateinit var view: ProgressBar
             when (clockSelected) {
-                ClockSelectedEnum.WorkClock -> view = holder!!.exerciseImg
-                ClockSelectedEnum.RestClock -> view = holder!!.restImg
+                ClockSelectedEnum.WorkClock -> view = holder!!.exerciseProgress
+                ClockSelectedEnum.RestClock -> view = holder!!.restProgress
                 ClockSelectedEnum.Idle      -> {}
             }
 
-            view.animate().cancel()
-            view.clearAnimation()
-            animRotationAngle = view.rotation
+            view.pauseAnimation()
         }
     }
+
 
     private lateinit var db: SQLiteDatabase
     lateinit var workCountDown: CountDownTimer
@@ -306,11 +281,14 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     override fun loadRecyclerViews() {
         workoutDB = WorkoutDB(requireActivity().applicationContext)
         db = workoutDB.readableDatabase
-        recyclerView.recycledViewPool.clear()
-        recyclerView.layoutManager = WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+        resetProgressBar()
+
         //prevents recycler views from stacking
         dataList.clear()
-        //recyclerView.layoutManager = WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        recyclerView.recycledViewPool.clear()
+        recyclerView.layoutManager = WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
         val cursor: Cursor = workoutDB.loadRecyclerElements(workoutTableName, db)
 
         if (cursor.moveToFirst()) {
@@ -349,25 +327,25 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                         rTimerIsRunning = false, rTimerIsPaused = false
                     )
                 )
-
             } while (cursor.moveToNext())
         }
         cursor.close()
         db.close()
-        listAdapter.notifyDataSetChanged()
+
+        //listAdapter.notifyDataSetChanged()
 
         if (listAdapter.itemCount > 0) {
             lastRestTimeCheck()
             roundsPicker()
         }
-        animRotationAngle = 0f
+
     }
+
 
 
     override fun roundsCount() {
         rounds--
         recyclerPosition = 0
-        val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
         binding.roundsPicker.value = rounds
         Log.d("MAIN", "Rounds Total: $rounds, isStartWorkout $isTimerRunning -- ${DateTimeUtils.getCurrentTime()}")
         Log.d("MAIN", "iterator = $recyclerPosition rounds = $rounds -- ${DateTimeUtils.getCurrentTime()}")
@@ -381,9 +359,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             return
         }
 
+        val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
         if (rounds == 1) {
             lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock("0")
-
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         }
 
@@ -409,7 +387,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             prepareCountdownInMillis = SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext())
 
         dataList = ArrayList()
-        recyclerView = binding.recyclerView//findViewById(R.id.recycler_view)
+        recyclerView = binding.recyclerView
         listAdapter = ExerciseRecyclerAdapter(requireContext(), this, dataList)
 
         recyclerView.apply {
@@ -418,7 +396,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             addItemDecoration(dividerItemDecoration)
         }
         binding.swipeRefreshRecycler.setOnRefreshListener {
-            if (!isTimerRunning) {
+            if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
                 getLastPositionForAddViewAnimation = -1
                 getLastPositionForRemoveViewAnimation = -1
                 loadRecyclerViews()
@@ -483,8 +461,10 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             pauseTotalTimer()
             binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
+
             if (SharedPreferencesUtils.getClocksAnimationsState(requireContext()))
-                stopAnimation(ClockSelected.clockSelected)
+                stopClockProgressBar(ClockSelected.clockSelected)
+
             return@setOnClickListener
         }
     }
@@ -589,9 +569,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             listAdapter.notifyDataSetChanged()
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         } else {
-            lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock(
-                workoutDB.lastRestTime(workoutTableName).toString()
-            )
+            lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock(workoutDB.lastRestTime(workoutTableName).toString())
             listAdapter.notifyDataSetChanged()
         }
 
@@ -602,7 +580,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         super.onSaveInstanceState(outState)
 
         outState.putLong("prepareCountdownInMillis", prepareCountdownInMillis)
-        outState.putBoolean("isPrepareCountdown", isPrepareCountdown)
+        //outState.putBoolean("isPrepareCountdown", isPrepareCountdown)
 
         outState.putBoolean("isStartWorkout", isTimerRunning)
         outState.putInt("iterator", recyclerPosition)
@@ -620,7 +598,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             prepareCountdownInMillis = savedInstanceState.getLong(
                 "prepareCountdownInMillis",
                 0)
-            isPrepareCountdown = savedInstanceState.getBoolean("isPrepareCountdown", true)
+            //isPrepareCountdown = savedInstanceState.getBoolean("isPrepareCountdown", true)
 
             isTimerRunning = savedInstanceState.getBoolean("isStartWorkout")
             recyclerPosition = savedInstanceState.getInt("iterator")
@@ -659,6 +637,18 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 //            workTimeInMillis=0L
 //            restTimeInMillis=0L
         }
+    }
+
+    private fun resetProgressBar() {
+        var holder: ExerciseRecyclerAdapter.ViewHolder?
+
+        for (i: Int in 0 until listAdapter.itemCount) {
+            Log.i("ResetProgress", "$i")
+            holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
+            holder?.exerciseProgress?.progress = 0
+            holder?.restProgress?.progress = 0
+        }
+
     }
 
 }

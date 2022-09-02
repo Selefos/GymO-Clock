@@ -1,16 +1,12 @@
 package com.gym.o.gymoclock.functionality.common.workout_db_calls
 
 import android.os.CountDownTimer
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.functionality.main_activity_pr.*
+import com.gym.o.gymoclock.enums.ExerciseActionEnum
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.restTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.workTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
@@ -18,7 +14,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.FormatUtils
-import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.WidgetsWarningsUtils
 
 
@@ -46,7 +41,7 @@ fun WorkoutFragment.updateExerciseValues(dataPosition: Int) {
             listAdapter.notifyItemChanged(dataPosition, position.restClockValue)
         }
 
-        saveExerciseValues("update", oldExerciseName, position.exerciseNameValue, position.exerciseClockValue, position.restClockValue)
+        saveExerciseValues(ExerciseActionEnum.Update, oldExerciseName, position.exerciseNameValue, position.exerciseClockValue, position.restClockValue)
 
         binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
 
@@ -59,9 +54,9 @@ fun WorkoutFragment.updateExerciseValues(dataPosition: Int) {
     }
 }
 
-fun WorkoutFragment.saveExerciseValues(action: String, oldExerciseName: String, exerciseName: String, exerciseClock: TextView, restClock: TextView) {
+fun WorkoutFragment.saveExerciseValues(action: ExerciseActionEnum, oldExerciseName: String, exerciseName: String, exerciseClock: TextView, restClock: TextView) {
 
-    if (action == "add") {
+    if (action == ExerciseActionEnum.Add) {
         val insertExerciseData = workoutDB.insertExerciseDetails(
             workoutTableName, exerciseName,
             FormatUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
@@ -72,7 +67,7 @@ fun WorkoutFragment.saveExerciseValues(action: String, oldExerciseName: String, 
             Toast.makeText(context, "Exercise Inserted", Toast.LENGTH_SHORT).show()
     }
 
-    if (action == "update") {
+    if (action == ExerciseActionEnum.Update) {
         val updateExerciseData = workoutDB.updateSelectedExerciseDetails(
             workoutTableName, oldExerciseName, exerciseName,
             FormatUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
@@ -128,7 +123,7 @@ fun WorkoutFragment.addEditExercise() {
                 rTimerIsRunning = false, rTimerIsPaused = false
             )
         )
-        saveExerciseValues("add", "", exerciseName, exerciseClock, restClock)
+        saveExerciseValues(ExerciseActionEnum.Add, "", exerciseName, exerciseClock, restClock)
 
         binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         loadRecyclerViews()

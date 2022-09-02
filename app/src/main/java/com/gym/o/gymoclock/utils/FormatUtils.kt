@@ -19,6 +19,7 @@ class FormatUtils {
             } else convertedTime
         }
 
+
         fun convertTimeToDigitalClockMinSecFormat(time: String): String {
             val units = time.split(":")
             val min = Integer.parseInt(units[0])
@@ -27,15 +28,18 @@ class FormatUtils {
             return "$min min, $secs secs"
         }
 
+
         fun convertTimeToDigitalClockMinutes(time: String): String {
             minutes = time.toLong()
             return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
         }
 
+
         fun convertTimeToDigitalClockSeconds(time: String): String {
             seconds = time.toLong()
             return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
         }
+
 
         fun convertTimeToMillis(time: String): Long {
             val units = time.split(":")
@@ -44,6 +48,7 @@ class FormatUtils {
             return (60 * min + secs).toLong() * 1000
         }
 
+
         fun convertTimeToSeconds(time: String): Int {
             val units = time.split(":")
             val min = Integer.parseInt(units[0])
@@ -51,13 +56,16 @@ class FormatUtils {
             return 60 * min + secs
         }
 
+
         fun stringSpaceToUnderscore(string: String): String {
             return string.replace(" ", "_")
         }
 
+
         fun stringUnderscoreToSpace(string: String): String {
             return string.replace("_", " ")
         }
+
 
         var strSeparator = ","
         fun convertArrayToString(array: Array<String>): String {
@@ -71,6 +79,7 @@ class FormatUtils {
             }
             return str
         }
+
 
         fun convertStringToArray(str: String): Array<String> {
             return str.split(strSeparator).toTypedArray()

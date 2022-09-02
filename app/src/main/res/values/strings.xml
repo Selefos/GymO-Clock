@@ -22,6 +22,7 @@
     <string name="exercise_time">Exercise Time</string>
     <string name="rest_time">Rest Time</string>
     <string name="play_pause_button">PlayPause Button</string>
+    <string name="exercise_settings_button">Exercise Settings</string>
     <string name="remove_view">Remove View</string>
     <string name="edit_view">Edit View</string>
     <string name="rounds_text">ROUNDS</string>

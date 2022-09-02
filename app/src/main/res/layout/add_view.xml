@@ -27,8 +27,8 @@
     <ProgressBar
         android:id="@+id/progress_bar_work"
         style="@style/CircularDeterminateProgressBar"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/edit_view"
         app:layout_constraintHorizontal_bias="0.022"
@@ -48,11 +48,24 @@
         app:layout_constraintStart_toStartOf="@+id/progress_bar_work"
         app:layout_constraintTop_toTopOf="@+id/progress_bar_work" />
 
+
+    <ImageButton
+        android:id="@+id/exercise_settings_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_exercise_settings_button_borders"
+        android:contentDescription="TODO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/progress_bar_rest"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toEndOf="@+id/progress_bar_work"
+        app:layout_constraintTop_toBottomOf="@+id/exercise_name" />
+
     <ProgressBar
         android:id="@+id/progress_bar_rest"
         style="@style/CircularDeterminateProgressBar"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.98"
@@ -74,28 +87,31 @@
 
     <ImageButton
         android:id="@+id/remove_view"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/ic_remove_view"
         android:backgroundTint="@color/custom_text_color"
         android:contentDescription="@string/remove_view"
-        app:layout_constraintStart_toEndOf="@+id/constraint_layout"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/exercise_settings_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/progress_bar_work"
+        app:layout_constraintTop_toBottomOf="@+id/exercise_name" />
 
     <ImageButton
         android:id="@+id/edit_view"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/ic_edit_view"
         android:backgroundTint="@color/custom_text_color"
         android:contentDescription="@string/edit_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/constraint_layout"
-        app:layout_constraintTop_toBottomOf="@+id/remove_view" />
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/progress_bar_rest"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/exercise_settings_button"
+        app:layout_constraintTop_toBottomOf="@+id/exercise_name" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.8dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

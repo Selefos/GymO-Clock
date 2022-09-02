@@ -4,7 +4,6 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.core.view.GravityCompat
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.enums.ClockSelected
 import com.gym.o.gymoclock.enums.ClockSelectedEnum
@@ -20,9 +19,8 @@ var workTimeInMillis: Long = 0//by Delegates.notNull<Long>()
 var restTimeInMillis: Long = 0//by Delegates.notNull<Long>()
 var startTime: String = ""
 var endTime: Long = 0 // by Delegates.notNull<Long>()
-
-var isWorkAnim = true
-var isRestAnim = false
+var isExerciseAnimating = true
+var isRestAnimating = true
 
 fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
@@ -32,21 +30,11 @@ fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
     if (startTime.isEmpty())
         startTime = DateTimeUtils.getCurrentTime()
 
-    Log.i("Start", "-----START TIME HERE $startTime")
-    Log.w("CountDown", "Start Of Timer {$recyclerPosition} -- ${DateTimeUtils.getCurrentTime()}")
-
     ClockSelected.clockSelected = ClockSelectedEnum.WorkClock
-    Log.i("ClockSelected", "$ClockSelected.clockSelected")
-    //mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, workTimeInMillis)
 
     position.wCountDownTimer = object : CountDownTimer(workTimeInMillis, 1000) {
         override fun onTick(millsUntilFinish: Long) {
             workTimeInMillis = millsUntilFinish
-
-            if(isWorkAnim)
-                mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, workTimeInMillis)
-            isWorkAnim = false
-
             updateExerciseCountUI(positionData)
         }
 
@@ -54,7 +42,7 @@ fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
             Log.w("CountDown", "End Of Start Timer {$recyclerPosition} -- ${DateTimeUtils.getCurrentTime()}")
             position.wTimerIsRunning = false
             position.wTimerIsPaused = true
-            isRestAnim = true
+            isRestAnimating = true
             startRestTimer(positionData)
         }
     }.start()
@@ -77,6 +65,7 @@ fun ExerciseRecyclerAdapter.updateExerciseCountUI(positionData: Int) {
     else if (workTimeInMillis / 1000 == 0L && recyclerPosition == itemCount - 1 && rounds == 1)
         TextToSpeechUtils.getInstance(context).speak(resources.getString(R.string.workout_completed))
 
+    exerciseClockAnimate()
     position.exerciseClockValue.text = workCount
     notifyItemChanged(positionData, position.exerciseClockValue)
 }
@@ -98,26 +87,19 @@ fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
     restTimeInMillis = FormatUtils.convertTimeToMillis(position.restClockValue.text.toString())
     endTime = System.currentTimeMillis() + restTimeInMillis
 
-    Log.i("CountDown", "Start Of Rest Timer {$recyclerPosition} -- ${DateTimeUtils.getCurrentTime()}")
-
     ClockSelected.clockSelected = ClockSelectedEnum.RestClock
-    //mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, restTimeInMillis)
 
     position.rCountDownTimer = object : CountDownTimer(restTimeInMillis, 1000) {
 
         override fun onTick(millsUntilFinish: Long) {
             restTimeInMillis = millsUntilFinish
-            if(isRestAnim)
-                mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, restTimeInMillis)
-            isRestAnim = false
             updateRestCountUI(positionData)
         }
 
         override fun onFinish() {
             position.rTimerIsRunning = false
             position.rTimerIsPaused = true
-            isWorkAnim = true
-            Log.e("CountDown", "Rest Timer onFinish() {$recyclerPosition} -- ${DateTimeUtils.getCurrentTime()}")
+            isExerciseAnimating = true
 
             if (recyclerPosition == itemCount - 1 && totalTimeFromDB(rounds) > 0) {
 
@@ -150,8 +132,6 @@ fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
 
             mRecyclerViewInterface.scrollToPosition()
 
-            Log.d("CountDown", "iterator Scroll Position == $recyclerPosition -- ${DateTimeUtils.getCurrentTime()}")
-            Log.i("CountDown", "End Of Rest Timer $recyclerPosition -- ${DateTimeUtils.getCurrentTime()}")
         }
     }.start()
     position.rTimerIsRunning = true
@@ -169,6 +149,7 @@ fun ExerciseRecyclerAdapter.updateRestCountUI(positionData: Int) {
     if (restTimeInMillis / 1000 == 0L)
         TextToSpeechUtils.getInstance(context).speak(resources.getString(R.string.workout_start))
 
+    restClockAnimate()
     position.restClockValue.text = restCount
     notifyItemChanged(positionData, position.restClockValue)
 }
@@ -180,4 +161,18 @@ fun ExerciseRecyclerAdapter.pauseRestTimer(positionData: Int, speakText: String)
     position.rTimerIsRunning = false
     position.rTimerIsPaused = true
     position.rCountDownTimer.cancel()
+}
+
+fun ExerciseRecyclerAdapter.exerciseClockAnimate(){
+    if (isExerciseAnimating)
+        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, workTimeInMillis)
+
+    isExerciseAnimating = false
+}
+
+fun ExerciseRecyclerAdapter.restClockAnimate(){
+    if (isRestAnimating)
+        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, restTimeInMillis)
+
+    isRestAnimating = false
 }

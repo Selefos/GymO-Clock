@@ -639,7 +639,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
     }
 
-    fun resetProgressBar() {
+    private fun resetProgressBar() {
         var holder: ExerciseRecyclerAdapter.ViewHolder?
 
         for (i: Int in 0 until listAdapter.itemCount) {

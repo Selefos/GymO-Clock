@@ -10,17 +10,13 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
-import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.enums.ClockSelected
-import com.gym.o.gymoclock.enums.ClockSelectedEnum
-import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.workTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
-import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
@@ -35,16 +31,15 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
     private lateinit var db: SQLiteDatabase
     lateinit var resources: Resources
     private var holderList: HashMap<Int, ViewHolder> = HashMap()
-    lateinit var viewHolder : ViewHolder
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         var exerciseName: TextView = itemView.findViewById(R.id.exercise_name)
 
-        var exerciseImg: ImageView = itemView.findViewById(R.id.exercise_img)
+        var exerciseProgress: ProgressBar = itemView.findViewById(R.id.progress_bar_work)
         var exerciseClock: TextView = itemView.findViewById(R.id.countdown_work)
 
-        var restImg: ImageView = itemView.findViewById(R.id.rest_img)
+        var restProgress: ProgressBar = itemView.findViewById(R.id.progress_bar_rest)
         var restClock: TextView = itemView.findViewById(R.id.countdown_rest)
 
         val removeView: ImageButton = itemView.findViewById(R.id.remove_view)
@@ -97,9 +92,9 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         holder.mrTimerIsPaused = newList.rTimerIsPaused
 
         //holder.setIsRecyclable(false)
-        //if(!holderList.containsKey(position))
+        //if(!holderList.containsKey(holder.adapterPosition))
         holderList[holder.adapterPosition] = holder
-        viewHolder = holder
+
 
         if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
             setOnAddViewAnimation(holder.itemView, position)

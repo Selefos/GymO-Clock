@@ -342,7 +342,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
 
-
     override fun roundsCount() {
         rounds--
         recyclerPosition = 0
@@ -355,6 +354,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (rounds == 0) {
             binding.roundsPicker.textColor = Color.RED
             binding.roundsPicker.value = 1
+            rounds = 1
             onEndOfWorkout()
             return
         }
@@ -373,6 +373,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     override fun scrollToPosition() {
         recyclerView.smoothScrollToPosition(recyclerPosition)
     }
+
 
     lateinit var dialogBuilder: AlertDialog.Builder
     lateinit var dialog: AlertDialog
@@ -423,6 +424,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         }
 
         binding.playPauseButton.setOnClickListener {
+
             if (rounds == 0) {
                 recyclerPosition = 0
                 WidgetsWarningsUtils.pickerTextWarning(binding.roundsPicker, rounds)
@@ -435,9 +437,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 return@setOnClickListener
             }
 
+            if(binding.roundsPicker.textColor == Color.RED) {
+                binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+                binding.roundsPicker.textColor = Color.WHITE
+            }
+
             isTimerRunning = !isTimerRunning
             Log.d("isStartWorkout", (isTimerRunning).toString())
-
             if (isTimerRunning) {
 
                 if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
@@ -638,6 +644,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 //            restTimeInMillis=0L
         }
     }
+
 
     private fun resetProgressBar() {
         var holder: ExerciseRecyclerAdapter.ViewHolder?

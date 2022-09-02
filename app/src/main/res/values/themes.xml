@@ -52,11 +52,10 @@
         <item name="colorControlNormal">@color/custom_transparent</item>
     </style>
 
-
-        <style name="CircularDeterminateProgressBar">
-            <item name="android:indeterminateOnly">false</item>
-            <item name="android:progressDrawable">@drawable/ic_progress_circle</item>
-        </style>
+    <style name="CircularDeterminateProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/ic_progress_circle</item>
+    </style>
 
     <style name="Theme.GymOClock.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

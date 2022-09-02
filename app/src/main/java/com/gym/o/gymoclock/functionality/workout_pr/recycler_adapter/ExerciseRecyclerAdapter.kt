@@ -4,23 +4,23 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
-import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.animations.*
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
-import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
 
@@ -33,6 +33,8 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
     private var holderList: HashMap<Int, ViewHolder> = HashMap()
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        private var exerciseSettingsButton: ImageButton = itemView.findViewById(R.id.exercise_settings_button)
 
         var exerciseName: TextView = itemView.findViewById(R.id.exercise_name)
 
@@ -49,24 +51,45 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var mrTimerIsRunning by Delegates.notNull<Boolean>()
         var mrTimerIsPaused by Delegates.notNull<Boolean>()
 
-        private var mView = WeakReference(view)
 
         init {
             resources = itemView.context.resources
-            //val playPause: ImageButton = itemView.findViewById(R.id.play_pause)
-//            playPause.setOnClickListener {
-//
-//            }
-
-//            mView.get()?.let{
-//
-//                editView = it.findViewById(R.id.edit_view)
-//
-//            }
 
             val editView: ImageButton = itemView.findViewById(R.id.edit_view)
             editView.setOnClickListener { mRecyclerViewInterface.editExercise(adapterPosition) }
 
+            var isSettingsVisible = false
+            exerciseSettingsButton.setOnClickListener{
+                isSettingsVisible = !isSettingsVisible
+
+
+                exerciseSettingsAnimation(exerciseSettingsButton)
+                if(isSettingsVisible) {
+
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
+                        }, 700)
+
+                    editView.isVisible = true
+                    removeView.isVisible = true
+                    scalePosButtonAnimation(editView)
+                    scalePosButtonAnimation(removeView)
+                }
+                else{
+
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
+                        }, 700)
+
+                    scaleNegButtonAnimation(editView)
+                    scaleNegButtonAnimation(removeView)
+                    editView.isVisible = false
+                    removeView.isVisible = false
+                }
+
+            }
         }
 
     }
@@ -94,7 +117,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         //holder.setIsRecyclable(false)
         //if(!holderList.containsKey(holder.adapterPosition))
         holderList[holder.adapterPosition] = holder
-
 
         if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
             setOnAddViewAnimation(holder.itemView, position)
@@ -132,44 +154,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         db.close()
 
         return totalTime * rounds
-    }
-
-
-    private fun setOnAddViewAnimation(viewToAnimate: View, position: Int) {
-        // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > getLastPositionForAddViewAnimation) {
-            val anim = ScaleAnimation(
-                0.0f, 1.0f, 0.0f, 1.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f
-            )
-            anim.duration = 1000
-            viewToAnimate.startAnimation(anim)
-            getLastPositionForAddViewAnimation = position
-        }
-    }
-
-
-    fun setOnRemoveViewAnimation(viewToAnimate: View, position: Int) {
-        // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > getLastPositionForRemoveViewAnimation) {
-            val anim = ScaleAnimation(
-                1.0f, 0.0f, 1.0f, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f
-            )
-            anim.duration = 1000
-            viewToAnimate.startAnimation(anim)
-            getLastPositionForRemoveViewAnimation = position
-
-            anim.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {}
-
-                override fun onAnimationRepeat(animation: Animation) {}
-
-                override fun onAnimationEnd(animation: Animation) {}
-            })
-        }
     }
 
 

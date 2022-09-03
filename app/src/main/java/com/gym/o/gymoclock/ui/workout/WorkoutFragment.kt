@@ -205,7 +205,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             dataList.removeAt(dataPosition)
             listAdapter.notifyItemRemoved(dataPosition)
-            
+
             getLastPositionForAddViewAnimation = -1
             getLastPositionForRemoveViewAnimation = -1
 

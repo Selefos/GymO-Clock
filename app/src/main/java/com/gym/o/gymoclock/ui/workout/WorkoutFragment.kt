@@ -390,6 +390,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
                 getLastPositionForAddViewAnimation = -1
                 getLastPositionForRemoveViewAnimation = -1
+                removeAllRecyclerViews()
                 loadRecyclerViews()
             }
             binding.swipeRefreshRecycler.isRefreshing = false
@@ -644,6 +645,16 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             holder?.restProgress?.progress = 0
         }
 
+    }
+
+
+    private fun removeAllRecyclerViews(){
+        if(listAdapter.itemCount > 0) {
+            for (i: Int in 0 until listAdapter.itemCount)
+                dataList.removeAt(0)
+
+            listAdapter.notifyDataSetChanged()
+        }
     }
 
 }

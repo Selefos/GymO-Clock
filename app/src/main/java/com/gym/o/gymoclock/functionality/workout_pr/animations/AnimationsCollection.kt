@@ -89,9 +89,10 @@ fun exerciseSettingsAnimation(viewToAnimate: View){
     Handler(Looper.getMainLooper()).postDelayed(
         {
             viewToAnimate.animate().apply {
-                duration = 1500
+                duration = 1400
                 scaleX(1f)
                 scaleY(1f)
             }.start()
         }, 700)
+
 }

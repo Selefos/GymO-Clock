@@ -62,29 +62,39 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
             exerciseSettingsButton.setOnClickListener{
                 isSettingsVisible = !isSettingsVisible
 
+                if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
+                    exerciseSettingsAnimation(exerciseSettingsButton)
 
-                exerciseSettingsAnimation(exerciseSettingsButton)
                 if(isSettingsVisible) {
+                    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+                        Handler(Looper.getMainLooper()).postDelayed(
+                            {
+                                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
+                            }, 700)
+                        scalePosButtonAnimation(editView)
+                        scalePosButtonAnimation(removeView)
 
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
-                        }, 700)
+                    }
+                    else
+                        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
 
                     editView.isVisible = true
                     removeView.isVisible = true
-                    scalePosButtonAnimation(editView)
-                    scalePosButtonAnimation(removeView)
                 }
                 else{
+                    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+                        Handler(Looper.getMainLooper()).postDelayed(
+                            {
+                                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
+                            }, 700)
 
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
-                        }, 700)
+                        scaleNegButtonAnimation(editView)
+                        scaleNegButtonAnimation(removeView)
 
-                    scaleNegButtonAnimation(editView)
-                    scaleNegButtonAnimation(removeView)
+                    }
+                    else
+                        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
+
                     editView.isVisible = false
                     removeView.isVisible = false
                 }

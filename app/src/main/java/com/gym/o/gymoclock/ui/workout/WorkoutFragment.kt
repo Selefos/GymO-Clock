@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +34,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnRemoveViewAn
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
-import com.gym.o.gymoclock.functionality.workout_pr.recycler_items_swipe.setItemTouchHelper
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPickerDisabled
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
@@ -205,13 +202,10 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext()))
                 listAdapter.setOnRemoveViewAnimation(itemView, dataPosition)
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    dataList.removeAt(dataPosition)
-                    //listAdapter.notifyItemRemoved(dataPosition)
-                    //listAdapter.notifyDataSetChanged()
-                }, 500)
 
+            dataList.removeAt(dataPosition)
+            listAdapter.notifyItemRemoved(dataPosition)
+            
             getLastPositionForAddViewAnimation = -1
             getLastPositionForRemoveViewAnimation = -1
 
@@ -219,17 +213,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     "Animate Add Position = $getLastPositionForAddViewAnimation")
 
             binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    loadRecyclerViews()
-                    //Log.i("RMV Exercise", "Item count: ${listAdapter.itemCount}")
-                    if (listAdapter.itemCount == 0) {
-                        Log.i("RMV Exercise", "Item count: ${listAdapter.itemCount}")
-                        roundsPickerDisabled()
-                    }
-                }, 500)
-
-
+            if (listAdapter.itemCount == 0)
+                roundsPickerDisabled()
 
             dialogBuilderUtils.dialog.dismiss()
         }
@@ -399,6 +384,15 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             dividerItemDecoration.setDrawable(getDrawable(context, R.drawable.divider_recycler_view)!!)
             addItemDecoration(dividerItemDecoration)
+        }
+
+        binding.swipeRefreshRecycler.setOnRefreshListener {
+            if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
+                getLastPositionForAddViewAnimation = -1
+                getLastPositionForRemoveViewAnimation = -1
+                loadRecyclerViews()
+            }
+            binding.swipeRefreshRecycler.isRefreshing = false
         }
 
         workoutDB = WorkoutDB(requireActivity().applicationContext)

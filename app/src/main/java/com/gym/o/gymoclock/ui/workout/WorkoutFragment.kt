@@ -272,6 +272,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         db = workoutDB.readableDatabase
 
         resetProgressBar()
+        removeAllRecyclerViews()
 
         //prevents recycler views from stacking
         dataList.clear()
@@ -390,7 +391,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
                 getLastPositionForAddViewAnimation = -1
                 getLastPositionForRemoveViewAnimation = -1
-                removeAllRecyclerViews()
                 loadRecyclerViews()
             }
             binding.swipeRefreshRecycler.isRefreshing = false
@@ -436,6 +436,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (isTimerRunning) {
 
                 if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
+                    exerciseSettingsButtonState(false)
                     prepareForWorkoutTimer()
                     return@setOnClickListener
                 }
@@ -471,6 +472,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         isTimerRunning = false
         PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
         buttonsStateOnWorkout(true)
+        exerciseSettingsButtonState(true)
 
         calendarDB = CalendarDB(context)
         Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
@@ -639,7 +641,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         var holder: ExerciseRecyclerAdapter.ViewHolder?
 
         for (i: Int in 0 until listAdapter.itemCount) {
-            Log.i("ResetProgress", "$i")
             holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
             holder?.exerciseProgress?.progress = 0
             holder?.restProgress?.progress = 0
@@ -648,13 +649,22 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
 
-    private fun removeAllRecyclerViews(){
-        if(listAdapter.itemCount > 0) {
+    private fun removeAllRecyclerViews() {
+
+        if (listAdapter.itemCount > 0) {
             for (i: Int in 0 until listAdapter.itemCount)
                 dataList.removeAt(0)
 
-            listAdapter.notifyDataSetChanged()
+            listAdapter.notifyItemRangeRemoved(0, listAdapter.itemCount)
         }
+
     }
 
+    private fun exerciseSettingsButtonState(stateEnabled: Boolean){
+        var holder: ExerciseRecyclerAdapter.ViewHolder?
+        for (i: Int in 0 until listAdapter.itemCount) {
+            holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
+            holder?.exerciseSettingsButton?.isEnabled = stateEnabled
+        }
+    }
 }

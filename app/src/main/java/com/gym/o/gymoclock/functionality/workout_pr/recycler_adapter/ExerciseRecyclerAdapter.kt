@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
+import com.gym.o.gymoclock.enums.PrepareTimerState
+import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.functionality.workout_pr.animations.*
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
@@ -34,7 +37,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private var exerciseSettingsButton: ImageButton = itemView.findViewById(R.id.exercise_settings_button)
+        var exerciseSettingsButton: ImageButton = itemView.findViewById(R.id.exercise_settings_button)
 
         var exerciseName: TextView = itemView.findViewById(R.id.exercise_name)
 

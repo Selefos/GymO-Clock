@@ -27,7 +27,7 @@ import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
 import com.gym.o.gymoclock.functionality.main_activity_pr.populateList
 import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
-import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
+import com.gym.o.gymoclock.functionality.main_activity_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils

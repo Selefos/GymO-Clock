@@ -127,7 +127,7 @@ fun roundPickerColor(numberPicker: NumberPicker, color: Int) {
     }
 }
 
-fun WorkoutFragment.roundsPickerDisabled(){
+fun WorkoutFragment.roundsPickerDisabled() {
     binding.roundsPicker.value = 1
     binding.roundsPicker.isEnabled = false
 }

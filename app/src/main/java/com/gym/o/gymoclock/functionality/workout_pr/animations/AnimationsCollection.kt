@@ -1,13 +1,24 @@
 package com.gym.o.gymoclock.functionality.workout_pr.animations
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
+import android.widget.ImageButton
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
+import com.gym.o.gymoclock.R
+import com.gym.o.gymoclock.enums.ClockSelected
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.isExerciseAnimating
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.isRestAnimating
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.restTimeInMillis
+import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.workTimeInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 
 fun setOnAddViewAnimation(viewToAnimate: View, position: Int) {
     // If the bound view wasn't previously displayed on screen, it's animated
@@ -23,7 +34,7 @@ fun setOnAddViewAnimation(viewToAnimate: View, position: Int) {
     }
 }
 
-fun ExerciseRecyclerAdapter.setOnRemoveViewAnimation(viewToAnimate: View, position: Int) {
+fun setOnRemoveViewAnimation(viewToAnimate: View, position: Int) {
     // If the bound view wasn't previously displayed on screen, it's animated
     if (position > getLastPositionForRemoveViewAnimation) {
         val anim = ScaleAnimation(
@@ -45,7 +56,7 @@ fun ExerciseRecyclerAdapter.setOnRemoveViewAnimation(viewToAnimate: View, positi
     }
 }
 
-fun scalePosButtonAnimation(viewToAnimate: View){
+fun scalePosButtonAnimation(viewToAnimate: View) {
     val anim = ScaleAnimation(
         0.0f, 1.0f, 0.0f, 1.0f,
         Animation.RELATIVE_TO_SELF, 0.5f,
@@ -55,7 +66,7 @@ fun scalePosButtonAnimation(viewToAnimate: View){
     viewToAnimate.startAnimation(anim)
 }
 
-fun scaleNegButtonAnimation(viewToAnimate: View){
+fun scaleNegButtonAnimation(viewToAnimate: View) {
     val anim = ScaleAnimation(
         1.0f, 0.0f, 1.0f, 0.0f,
         Animation.RELATIVE_TO_SELF, 0.5f,
@@ -65,7 +76,7 @@ fun scaleNegButtonAnimation(viewToAnimate: View){
     viewToAnimate.startAnimation(anim)
 }
 
-fun exerciseSettingsAnimation(viewToAnimate: View){
+fun exerciseSettingsButtonAnimation(viewToAnimate: View) {
     //rotate
     Handler(Looper.getMainLooper()).postDelayed(
         {
@@ -95,4 +106,65 @@ fun exerciseSettingsAnimation(viewToAnimate: View){
             }.start()
         }, 700)
 
+}
+
+fun ExerciseRecyclerAdapter.exerciseClockAnimate() {
+    if (isExerciseAnimating)
+        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, workTimeInMillis)
+
+    isExerciseAnimating = false
+}
+
+fun ExerciseRecyclerAdapter.restClockAnimate() {
+    if (isRestAnimating)
+        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, restTimeInMillis)
+
+    isRestAnimating = false
+}
+
+fun exerciseSettingsButtonAnimationControl(context: Context, isSettingsVisible: Boolean, exerciseSettingsButton: ImageButton,
+    editView: ImageButton, removeView: ImageButton) {
+
+    if (isSettingsVisible)
+        unfoldSettingsAnimation(context, exerciseSettingsButton, editView, removeView)
+    else
+        foldSettingsAnimation(context, exerciseSettingsButton, editView, removeView)
+}
+
+fun unfoldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
+
+    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+        exerciseSettingsButtonAnimation(exerciseSettingsButton)
+
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
+            }, 700)
+        scalePosButtonAnimation(editView)
+        scalePosButtonAnimation(removeView)
+
+    } else
+        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
+
+    editView.isVisible = true
+    removeView.isVisible = true
+}
+
+fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
+    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+        exerciseSettingsButtonAnimation(exerciseSettingsButton)
+
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
+            }, 700)
+
+        scaleNegButtonAnimation(editView)
+        scaleNegButtonAnimation(removeView)
+
+    } else
+        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
+
+    editView.isVisible = false
+    removeView.isVisible = false
 }

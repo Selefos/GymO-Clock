@@ -2,12 +2,10 @@ package com.gym.o.gymoclock.functionality.main_activity_pr
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ExpandableListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.GravityCompat
@@ -16,13 +14,12 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addWorkoutTable
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.editWorkoutName
+import com.gym.o.gymoclock.functionality.main_activity_pr.navigation_list_adapter.CustomExpandableListAdapter
+import com.gym.o.gymoclock.functionality.main_activity_pr.navigation_list_adapter.MenuModel
 import com.gym.o.gymoclock.functionality.main_activity_pr.settings.*
-import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.CustomExpandableListAdapter
-import com.gym.o.gymoclock.functionality.workout_pr.navigation_list_adapter.MenuModel
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
-import com.gym.o.gymoclock.utils.DialogBuilderUtils
 import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 

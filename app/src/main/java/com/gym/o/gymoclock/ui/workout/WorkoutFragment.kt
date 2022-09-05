@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,7 @@ import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
+import com.gym.o.gymoclock.functionality.workout_pr.animations.foldSettingsAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
@@ -157,7 +160,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     override fun editExercise(dataPosition: Int) {
         val position = dataList[dataPosition]
         dialogBuilderUtils = DialogBuilderUtils(requireContext())
-        dialogBuilderUtils.addOrEditExercise(false)
+        dialogBuilderUtils.addOrEditExerciseDialog(false)
         timePickerUtils = TimePickerUtils(requireContext())
 
         dialogBuilderUtils.workDigitalTime.text = position.exerciseClockValue.text
@@ -191,7 +194,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialogBuilderUtils = DialogBuilderUtils(requireContext())
         val position = dataList[dataPosition]
 
-        dialogBuilderUtils.removeExercise(false)
+        dialogBuilderUtils.removeExerciseDialog(false)
 
         Log.e("WorkoutFrag", "PositionData: $dataPosition")
 
@@ -201,11 +204,17 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 Toast.makeText(context, "Exercise Deleted", Toast.LENGTH_SHORT).show()
 
             if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext()))
-                listAdapter.setOnRemoveViewAnimation(itemView, dataPosition)
+                setOnRemoveViewAnimation(itemView, dataPosition)
 
-            dataList.removeAt(dataPosition)
-            listAdapter.notifyItemRemoved(dataPosition)
-            
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    dataList.removeAt(dataPosition)
+                    listAdapter.notifyItemRemoved(dataPosition)
+                }, 500)
+
+//            dataList.removeAt(dataPosition)
+//            listAdapter.notifyItemRemoved(dataPosition)
+
             getLastPositionForAddViewAnimation = -1
             getLastPositionForRemoveViewAnimation = -1
 
@@ -213,8 +222,12 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     "Animate Add Position = $getLastPositionForAddViewAnimation")
 
             binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
-            if (listAdapter.itemCount == 0)
-                roundsPickerDisabled()
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    loadRecyclerViews()
+                    if (listAdapter.itemCount == 0)
+                        roundsPickerDisabled()
+                }, 600)
 
             dialogBuilderUtils.dialog.dismiss()
         }
@@ -272,6 +285,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         db = workoutDB.readableDatabase
 
         resetProgressBar()
+        removeAllRecyclerViews()
 
         //prevents recycler views from stacking
         dataList.clear()
@@ -435,6 +449,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (isTimerRunning) {
 
                 if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
+                    exerciseSettingsButtonState(false)
                     prepareForWorkoutTimer()
                     return@setOnClickListener
                 }
@@ -470,6 +485,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         isTimerRunning = false
         PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
         buttonsStateOnWorkout(true)
+        exerciseSettingsButtonState(true)
 
         calendarDB = CalendarDB(context)
         Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
@@ -519,7 +535,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         dialogBuilderUtils = DialogBuilderUtils(requireContext())
         timePickerUtils = TimePickerUtils(requireContext())
 
-        dialogBuilderUtils.addOrEditExercise(false)
+        dialogBuilderUtils.addOrEditExerciseDialog(false)
 
 //        dialogBuilderUtils.onClickListenerWorkoutScope(
 //            { addEditExercise() },
@@ -564,6 +580,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         } else {
             lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock(workoutDB.lastRestTime(workoutTableName).toString())
+            Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
             listAdapter.notifyDataSetChanged()
         }
 
@@ -638,10 +655,36 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         var holder: ExerciseRecyclerAdapter.ViewHolder?
 
         for (i: Int in 0 until listAdapter.itemCount) {
-            Log.i("ResetProgress", "$i")
             holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
             holder?.exerciseProgress?.progress = 0
             holder?.restProgress?.progress = 0
+        }
+
+    }
+
+
+    private fun removeAllRecyclerViews() {
+
+        if (listAdapter.itemCount > 0) {
+            for (i: Int in 0 until listAdapter.itemCount)
+                dataList.removeAt(0)
+
+            listAdapter.notifyDataSetChanged()
+        }
+
+    }
+
+
+    private fun exerciseSettingsButtonState(stateEnabled: Boolean) {
+
+        var holder: ExerciseRecyclerAdapter.ViewHolder?
+        for (i: Int in 0 until listAdapter.itemCount) {
+            holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
+            holder?.exerciseSettingsButton?.isEnabled = stateEnabled
+
+            if (holder!!.isSettingsVisible)
+                foldSettingsAnimation(requireContext(), holder.exerciseSettingsButton, holder.editView, holder.removeView)
+
         }
 
     }

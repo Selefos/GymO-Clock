@@ -4,16 +4,12 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
@@ -34,7 +30,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private var exerciseSettingsButton: ImageButton = itemView.findViewById(R.id.exercise_settings_button)
+        var exerciseSettingsButton: ImageButton = itemView.findViewById(R.id.exercise_settings_button)
 
         var exerciseName: TextView = itemView.findViewById(R.id.exercise_name)
 
@@ -45,61 +41,25 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var restClock: TextView = itemView.findViewById(R.id.countdown_rest)
 
         val removeView: ImageButton = itemView.findViewById(R.id.remove_view)
+        val editView: ImageButton = itemView.findViewById(R.id.edit_view)
 
         var mwTimerIsRunning by Delegates.notNull<Boolean>()
         var mwTimerIsPaused by Delegates.notNull<Boolean>()
         var mrTimerIsRunning by Delegates.notNull<Boolean>()
         var mrTimerIsPaused by Delegates.notNull<Boolean>()
 
+        var isSettingsVisible = false
 
         init {
             resources = itemView.context.resources
 
-            val editView: ImageButton = itemView.findViewById(R.id.edit_view)
             editView.setOnClickListener { mRecyclerViewInterface.editExercise(adapterPosition) }
 
-            var isSettingsVisible = false
-            exerciseSettingsButton.setOnClickListener{
+            exerciseSettingsButton.setOnClickListener {
                 isSettingsVisible = !isSettingsVisible
-
-                if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
-                    exerciseSettingsAnimation(exerciseSettingsButton)
-
-                if(isSettingsVisible) {
-                    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
-                        Handler(Looper.getMainLooper()).postDelayed(
-                            {
-                                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
-                            }, 700)
-                        scalePosButtonAnimation(editView)
-                        scalePosButtonAnimation(removeView)
-
-                    }
-                    else
-                        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_cirlces)
-
-                    editView.isVisible = true
-                    removeView.isVisible = true
-                }
-                else{
-                    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
-                        Handler(Looper.getMainLooper()).postDelayed(
-                            {
-                                exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
-                            }, 700)
-
-                        scaleNegButtonAnimation(editView)
-                        scaleNegButtonAnimation(removeView)
-
-                    }
-                    else
-                        exerciseSettingsButton.background = AppCompatResources.getDrawable(context, R.drawable.ic_exercise_settings_button_borders)
-
-                    editView.isVisible = false
-                    removeView.isVisible = false
-                }
-
+                exerciseSettingsButtonAnimationControl(context, isSettingsVisible, exerciseSettingsButton, editView, removeView)
             }
+
         }
 
     }

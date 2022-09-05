@@ -7,6 +7,8 @@ import android.util.Log
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.enums.ClockSelected
 import com.gym.o.gymoclock.enums.ClockSelectedEnum
+import com.gym.o.gymoclock.functionality.workout_pr.animations.exerciseClockAnimate
+import com.gym.o.gymoclock.functionality.workout_pr.animations.restClockAnimate
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.rounds
@@ -161,18 +163,4 @@ fun ExerciseRecyclerAdapter.pauseRestTimer(positionData: Int, speakText: String)
     position.rTimerIsRunning = false
     position.rTimerIsPaused = true
     position.rCountDownTimer.cancel()
-}
-
-fun ExerciseRecyclerAdapter.exerciseClockAnimate(){
-    if (isExerciseAnimating)
-        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, workTimeInMillis)
-
-    isExerciseAnimating = false
-}
-
-fun ExerciseRecyclerAdapter.restClockAnimate(){
-    if (isRestAnimating)
-        mRecyclerViewInterface.startClockProgressBar(ClockSelected.clockSelected, restTimeInMillis)
-
-    isRestAnimating = false
 }

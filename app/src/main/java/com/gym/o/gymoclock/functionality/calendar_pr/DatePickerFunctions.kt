@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -86,7 +85,7 @@ fun CalendarFragment.createButton(tableName: String, workoutID: String, workoutN
         sqlDB.close()
 
         dialogBuilderUtils.onClickListenerCalendarScope(workoutID) { populateTextViews(workoutID, dialogBuilderUtils.exerciseScreenListLayout) }
-        dialogBuilderUtils.calendarWorkoutDetails(true)
+        dialogBuilderUtils.calendarWorkoutDetailsDialog(true)
     }
 
 }

@@ -17,7 +17,7 @@ fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int){
     timePickerUtils.settingsTimeDialogPrepareClock()
 
     timePickerUtils.setNumberPicker.setOnClickListener {
-        prepareCountdownInMillis = FormatUtils.convertTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
+        prepareCountdownInMillis = FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
         SharedPreferencesUtils.savePrepareTimeToPreferences(this, prepareCountdownInMillis)
         timePickerUtils.dialog.dismiss()
         parent.collapseGroup(groupPosition)
@@ -35,7 +35,7 @@ fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, worko
     timePickerUtils.settingsTimeDialogPrepareClock()
 
     timePickerUtils.setNumberPicker.setOnClickListener {
-        globalWorkTimer = FormatUtils.convertTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
+        globalWorkTimer = FormatUtils.convertDigitalTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
         workoutDB.updateAllExercisesTimer(workoutName, ClockSelectedEnum.WorkClock, globalWorkTimer)
         changeFragment(WorkoutFragment::class.java)
         timePickerUtils.dialog.dismiss()
@@ -55,7 +55,7 @@ fun MainActivity.restTimer(parent: ExpandableListView, groupPosition: Int, worko
     timePickerUtils.settingsTimeDialogPrepareClock()
 
     timePickerUtils.setNumberPicker.setOnClickListener {
-        globalRestTimer = FormatUtils.convertTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
+        globalRestTimer = FormatUtils.convertDigitalTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
         workoutDB.updateAllExercisesTimer(workoutName, ClockSelectedEnum.RestClock, globalRestTimer)
         changeFragment(WorkoutFragment::class.java)
         timePickerUtils.dialog.dismiss()

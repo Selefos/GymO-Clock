@@ -27,7 +27,7 @@ var isRestAnimating = true
 fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]
 
-    workTimeInMillis = FormatUtils.convertTimeToMillis(position.exerciseClockValue.text.toString())
+    workTimeInMillis = FormatUtils.convertDigitalTimeToMillis(position.exerciseClockValue.text.toString())
     endTime = System.currentTimeMillis() + workTimeInMillis
     if (startTime.isEmpty())
         startTime = DateTimeUtils.getCurrentTime()
@@ -54,9 +54,6 @@ fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
 
 fun ExerciseRecyclerAdapter.updateExerciseCountUI(positionData: Int) {
     val position = dataList[positionData]
-    val minutesWork = (workTimeInMillis / 1000) / 60
-    val secondsWork = (workTimeInMillis / 1000) % 60
-    val workCount: String = String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
 
     if (workTimeInMillis / 1000 <= 5 && workTimeInMillis / 1000 != 0L)
         TextToSpeechUtils.getInstance(context).speak((workTimeInMillis / 1000).toString())
@@ -68,7 +65,7 @@ fun ExerciseRecyclerAdapter.updateExerciseCountUI(positionData: Int) {
         TextToSpeechUtils.getInstance(context).speak(resources.getString(R.string.workout_completed))
 
     exerciseClockAnimate()
-    position.exerciseClockValue.text = workCount
+    position.exerciseClockValue.text = FormatUtils.timeInMillisecondsClockUI(workTimeInMillis)//workCount
     notifyItemChanged(positionData, position.exerciseClockValue)
 }
 
@@ -86,7 +83,7 @@ fun ExerciseRecyclerAdapter.pauseExerciseTimer(positionData: Int, speakText: Str
 fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
     val position = dataList[positionData]
 
-    restTimeInMillis = FormatUtils.convertTimeToMillis(position.restClockValue.text.toString())
+    restTimeInMillis = FormatUtils.convertDigitalTimeToMillis(position.restClockValue.text.toString())
     endTime = System.currentTimeMillis() + restTimeInMillis
 
     ClockSelected.clockSelected = ClockSelectedEnum.RestClock
@@ -141,9 +138,6 @@ fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
 
 fun ExerciseRecyclerAdapter.updateRestCountUI(positionData: Int) {
     val position = dataList[positionData]
-    val minutesWork = (restTimeInMillis / 1000) / 60
-    val secondsWork = (restTimeInMillis / 1000) % 60
-    val restCount: String = String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
 
     if (restTimeInMillis / 1000 <= 5 && restTimeInMillis / 1000 != 0L)
         TextToSpeechUtils.getInstance(context).speak((restTimeInMillis / 1000).toString())
@@ -152,7 +146,7 @@ fun ExerciseRecyclerAdapter.updateRestCountUI(positionData: Int) {
         TextToSpeechUtils.getInstance(context).speak(resources.getString(R.string.workout_start))
 
     restClockAnimate()
-    position.restClockValue.text = restCount
+    position.restClockValue.text = FormatUtils.timeInMillisecondsClockUI(restTimeInMillis)//restCount
     notifyItemChanged(positionData, position.restClockValue)
 }
 

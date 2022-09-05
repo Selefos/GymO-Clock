@@ -6,21 +6,20 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.enums.PrepareTimerState
+import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.functionality.workout_pr.prepareCountdownInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
-import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
-import java.util.*
 
 
 private lateinit var prepareTimer: CountDownTimer
 
 fun WorkoutFragment.prepareForWorkoutTimer() {
     dialogBuilder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
-    val inflater = layoutInflater //LayoutInflater.from(requireContext())
+    val inflater = layoutInflater
     val view = inflater.inflate(R.layout.workout_prepare, null)
     val prepareCountdownText = view.findViewById<TextView>(R.id.prepare_countdown)
 
@@ -58,14 +57,10 @@ fun WorkoutFragment.startPrepareTimer(textView: TextView) {
 }
 
 fun WorkoutFragment.updatePrepareTimerUI(textView: TextView) {
-    val secondsWork = (prepareCountdownInMillis / 1000) % 60
-    val totalCount: String =
-        String.format(Locale.getDefault(), "%02d", secondsWork)
-    textView.text = totalCount
+    textView.text = FormatUtils.timeInMillisecondsClockUI(prepareCountdownInMillis)
 
     if (prepareCountdownInMillis / 1000 <= 3)
-        TextToSpeechUtils.getInstance(requireContext())
-                .speak((prepareCountdownInMillis / 1000).toString())
+        TextToSpeechUtils.getInstance(requireContext()).speak((prepareCountdownInMillis / 1000).toString())
 
     if (prepareCountdownInMillis / 1000 == 0L) {
         TextToSpeechUtils.getInstance(requireContext()).speak("Start")
@@ -74,11 +69,11 @@ fun WorkoutFragment.updatePrepareTimerUI(textView: TextView) {
 
 }
 
-fun WorkoutFragment.buttonsStateOnWorkout(stateEnabled: Boolean){
+fun WorkoutFragment.buttonsStateOnWorkout(stateEnabled: Boolean) {
     binding.roundsPicker.isEnabled = stateEnabled
 
     binding.addLayout.isEnabled = stateEnabled
-    if(!stateEnabled)
+    if (!stateEnabled)
         binding.addLayout.background.setTint(Color.RED)
     else
         binding.addLayout.background.setTintList(null)

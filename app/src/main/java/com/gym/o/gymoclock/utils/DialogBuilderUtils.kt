@@ -42,7 +42,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val cancelButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.cancel_exercise_delete)
 
 
-    fun addOrEditExercise(setCanceledOnTouchOutside: Boolean) {
+    fun addOrEditExerciseDialog(setCanceledOnTouchOutside: Boolean) {
 
         exerciseNameEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -68,7 +68,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
-    fun removeExercise(setCanceledOnTouchOutside: Boolean) {
+    fun removeExerciseDialog(setCanceledOnTouchOutside: Boolean) {
         dialogBuilder.setView(viewRemoveExercise)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
@@ -88,7 +88,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val calendarTotalTime: TextView = tableLayout.findViewById(R.id.calendar_total_time)
     val calendarTotalWorkingTime: TextView = tableLayout.findViewById(R.id.calendar_total_working_time)
 
-    fun calendarWorkoutDetails(setCanceledOnTouchOutside: Boolean) {
+    fun calendarWorkoutDetailsDialog(setCanceledOnTouchOutside: Boolean) {
 
         dialogBuilder.setView(viewCalendarWorkoutDetails)
         scrollView.addView(tableLayout)

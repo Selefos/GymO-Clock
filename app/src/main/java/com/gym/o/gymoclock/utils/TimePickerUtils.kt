@@ -39,8 +39,8 @@ class TimePickerUtils(context: Context) {
     private val numberPickerMinutes: NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_minutes)
     private val numberPickerSeconds: NumberPicker = viewAddOrEditExercise.findViewById(R.id.numberPicker_seconds)
     val timeDigitalFormatTextView: TextView = viewAddOrEditExercise.findViewById(R.id.time_digital_format)
-    val setNumberPicker: Button = viewAddOrEditExercise.findViewById(R.id.set_numberPicker)
-    val cancelTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.cancel_numberPicker)
+    val setNumberPickerButton: Button = viewAddOrEditExercise.findViewById(R.id.set_numberPicker_button)
+    val cancelTimePickerButton: Button = viewAddOrEditExercise.findViewById(R.id.cancel_numberPicker_button)
 
     fun numberPickerTimeDialogExercises(digitalTime: TextView?, verifyButton: ImageButton) {
 
@@ -65,7 +65,7 @@ class TimePickerUtils(context: Context) {
         val dialog: AlertDialog = dialogBuilder.create()
         dialog.show()
 
-        setNumberPicker.setOnClickListener {
+        setNumberPickerButton.setOnClickListener {
             digitalTime?.text = timeDigitalFormatTextView.text
             verifyButton.background.setTintList(ContextCompat.getColorStateList(context!!, R.color.custom_text_color))
 
@@ -74,7 +74,7 @@ class TimePickerUtils(context: Context) {
             dialog.dismiss()
         }
 
-        cancelTimePicker.setOnClickListener {
+        cancelTimePickerButton.setOnClickListener {
             Log.i("DismissTime", "Clicked")
             isTimePicked(false)
             (viewAddOrEditExercise.parent as ViewGroup).removeView(viewAddOrEditExercise)
@@ -98,7 +98,10 @@ class TimePickerUtils(context: Context) {
         }
 
         numberPickerSeconds.setOnValueChangedListener { picker, oldVal, newVal ->
-            timeDigitalFormatTextView.text = FormatUtils.convertTimeToDigitalClockSeconds(newVal.toString())
+            var newValue = newVal
+            if(newValue == 0)
+                newValue = 1
+            timeDigitalFormatTextView.text = FormatUtils.convertTimeToDigitalClockSeconds(newValue.toString())
         }
 
         dialogBuilder.setView(viewAddOrEditExercise)

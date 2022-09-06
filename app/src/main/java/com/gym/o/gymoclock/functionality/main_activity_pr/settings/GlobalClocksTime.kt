@@ -16,14 +16,14 @@ fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int){
     val timePickerUtils = TimePickerUtils(this)
     timePickerUtils.settingsTimeDialogPrepareClock()
 
-    timePickerUtils.setNumberPicker.setOnClickListener {
+    timePickerUtils.setNumberPickerButton.setOnClickListener {
         prepareCountdownInMillis = FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
         SharedPreferencesUtils.savePrepareTimeToPreferences(this, prepareCountdownInMillis)
         timePickerUtils.dialog.dismiss()
         parent.collapseGroup(groupPosition)
     }
 
-    timePickerUtils.cancelTimePicker.setOnClickListener {
+    timePickerUtils.cancelTimePickerButton.setOnClickListener {
         Log.i("DismissTime", "Clicked")
         timePickerUtils.dialog.dismiss()
     }
@@ -34,7 +34,7 @@ fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, worko
 
     timePickerUtils.settingsTimeDialogPrepareClock()
 
-    timePickerUtils.setNumberPicker.setOnClickListener {
+    timePickerUtils.setNumberPickerButton.setOnClickListener {
         globalWorkTimer = FormatUtils.convertDigitalTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
         workoutDB.updateAllExercisesTimer(workoutName, ClockSelectedEnum.WorkClock, globalWorkTimer)
         changeFragment(WorkoutFragment::class.java)
@@ -42,7 +42,7 @@ fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, worko
         parent.collapseGroup(groupPosition)
     }
 
-    timePickerUtils.cancelTimePicker.setOnClickListener {
+    timePickerUtils.cancelTimePickerButton.setOnClickListener {
         Log.i("DismissTime", "Clicked")
         timePickerUtils.dialog.dismiss()
     }
@@ -54,7 +54,7 @@ fun MainActivity.restTimer(parent: ExpandableListView, groupPosition: Int, worko
 
     timePickerUtils.settingsTimeDialogPrepareClock()
 
-    timePickerUtils.setNumberPicker.setOnClickListener {
+    timePickerUtils.setNumberPickerButton.setOnClickListener {
         globalRestTimer = FormatUtils.convertDigitalTimeToSeconds(timePickerUtils.timeDigitalFormatTextView.text.toString())
         workoutDB.updateAllExercisesTimer(workoutName, ClockSelectedEnum.RestClock, globalRestTimer)
         changeFragment(WorkoutFragment::class.java)
@@ -62,7 +62,7 @@ fun MainActivity.restTimer(parent: ExpandableListView, groupPosition: Int, worko
         parent.collapseGroup(groupPosition)
     }
 
-    timePickerUtils.cancelTimePicker.setOnClickListener {
+    timePickerUtils.cancelTimePickerButton.setOnClickListener {
         Log.i("DismissTime", "Clicked")
         timePickerUtils.dialog.dismiss()
     }

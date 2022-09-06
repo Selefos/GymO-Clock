@@ -59,8 +59,8 @@ fun WorkoutFragment.saveExerciseValues(action: ExerciseActionEnum, oldExerciseNa
     if (action == ExerciseActionEnum.Add) {
         val insertExerciseData = workoutDB.insertExerciseDetails(
             workoutTableName, exerciseName,
-            FormatUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
-            FormatUtils.convertTimeToSeconds(restClock.text.toString()).toString()
+            FormatUtils.convertDigitalTimeToSeconds(exerciseClock.text.toString()).toString(),
+            FormatUtils.convertDigitalTimeToSeconds(restClock.text.toString()).toString()
         )
 
         if (insertExerciseData)
@@ -70,8 +70,8 @@ fun WorkoutFragment.saveExerciseValues(action: ExerciseActionEnum, oldExerciseNa
     if (action == ExerciseActionEnum.Update) {
         val updateExerciseData = workoutDB.updateSelectedExerciseDetails(
             workoutTableName, oldExerciseName, exerciseName,
-            FormatUtils.convertTimeToSeconds(exerciseClock.text.toString()).toString(),
-            FormatUtils.convertTimeToSeconds(restClock.text.toString()).toString()
+            FormatUtils.convertDigitalTimeToSeconds(exerciseClock.text.toString()).toString(),
+            FormatUtils.convertDigitalTimeToSeconds(restClock.text.toString()).toString()
         )
         if (updateExerciseData)
             Toast.makeText(context, "Exercise Updated", Toast.LENGTH_SHORT).show()

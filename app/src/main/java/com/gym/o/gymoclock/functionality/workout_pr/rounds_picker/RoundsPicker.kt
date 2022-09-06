@@ -59,7 +59,7 @@ fun WorkoutFragment.roundsPicker() {
 
 
 fun WorkoutFragment.elapsedTime(totalTimeFromDB: Int): Int {
-    val currentTotalTime: Int = FormatUtils.convertTimeToSeconds(binding.totalTime.text.toString())
+    val currentTotalTime: Int = FormatUtils.convertDigitalTimeToSeconds(binding.totalTime.text.toString())
     Log.i("ELAPSED_TIME", "TOTAL TIME DB: $totalTimeFromDB, CURRENT TOTAL TIME: $currentTotalTime, TOTAL TIME TXT: ${binding.totalTime.text}")
     return totalTimeFromDB - currentTotalTime
 }

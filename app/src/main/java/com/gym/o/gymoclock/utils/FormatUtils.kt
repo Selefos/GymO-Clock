@@ -1,6 +1,7 @@
 package com.gym.o.gymoclock.utils
 
-import java.util.*
+import java.util.Locale
+
 
 class FormatUtils {
 
@@ -17,6 +18,13 @@ class FormatUtils {
                 convertedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                 convertedTime
             } else convertedTime
+        }
+
+
+        fun timeInMillisecondsClockUI(timeInMilliseconds: Long): String{
+            val minutesWork = (timeInMilliseconds / 1000) / 60
+            val secondsWork = (timeInMilliseconds / 1000) % 60
+            return String.format(Locale.getDefault(), "%02d:%02d", minutesWork, secondsWork)
         }
 
 
@@ -41,7 +49,7 @@ class FormatUtils {
         }
 
 
-        fun convertTimeToMillis(time: String): Long {
+        fun convertDigitalTimeToMillis(time: String): Long {
             val units = time.split(":")
             val min = Integer.parseInt(units[0])
             val secs = Integer.parseInt(units[1])
@@ -49,7 +57,7 @@ class FormatUtils {
         }
 
 
-        fun convertTimeToSeconds(time: String): Int {
+        fun convertDigitalTimeToSeconds(time: String): Int {
             val units = time.split(":")
             val min = Integer.parseInt(units[0])
             val secs = Integer.parseInt(units[1])

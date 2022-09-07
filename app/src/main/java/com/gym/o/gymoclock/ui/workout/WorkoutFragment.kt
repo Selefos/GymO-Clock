@@ -574,14 +574,16 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     fun lastRestTimeCheck() {
         val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
+        val lastPosition = listAdapter.itemCount - 1
+
         if (rounds <= 1) {
             lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock("0")
-            listAdapter.notifyDataSetChanged()
+            listAdapter.notifyItemChanged(lastPosition)
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
         } else {
             lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock(workoutDB.lastRestTime(workoutTableName).toString())
             Log.d(TAG_NUMPICKER, "AFTER ROUNDS CHANGED = ${binding.totalTime.text}")
-            listAdapter.notifyDataSetChanged()
+            listAdapter.notifyItemChanged(lastPosition)
         }
 
     }

@@ -17,7 +17,10 @@ fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int){
     timePickerUtils.settingsTimeDialogPrepareClock()
 
     timePickerUtils.setNumberPickerButton.setOnClickListener {
-        prepareCountdownInMillis = FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
+        prepareCountdownInMillis = if(FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString()) == 0L )
+            1000L
+        else
+            FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
         SharedPreferencesUtils.savePrepareTimeToPreferences(this, prepareCountdownInMillis)
         timePickerUtils.dialog.dismiss()
         parent.collapseGroup(groupPosition)

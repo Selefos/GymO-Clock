@@ -98,10 +98,7 @@ class TimePickerUtils(context: Context) {
         }
 
         numberPickerSeconds.setOnValueChangedListener { picker, oldVal, newVal ->
-            var newValue = newVal
-            if(newValue == 0)
-                newValue = 1
-            timeDigitalFormatTextView.text = FormatUtils.convertTimeToDigitalClockSeconds(newValue.toString())
+            timeDigitalFormatTextView.text = FormatUtils.convertTimeToDigitalClockSeconds(newVal.toString())
         }
 
         dialogBuilder.setView(viewAddOrEditExercise)

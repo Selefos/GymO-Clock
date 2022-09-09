@@ -19,15 +19,14 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
+import com.gym.o.gymoclock.functionality.main_activity_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.main_activity_pr.populateList
 import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
-import com.gym.o.gymoclock.functionality.main_activity_pr.navigation_list_adapter.CustomExpandableListAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
@@ -57,11 +56,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this).isNotEmpty() && workoutDB.loadWorkoutTableNames().isNotEmpty())
             workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
 
-        binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
         calendarDBInit()
 
         expandableListView = binding.expandableView
@@ -74,41 +68,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
 
-
-/*        binding.root.setOnTouchListener {
-                _, event ->
-            val x = event.x
-            val y = event.y
-            binding.appBarMain.fab.x = x
-            binding.appBarMain.fab.y = y
-//            editTextX.setText(x.toString())
-//            editTextY.setText(y.toString())
-            true
-        }
-
-        binding.appBarMain.fab.setOnLongClickListener{
-            View ->
-            Toast.makeText(this, "Longed", Toast.LENGTH_SHORT).show()
-            binding.root.setOnTouchListener {
-                    _, event ->
-                val x = event.x
-                val y = event.y
-                binding.appBarMain.fab.x = x
-                binding.appBarMain.fab.y = y
-                Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show()
-//            editTextX.setText(x.toString())
-//            editTextY.setText(y.toString())
-                true
-            }
-            true
-        }
-        val calendarDB = CalendarDB(this)
-        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
-        val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
-        val cursor: Cursor = calendarDB.getCalendarWorkoutID(monthYear, "date", sqlDB)
-
-        val exercisesScreenDB: ExercisesScreenDB = ExercisesScreenDB(this)
-        exercisesScreenDB.insertScreenDBDetails(1, workoutTableName, DateTimeUtils.getDate(), "test,asdd,asd,fdsfda,adasd")*/
     }
 
     /* init  {

@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.os.CountDownTimer
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.enums.PrepareTimerState
 import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
@@ -46,8 +46,7 @@ fun WorkoutFragment.startPrepareTimer(textView: TextView) {
 
         override fun onFinish() {
             PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Working
-            binding.playPauseButton.background = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_pause_button)
-
+            binding.playPauseFab.setImageResource(android.R.drawable.ic_media_pause)
             startTotalTimer()
             listAdapter.startExerciseTimer(recyclerPosition)
 
@@ -71,11 +70,13 @@ fun WorkoutFragment.updatePrepareTimerUI(textView: TextView) {
 
 fun WorkoutFragment.buttonsStateOnWorkout(stateEnabled: Boolean) {
     binding.roundsPicker.isEnabled = stateEnabled
+    binding.addLayoutFab.isVisible = stateEnabled
 
-    binding.addLayout.isEnabled = stateEnabled
+
+
     if (!stateEnabled)
-        binding.addLayout.background.setTint(Color.RED)
+        binding.addLayoutFab.setColorFilter(Color.rgb(155, 50, 50))
     else
-        binding.addLayout.background.setTintList(null)
+        binding.addLayoutFab.setColorFilter(Color.rgb(145, 251, 218))
 }
 

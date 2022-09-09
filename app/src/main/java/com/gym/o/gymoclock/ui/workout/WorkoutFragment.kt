@@ -1,5 +1,6 @@
 package com.gym.o.gymoclock.ui.workout
 
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -9,8 +10,10 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -55,7 +58,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        Log.i("WorkoutFragment", "onCreateView")
+
         init()
         onSavedInstance(savedInstanceState)
         if (workoutTableName.isNotEmpty()) {
@@ -66,8 +69,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         //setItemTouchHelper()
 
         recyclerView.smoothScrollToPosition(recyclerPosition)
-
-        workoutInit()
 
         if (listAdapter.itemCount != 0)
             roundsPicker()
@@ -81,37 +82,36 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
 
-    override fun onDestroyView() {
+    private fun setPlayPauseFABPosition() {
+//        Handler(Looper.getMainLooper()).postDelayed(
+//            {
+//        binding.playPauseFab.x =  SharedPreferencesUtils.getPlayPauseButtonPositionX(requireContext())
+//        binding.playPauseFab.y =  SharedPreferencesUtils.getPlayPauseButtonPositionY(requireContext())
+//            }, 20)
 
-        // _binding = null
-        //TextToSpeechUtils.getInstance(requireContext()).stopTTS()
-//        binding.addLayout.isEnabled = false
-//        binding.addLayout.isClickable = false
-//
-//        binding.playPauseButton.isEnabled = false
-//        binding.playPauseButton.isClickable = false
-//
-//        binding.roundsEdit.isEnabled = false
-//        binding.roundsEdit.isClickable = false
-//
-//        if(listAdapter.itemCount > 0) {
-//            val position = dataList[recyclerPosition]
-//
-//            if (position.wTimerIsRunning) {
-//                pauseTotalTimer()
-//                listAdapter.pauseExerciseTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-//            }
-//
-//            if (position.rTimerIsRunning) {
-//                pauseTotalTimer()
-//                listAdapter.pauseRestTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-//            }
-//        }
-//        recyclerPosition = 0
-//        PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
-//        Log.i("WorkFrag", "onDestroyView")
-//        stopAnimation(ClockSelected.clockSelected)
-        super.onDestroyView()
+        binding.playPauseFab.animate().apply {
+            duration = 1200
+            interpolator = LinearInterpolator()
+            x(SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()))
+            y(SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext()))
+        }.start()
+
+    }
+
+
+    private fun setAddLayoutFABPosition() {
+//        Handler(Looper.getMainLooper()).postDelayed(
+//            {
+//        binding.addLayoutFab.x =  SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext())
+//        binding.addLayoutFab.y =  SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
+//            }, 20)
+
+        binding.addLayoutFab.animate().apply {
+            duration = 1200
+            interpolator = LinearInterpolator()
+            x(SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()))
+            y(SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext()))
+        }.start()
 
     }
 
@@ -279,7 +279,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private lateinit var db: SQLiteDatabase
     lateinit var workCountDown: CountDownTimer
     lateinit var restCountDown: CountDownTimer
-
     override fun loadRecyclerViews() {
         workoutDB = WorkoutDB(requireActivity().applicationContext)
         db = workoutDB.readableDatabase
@@ -412,20 +411,66 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         workoutDB = WorkoutDB(requireActivity().applicationContext)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
         recyclerView.adapter = listAdapter
+
+        workoutInit()
+        setPlayPauseFABPosition()
+        setAddLayoutFABPosition()
     }
 
 
     private fun workoutInit() {
-        binding.addLayout.setOnClickListener {
-            if (workoutTableName.isEmpty()) {
-                Toast.makeText(context, "No exercises available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            addExerciseRecyclerView()
-            return@setOnClickListener
-        }
 
-        binding.playPauseButton.setOnClickListener {
+        val displayMetrics = Resources.getSystem().displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+
+        binding.playPauseFab.setOnTouchListener(object : View.OnTouchListener {
+            var x = 0f
+            var y = 0f
+            var xyPivot = 25
+
+            override fun onTouch(view: View, event: MotionEvent): Boolean {
+                val touchDuration = event.eventTime - event.downTime
+                val clickThreshold = 200
+
+                var newX = 0f
+                var newY = 0f
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        x = event.x
+                        y = event.y
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        newX = binding.playPauseFab.x + (event.x - x)
+                        newY = binding.playPauseFab.y + (event.y - y)
+                        // check if the view out of screen
+                        // xyPivot is used to prevent dragged view from coming too close to
+                        // the screen borders, as results from the view getting bellow it
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) || (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot))
+                            return true
+
+                        binding.playPauseFab.x = newX
+                        binding.playPauseFab.y = newY
+
+                        SharedPreferencesUtils.savePlayPauseFABPositionXY(requireContext(), newX, newY)
+
+                        return true
+                    }
+                    MotionEvent.ACTION_UP   -> {
+                        if (event.action == MotionEvent.ACTION_UP && touchDuration < clickThreshold)
+                            view.performClick()
+
+                        return true
+                    }
+
+                }
+                return true
+            }
+        })
+
+        binding.playPauseFab.setOnClickListener {
 
             if (rounds == 0) {
                 recyclerPosition = 0
@@ -454,7 +499,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     return@setOnClickListener
                 }
 
-                binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_pause_button)
+                binding.playPauseFab.setImageResource(android.R.drawable.ic_media_pause)
                 startTotalTimer()
                 listAdapter.startExerciseTimer(recyclerPosition)
 
@@ -469,19 +514,75 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 listAdapter.pauseRestTimer(recyclerPosition, resources.getString(R.string.rest_paused))
 
             pauseTotalTimer()
-            binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
-
+            binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
             if (SharedPreferencesUtils.getClocksAnimationsState(requireContext()))
                 stopClockProgressBar(ClockSelected.clockSelected)
 
             return@setOnClickListener
         }
+
+        binding.addLayoutFab.setOnTouchListener(object : View.OnTouchListener {
+            var x = 0f
+            var y = 0f
+            var xyPivot = 25
+
+            override fun onTouch(view: View, event: MotionEvent): Boolean {
+                val touchDuration = event.eventTime - event.downTime
+                val clickThreshold = 200
+
+                var newX = 0f
+                var newY = 0f
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        x = event.x
+                        y = event.y
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        newX = binding.addLayoutFab.x + (event.x - x)
+                        newY = binding.addLayoutFab.y + (event.y - y)
+                        // check if the view out of screen
+                        // xyPivot is used to prevent dragged view from coming too close to
+                        // the screen borders, as results from the view getting bellow it
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) || (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot))
+                            return true
+
+                        binding.addLayoutFab.x = newX
+                        binding.addLayoutFab.y = newY
+
+                        SharedPreferencesUtils.saveAddLayoutFABPositionXY(requireContext(), newX, newY)
+
+                        return true
+                    }
+                    MotionEvent.ACTION_UP   -> {
+                        if (event.action == MotionEvent.ACTION_UP && touchDuration < clickThreshold)
+                            view.performClick()
+
+                        return true
+                    }
+
+                }
+                return true
+            }
+        })
+
+        binding.addLayoutFab.setOnClickListener {
+            if (workoutTableName.isEmpty()) {
+                Toast.makeText(context, "No exercises available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            addExerciseRecyclerView()
+            return@setOnClickListener
+        }
     }
+
 
     private lateinit var calendarDB: CalendarDB
     private lateinit var exercisesScreenDB: ExercisesScreenDB
     private fun onEndOfWorkout() {
-        binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
+        //binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
+        binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
         isTimerRunning = false
         PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
         buttonsStateOnWorkout(true)
@@ -684,7 +785,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
             holder?.exerciseSettingsButton?.isEnabled = stateEnabled
 
-            if (holder!!.isSettingsVisible)
+            if (holder?.isSettingsVisible == true)
                 foldSettingsAnimation(requireContext(), holder.exerciseSettingsButton, holder.editView, holder.removeView)
 
         }

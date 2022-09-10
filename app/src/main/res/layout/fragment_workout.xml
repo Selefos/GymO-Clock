@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_layout"
@@ -12,34 +12,26 @@
         android:id="@+id/play_pause_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_gravity="start|bottom"
+        android:layout_marginBottom="4sp"
         android:contentDescription="@string/ok_button"
         android:src="@android:drawable/ic_media_play"
         app:backgroundTint="#DC172230"
-        app:borderWidth="2dp"
-        app:fabCustomSize="48dp"
-        app:layout_anchor="@+id/main_activity_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.34"
-        app:layout_constraintStart_toStartOf="parent"
+        app:borderWidth="@dimen/fab_borderWidth"
+        app:fabCustomSize="@dimen/fab_size"
         app:tint="@color/custom_text_color" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_layout_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="4sp"
         android:contentDescription="@string/ok_button"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="#DC172230"
-        app:borderWidth="2dp"
-        app:fabCustomSize="48dp"
-        app:layout_anchor="@+id/main_activity_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.66"
-        app:layout_constraintStart_toStartOf="parent"
+        app:borderWidth="@dimen/fab_borderWidth"
+        app:fabCustomSize="@dimen/fab_size"
         app:tint="@color/custom_text_color" />
 
     <LinearLayout
@@ -147,4 +139,4 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

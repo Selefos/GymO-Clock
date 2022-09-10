@@ -9,15 +9,13 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,8 +75,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
-
-        Log.i
 
         return root
     }
@@ -382,16 +378,28 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         recyclerView.adapter = listAdapter
 
         workoutInit()
-        setFABPosition(binding.playPauseFab,
-            SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()),
-            SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
-        )
 
-        setFABPosition(binding.addLayoutFab,
-            SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()),
-            SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
-        )
+        val playPauseFABX = SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext())
+        val playPauseFABY = SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
 
+        if (playPauseFABX != 0f && playPauseFABY != 0f)
+            setFABPosition(binding.playPauseFab,
+                SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()),
+                SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
+            )
+        else
+            (binding.playPauseFab.layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM or Gravity.START
+
+        val addLayoutFABX = SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext())
+        val addLayoutFABY = SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
+
+        if (addLayoutFABX != 0f && addLayoutFABY != 0f)
+            setFABPosition(binding.addLayoutFab,
+                SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()),
+                SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
+            )
+        else
+            (binding.addLayoutFab.layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM or Gravity.END
     }
 
 

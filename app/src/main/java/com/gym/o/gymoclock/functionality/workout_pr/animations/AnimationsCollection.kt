@@ -172,7 +172,6 @@ fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton,
     removeView.isVisible = false
 }
 
-
 fun WorkoutFragment.setFABPosition(fab: FloatingActionButton, x: Float, y: Float){
 
     if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext())){
@@ -200,6 +199,6 @@ fun setFABPositionNoAnimation(fab: FloatingActionButton, x: Float, y: Float){
         {
             fab.x =  x
             fab.y =  y
-        }, 20)
+        }, 160)
 
 }

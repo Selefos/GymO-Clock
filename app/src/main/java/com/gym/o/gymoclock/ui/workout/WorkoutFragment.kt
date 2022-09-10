@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -36,6 +35,7 @@ import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
 import com.gym.o.gymoclock.functionality.workout_pr.animations.foldSettingsAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.animations.setFABPosition
 import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
@@ -78,41 +78,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         getLastPositionForAddViewAnimation = -1
         getLastPositionForRemoveViewAnimation = -1
 
+        Log.i
+
         return root
-    }
-
-
-    private fun setPlayPauseFABPosition() {
-//        Handler(Looper.getMainLooper()).postDelayed(
-//            {
-//        binding.playPauseFab.x =  SharedPreferencesUtils.getPlayPauseButtonPositionX(requireContext())
-//        binding.playPauseFab.y =  SharedPreferencesUtils.getPlayPauseButtonPositionY(requireContext())
-//            }, 20)
-
-        binding.playPauseFab.animate().apply {
-            duration = 1200
-            interpolator = LinearInterpolator()
-            x(SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()))
-            y(SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext()))
-        }.start()
-
-    }
-
-
-    private fun setAddLayoutFABPosition() {
-//        Handler(Looper.getMainLooper()).postDelayed(
-//            {
-//        binding.addLayoutFab.x =  SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext())
-//        binding.addLayoutFab.y =  SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
-//            }, 20)
-
-        binding.addLayoutFab.animate().apply {
-            duration = 1200
-            interpolator = LinearInterpolator()
-            x(SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()))
-            y(SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext()))
-        }.start()
-
     }
 
 
@@ -383,6 +351,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     lateinit var listAdapter: ExerciseRecyclerAdapter
     lateinit var dataList: ArrayList<ExerciseElements>
     lateinit var workoutDB: WorkoutDB
+
     private fun init() {
         if (SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
             rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
@@ -413,8 +382,16 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         recyclerView.adapter = listAdapter
 
         workoutInit()
-        setPlayPauseFABPosition()
-        setAddLayoutFABPosition()
+        setFABPosition(binding.playPauseFab,
+            SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()),
+            SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
+        )
+
+        setFABPosition(binding.addLayoutFab,
+            SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()),
+            SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
+        )
+
     }
 
 
@@ -569,7 +546,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         binding.addLayoutFab.setOnClickListener {
             if (workoutTableName.isEmpty()) {
-                Toast.makeText(context, "No exercises available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "No workouts available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             addExerciseRecyclerView()

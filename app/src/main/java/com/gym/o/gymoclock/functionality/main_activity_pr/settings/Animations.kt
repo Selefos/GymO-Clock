@@ -43,7 +43,7 @@ fun MainActivity.allAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
             Log.i("IsChecked", isChecked.toString())
 
             animRecyclerViewState(dialogBuilderUtils, isChecked)
-            SharedPreferencesUtils.saveRecyclerViewAnimationsState(this, isChecked)
+            SharedPreferencesUtils.saveLayoutAnimationsState(this, isChecked)
 
             animClocksState(dialogBuilderUtils, isChecked)
             SharedPreferencesUtils.saveClocksAnimationsState(this, isChecked)
@@ -56,7 +56,7 @@ fun MainActivity.allAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
 }
 
 fun MainActivity.recyclerViewAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
-    animRecyclerViewState(dialogBuilderUtils,SharedPreferencesUtils.getRecyclerViewAnimationsState(this))
+    animRecyclerViewState(dialogBuilderUtils,SharedPreferencesUtils.getLayoutAnimationsState(this))
 
     dialogBuilderUtils.recyclerViewAnimationsState.setOnCheckedChangeListener { _, isChecked ->
         if (isChecked) {
@@ -66,7 +66,7 @@ fun MainActivity.recyclerViewAnimationsState(dialogBuilderUtils: DialogBuilderUt
             dialogBuilderUtils.recyclerViewAnimationsState.text = resources.getString(R.string.settings_enable_recycler_view_animations)
             Log.i("IsChecked", isChecked.toString())
         }
-        SharedPreferencesUtils.saveRecyclerViewAnimationsState(this, dialogBuilderUtils.recyclerViewAnimationsState.isChecked)
+        SharedPreferencesUtils.saveLayoutAnimationsState(this, dialogBuilderUtils.recyclerViewAnimationsState.isChecked)
     }
 }
 

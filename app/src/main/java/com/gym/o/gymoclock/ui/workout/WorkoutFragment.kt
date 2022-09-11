@@ -9,13 +9,15 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,10 +34,10 @@ import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
-import com.gym.o.gymoclock.functionality.workout_pr.animations.foldSettingsAnimation
-import com.gym.o.gymoclock.functionality.workout_pr.animations.setFABPosition
+import com.gym.o.gymoclock.functionality.workout_pr.animations.fabFadeInFadeOutAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
+import com.gym.o.gymoclock.functionality.workout_pr.fab_ui.setFabPosition
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
@@ -50,7 +52,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private var _binding: FragmentWorkoutBinding? = null
     val binding get() = _binding!!
 
-    private var isTimerRunning: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
@@ -77,6 +78,19 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         getLastPositionForRemoveViewAnimation = -1
 
         return root
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setFabPosition()
+
+        if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+            fabFadeInFadeOutAnimation(binding.playPauseFab)
+            fabFadeInFadeOutAnimation(binding.addLayoutFab)
+        }
+
     }
 
 
@@ -167,7 +181,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (deleteView)
                 Toast.makeText(context, "Exercise Deleted", Toast.LENGTH_SHORT).show()
 
-            if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext()))
+            if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext()))
                 setOnRemoveViewAnimation(itemView, dataPosition)
 
             Handler(Looper.getMainLooper()).postDelayed(
@@ -243,6 +257,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private lateinit var db: SQLiteDatabase
     lateinit var workCountDown: CountDownTimer
     lateinit var restCountDown: CountDownTimer
+
     override fun loadRecyclerViews() {
         workoutDB = WorkoutDB(requireActivity().applicationContext)
         db = workoutDB.readableDatabase
@@ -307,6 +322,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
+    private var isTimerRunning: Boolean = false
 
     override fun roundsCount() {
         rounds--
@@ -379,27 +395,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         workoutInit()
 
-        val playPauseFABX = SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext())
-        val playPauseFABY = SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
-
-        if (playPauseFABX != 0f && playPauseFABY != 0f)
-            setFABPosition(binding.playPauseFab,
-                SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext()),
-                SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
-            )
-        else
-            (binding.playPauseFab.layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM or Gravity.START
-
-        val addLayoutFABX = SharedPreferencesUtils.getPlayPauseFABPositionX(requireContext())
-        val addLayoutFABY = SharedPreferencesUtils.getPlayPauseFABPositionY(requireContext())
-
-        if (addLayoutFABX != 0f && addLayoutFABY != 0f)
-            setFABPosition(binding.addLayoutFab,
-                SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext()),
-                SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
-            )
-        else
-            (binding.addLayoutFab.layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM or Gravity.END
     }
 
 
@@ -475,12 +470,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
 
             isTimerRunning = !isTimerRunning
-            Log.d("isStartWorkout", (isTimerRunning).toString())
             if (isTimerRunning) {
 
                 if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
-                    exerciseSettingsButtonState(false)
-                    prepareForWorkoutTimer()
+                    responsiveUIElementsStateOnWorkout(false)
+                    prepareForWorkout()
                     return@setOnClickListener
                 }
 
@@ -565,16 +559,16 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     private lateinit var calendarDB: CalendarDB
     private lateinit var exercisesScreenDB: ExercisesScreenDB
+
     private fun onEndOfWorkout() {
-        //binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
+
         binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
         isTimerRunning = false
         PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
-        buttonsStateOnWorkout(true)
-        exerciseSettingsButtonState(true)
+        responsiveUIElementsStateOnWorkout(true)
 
         calendarDB = CalendarDB(context)
-        Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
+
         val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
 
         calendarDB.insertCalendarDetails(
@@ -583,9 +577,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
         )
 
+
         saveExercisesList(monthYear)
         ClockSelected.clockSelected = ClockSelectedEnum.Idle
         startTime = ""
+
     }
 
 
@@ -758,21 +754,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 dataList.removeAt(0)
 
             listAdapter.notifyDataSetChanged()
-        }
-
-    }
-
-
-    private fun exerciseSettingsButtonState(stateEnabled: Boolean) {
-
-        var holder: ExerciseRecyclerAdapter.ViewHolder?
-        for (i: Int in 0 until listAdapter.itemCount) {
-            holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
-            holder?.exerciseSettingsButton?.isEnabled = stateEnabled
-
-            if (holder?.isSettingsVisible == true)
-                foldSettingsAnimation(requireContext(), holder.exerciseSettingsButton, holder.editView, holder.removeView)
-
         }
 
     }

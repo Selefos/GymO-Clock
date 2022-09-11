@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
-import android.view.animation.LinearInterpolator
 import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import androidx.appcompat.content.res.AppCompatResources
@@ -20,7 +19,6 @@ import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.work
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.getLastPositionForRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
-import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 
 fun setOnAddViewAnimation(viewToAnimate: View, position: Int) {
@@ -136,7 +134,7 @@ fun exerciseSettingsButtonAnimationControl(context: Context, isSettingsVisible: 
 
 fun unfoldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
 
-    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(context)) {
         exerciseSettingsButtonAnimation(exerciseSettingsButton)
 
         Handler(Looper.getMainLooper()).postDelayed(
@@ -154,7 +152,7 @@ fun unfoldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButto
 }
 
 fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
-    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(context)) {
         exerciseSettingsButtonAnimation(exerciseSettingsButton)
 
         Handler(Looper.getMainLooper()).postDelayed(
@@ -172,33 +170,30 @@ fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton,
     removeView.isVisible = false
 }
 
-fun WorkoutFragment.setFABPosition(fab: FloatingActionButton, x: Float, y: Float){
-
-    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext())){
-        setFABPositionWithAnimation(fab, x, y)
-        return
-    }
-
-    setFABPositionNoAnimation(fab, x, y)
-}
-
-fun setFABPositionWithAnimation(fab: FloatingActionButton, x: Float, y: Float){
-
-    fab.animate().apply {
-        duration = 1200
-        interpolator = LinearInterpolator()
-        x(x)
-        y(y)
-    }.start()
-
-}
-
-fun setFABPositionNoAnimation(fab: FloatingActionButton, x: Float, y: Float){
+fun fabFadeInFadeOutAnimation(fab: FloatingActionButton) {
 
     Handler(Looper.getMainLooper()).postDelayed(
         {
-            fab.x =  x
-            fab.y =  y
-        }, 160)
+            fab.animate().alpha(0f).setDuration(500).start()
+        }, 20)
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(1f).setDuration(500).start()
+        }, 1020)
+
+}
+
+fun fabFadeOutFadeInAnimation(fab: FloatingActionButton){
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(0f).setDuration(1000).start()
+        }, 0)
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(1f).setDuration(1000).start()
+        }, 1000)
 
 }

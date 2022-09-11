@@ -91,14 +91,14 @@ class SharedPreferencesUtils {
         }
 
 
-        fun saveRecyclerViewAnimationsState(context: Context, prefRecyclerViewAnimationsState: Boolean) {
+        fun saveLayoutAnimationsState(context: Context, prefRecyclerViewAnimationsState: Boolean) {
             val sharedPreferences = context.getSharedPreferences("RecyclerViewAnimationsState", Context.MODE_PRIVATE)
             val save = sharedPreferences.edit()
             save.putBoolean("recyclerViewAnimationsState", prefRecyclerViewAnimationsState)
             save.apply()
         }
 
-        fun getRecyclerViewAnimationsState(context: Context): Boolean {
+        fun getLayoutAnimationsState(context: Context): Boolean {
             sharedPreferences = context.getSharedPreferences("RecyclerViewAnimationsState", Context.MODE_PRIVATE)
             return sharedPreferences.getBoolean("recyclerViewAnimationsState", false)
         }

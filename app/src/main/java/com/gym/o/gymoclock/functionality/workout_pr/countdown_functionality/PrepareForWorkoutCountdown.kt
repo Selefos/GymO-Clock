@@ -2,30 +2,36 @@ package com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality
 
 import android.graphics.Color
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.enums.PrepareTimerState
 import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
+import com.gym.o.gymoclock.functionality.workout_pr.animations.fabFadeOutFadeInAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.animations.foldSettingsAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.fab_ui.numericalFABPosition
 import com.gym.o.gymoclock.functionality.workout_pr.prepareCountdownInMillis
 import com.gym.o.gymoclock.functionality.workout_pr.recyclerPosition
+import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.FormatUtils
+import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 
 
 private lateinit var prepareTimer: CountDownTimer
 
-fun WorkoutFragment.prepareForWorkoutTimer() {
-    dialogBuilder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+fun WorkoutFragment.prepareForWorkout() {
+
     val inflater = layoutInflater
     val view = inflater.inflate(R.layout.workout_prepare, null)
     val prepareCountdownText = view.findViewById<TextView>(R.id.prepare_countdown)
 
-    buttonsStateOnWorkout(false)
     startPrepareTimer(prepareCountdownText)
 
+    dialogBuilder = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
     dialogBuilder.setView(view)
     dialog = dialogBuilder.create()
     dialog.setCanceledOnTouchOutside(false)
@@ -68,15 +74,65 @@ fun WorkoutFragment.updatePrepareTimerUI(textView: TextView) {
 
 }
 
-fun WorkoutFragment.buttonsStateOnWorkout(stateEnabled: Boolean) {
+fun WorkoutFragment.responsiveUIElementsStateOnWorkout(stateEnabled: Boolean) {
+
     binding.roundsPicker.isEnabled = stateEnabled
-    binding.addLayoutFab.isVisible = stateEnabled
-
-
+    binding.addLayoutFab.isEnabled = stateEnabled
 
     if (!stateEnabled)
-        binding.addLayoutFab.setColorFilter(Color.rgb(155, 50, 50))
+        disableAddLayoutFAB()
     else
-        binding.addLayoutFab.setColorFilter(Color.rgb(145, 251, 218))
+        enableAddLayoutFAB()
+
+    exerciseSettingsButtonState(stateEnabled)
+
 }
 
+fun WorkoutFragment.disableAddLayoutFAB(){
+    binding.addLayoutFab.setColorFilter(Color.rgb(155, 50, 50))//red
+
+    if(SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+        fabFadeOutFadeInAnimation(binding.addLayoutFab)
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                numericalFABPosition(binding.addLayoutFab, 30.0f, 30.0f)
+            }, 1000)
+        return
+    }
+
+    numericalFABPosition(binding.addLayoutFab, 30.0f, 30.0f)
+}
+
+fun WorkoutFragment.enableAddLayoutFAB(){
+    binding.addLayoutFab.setColorFilter(Color.rgb(145, 251, 218))//green
+
+    val addLayoutFABX = SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext())
+    val addLayoutFABY = SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
+
+    if(SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+        fabFadeOutFadeInAnimation(binding.addLayoutFab)
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                numericalFABPosition(binding.addLayoutFab, addLayoutFABX, addLayoutFABY)
+            }, 1000)
+        return
+    }
+
+    numericalFABPosition(binding.addLayoutFab, addLayoutFABX, addLayoutFABY)
+
+}
+
+
+fun WorkoutFragment.exerciseSettingsButtonState(stateEnabled: Boolean) {
+
+    var holder: ExerciseRecyclerAdapter.ViewHolder?
+    for (i: Int in 0 until listAdapter.itemCount) {
+        holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
+        holder?.exerciseSettingsButton?.isEnabled = stateEnabled
+
+        if (holder?.isSettingsVisible == true)
+            foldSettingsAnimation(requireContext(), holder.exerciseSettingsButton, holder.editView, holder.removeView)
+
+    }
+
+}

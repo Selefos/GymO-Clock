@@ -112,7 +112,7 @@
                 android:text="@string/initial_remaining_time"
                 android:textAlignment="center"
                 android:textColor="@color/custom_text_color"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/total_time_text_view"
                 app:layout_constraintStart_toStartOf="@+id/total_time_text_view"

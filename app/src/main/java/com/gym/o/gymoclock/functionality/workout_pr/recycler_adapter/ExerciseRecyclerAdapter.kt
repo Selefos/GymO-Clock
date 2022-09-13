@@ -83,7 +83,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         holder.mrTimerIsPaused = newList.rTimerIsPaused
 
         //holder.setIsRecyclable(false)
-        if(!holderList.containsKey(holder.adapterPosition))
+        //if(!holderList.containsKey(holder.adapterPosition))
         holderList[holder.adapterPosition] = holder
 
         if (SharedPreferencesUtils.getLayoutAnimationsState(context))

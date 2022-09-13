@@ -161,7 +161,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun calendarDBInit() {
         val calendarDB = CalendarDB(this)
         val calendarMonths: List<String> = calendarDB.loadCalendarTableNames()
-        //val dateTimeUtils = DateTimeUtils()
 
         DateTimeUtils.getCurrentYear()
         DateTimeUtils.getCurrentMonth()
@@ -176,6 +175,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         calendarDB.addCalendarTable(DateTimeUtils.setCalendarTableName())
+
 
     }
 

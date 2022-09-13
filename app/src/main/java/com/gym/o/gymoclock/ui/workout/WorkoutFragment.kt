@@ -62,7 +62,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         onSavedInstance(savedInstanceState)
         if (workoutTableName.isNotEmpty()) {
             loadRecyclerViews()
-            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         }
 
         //setItemTouchHelper()
@@ -199,7 +199,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             Log.e("WorkoutFrag", "Item Position = $dataPosition, Animate Delete Position = $getLastPositionForRemoveViewAnimation" + " " +
                     "Animate Add Position = $getLastPositionForAddViewAnimation")
 
-            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
             Handler(Looper.getMainLooper()).postDelayed(
                 {
                     loadRecyclerViews()
@@ -465,7 +465,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
 
             if (binding.roundsPicker.textColor == Color.RED) {
-                binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+                binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
                 binding.roundsPicker.textColor = Color.WHITE
             }
 
@@ -573,8 +573,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutTableName,
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
+            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
+            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
         )
 
 

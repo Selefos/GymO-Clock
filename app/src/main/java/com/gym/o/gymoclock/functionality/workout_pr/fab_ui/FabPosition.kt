@@ -1,8 +1,5 @@
 package com.gym.o.gymoclock.functionality.workout_pr.fab_ui
 
-import android.graphics.Color
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton

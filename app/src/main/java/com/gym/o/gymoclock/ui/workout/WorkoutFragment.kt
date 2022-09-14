@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.graphics.RectF
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -397,6 +398,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
+    open fun calculateRectOnScreen(view: View): RectF? {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        return RectF(location[0].toFloat(), location[1].toFloat(), (location[0] + view.measuredWidth).toFloat(), (location[1] + view.measuredHeight).toFloat())
+    }
 
     private fun workoutInit() {
 
@@ -413,8 +419,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 val touchDuration = event.eventTime - event.downTime
                 val clickThreshold = 200
 
-                var newX = 0f
-                var newY = 0f
+                val newX: Float
+                val newY: Float
 
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -425,11 +431,19 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     MotionEvent.ACTION_MOVE -> {
                         newX = binding.playPauseFab.x + (event.x - x)
                         newY = binding.playPauseFab.y + (event.y - y)
+
                         // check if the view out of screen
                         // xyPivot is used to prevent dragged view from coming too close to
                         // the screen borders, as results from the view getting bellow it
-                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) || (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot))
-                            return true
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) ||
+                            (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot)
+                        ) return true
+
+                        val collisionPoint = 100f
+                        if (
+                            (newX <= (binding.addLayoutFab.x + collisionPoint) && newY <= (binding.addLayoutFab.y + collisionPoint)) &&
+                            (newX >= (binding.addLayoutFab.x - collisionPoint) && newY >= (binding.addLayoutFab.y - collisionPoint))
+                        ) return true
 
                         binding.playPauseFab.x = newX
                         binding.playPauseFab.y = newY
@@ -509,8 +523,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 val touchDuration = event.eventTime - event.downTime
                 val clickThreshold = 200
 
-                var newX = 0f
-                var newY = 0f
+                val newX: Float
+                val newY: Float
 
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -521,11 +535,19 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                     MotionEvent.ACTION_MOVE -> {
                         newX = binding.addLayoutFab.x + (event.x - x)
                         newY = binding.addLayoutFab.y + (event.y - y)
+
                         // check if the view out of screen
                         // xyPivot is used to prevent dragged view from coming too close to
                         // the screen borders, as results from the view getting bellow it
-                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) || (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot))
-                            return true
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) ||
+                            (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot)
+                        ) return true
+
+                        val collisionPoint = 100f
+                        if (
+                            (newX <= (binding.playPauseFab.x + collisionPoint) && newY <= (binding.playPauseFab.y + collisionPoint)) &&
+                            (newX >= (binding.playPauseFab.x - collisionPoint) && newY >= (binding.playPauseFab.y - collisionPoint))
+                        ) return true
 
                         binding.addLayoutFab.x = newX
                         binding.addLayoutFab.y = newY

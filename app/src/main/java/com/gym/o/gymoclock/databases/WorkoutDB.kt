@@ -91,17 +91,17 @@ class WorkoutDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nu
         return result != 1
     }
 
-    fun updateAllExercisesTimer(workoutName: String, clockChoice: ClockSelectedEnum, time: Int){
+    fun updateAllExercisesTimer(workoutName: String, clockChoice: ClockSelectedEnum, time: Int) {
         val db: SQLiteDatabase = this.writableDatabase
         val contentValues = ContentValues()
 
-        when(clockChoice){
+        when (clockChoice) {
             ClockSelectedEnum.WorkClock -> contentValues.put(COL_WORK_TIME, time)
             ClockSelectedEnum.RestClock -> contentValues.put(COL_REST_TIME, time)
             ClockSelectedEnum.Idle      -> {}
         }
 
-        db.update(workoutName, contentValues,null,null)
+        db.update(workoutName, contentValues, null, null)
     }
 
     fun deleteWorkoutDetails(workoutName: String, exerciseName: String): Boolean {

@@ -3,9 +3,9 @@
     android:height="200dp"
     android:viewportWidth="864"
     android:viewportHeight="864">
-  <path
-      android:pathData="M738.8,391H469V125.2c0,-5 -3.7,-9.2 -8.8,-9.2h-55c-5,0 -8.3,4.1 -8.3,9.2V391H125.2c-5,0 -9.2,3.9 -9.2,8.9v55c0,5 4.1,9.1 9.2,9.1H397v274.8c0,5 3.2,9.2 8.3,9.2h55c5,0 8.8,-4.1 8.8,-9.2V464h269.8c5,0 9.2,-4.1 9.2,-9.1v-55C748,394.9 743.9,391 738.8,391z"
-      android:strokeWidth="20"
-      android:fillColor="#00000000"
-      android:strokeColor="#000000"/>
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M738.8,391H469V125.2c0,-5 -3.7,-9.2 -8.8,-9.2h-55c-5,0 -8.3,4.1 -8.3,9.2V391H125.2c-5,0 -9.2,3.9 -9.2,8.9v55c0,5 4.1,9.1 9.2,9.1H397v274.8c0,5 3.2,9.2 8.3,9.2h55c5,0 8.8,-4.1 8.8,-9.2V464h269.8c5,0 9.2,-4.1 9.2,-9.1v-55C748,394.9 743.9,391 738.8,391z"
+        android:strokeWidth="20"
+        android:strokeColor="#000000" />
 </vector>

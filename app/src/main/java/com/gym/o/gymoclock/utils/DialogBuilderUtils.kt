@@ -30,7 +30,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val restDigitalTime: TextView = viewAddOrEditExercise.findViewById(R.id.rest_digital_time)
 
 
-
     val workTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.work_time_picker)
     val restTimePicker: Button = viewAddOrEditExercise.findViewById(R.id.rest_time_picker)
 
@@ -55,9 +54,9 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
             override fun afterTextChanged(s: Editable?) {
                 Log.i("Editable", TimePickerUtils.timePicked.toString())
-                if(s.toString().isNotEmpty())
+                if (s.toString().isNotEmpty())
                     verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.custom_text_color))
-                else if(s.toString().isEmpty() && !TimePickerUtils.timePicked)
+                else if (s.toString().isEmpty() && !TimePickerUtils.timePicked)
                     verifyButtonEditExercise.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
             }
         })
@@ -102,22 +101,22 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val exerciseScreenListLayout: LinearLayout = viewCalendarExerciseScreenList.findViewById(R.id.exercise_screen_list)
     private var isViewOnWorkoutDetails = true
     private var isListForLoad = true
-    
-    fun onClickListenerCalendarScope(workoutID: String, populateTextViews: (workoutID: String) -> Unit){
 
-        calendarCircleChangeButton.setOnClickListener{
+    fun onClickListenerCalendarScope(workoutID: String, populateTextViews: (workoutID: String) -> Unit) {
+
+        calendarCircleChangeButton.setOnClickListener {
             isViewOnWorkoutDetails = !isViewOnWorkoutDetails
 
             scrollView.removeAllViews()
             Log.i("IsOnDetails", isViewOnWorkoutDetails.toString())
             Log.i("FLAG", isListForLoad.toString())
-            if(isViewOnWorkoutDetails){
+            if (isViewOnWorkoutDetails) {
                 calendarCircleChangeButton.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
                 scrollView.addView(tableLayout)
             }
 
-            if(!isViewOnWorkoutDetails) {
-                if(isListForLoad)
+            if (!isViewOnWorkoutDetails) {
+                if (isListForLoad)
                     populateTextViews(workoutID)
                 isListForLoad = false
                 calendarCircleChangeButton.background.setTint(Color.WHITE)
@@ -137,7 +136,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val volumePercent: TextView = viewVoiceAssistSettings.findViewById(R.id.volume_percent)
     var testVoiceVolumeButton: Button = viewVoiceAssistSettings.findViewById(R.id.test_volume_button)
 
-    fun voiceAssistScope(setCanceledOnTouchOutside: Boolean){
+    fun voiceAssistScope(setCanceledOnTouchOutside: Boolean) {
         dialogBuilder.setView(viewVoiceAssistSettings)
         scrollView.addView(tableLayout)
         dialog = dialogBuilder.create()
@@ -151,7 +150,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     var recyclerViewAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.recycler_view_animations)
     var clocksAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.clocks_animations)
 
-    fun animationsScope(setCanceledOnTouchOutside: Boolean){
+    fun animationsScope(setCanceledOnTouchOutside: Boolean) {
         dialogBuilder.setView(viewAnimationsSettings)
         scrollView.addView(tableLayout)
         dialog = dialogBuilder.create()

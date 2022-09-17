@@ -1,14 +1,17 @@
 package com.gym.o.gymoclock.ui.workout
 
+import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
+import android.graphics.RectF
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
@@ -32,9 +35,10 @@ import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
-import com.gym.o.gymoclock.functionality.workout_pr.animations.foldSettingsAnimation
+import com.gym.o.gymoclock.functionality.workout_pr.animations.fabFadeInFadeOutAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnRemoveViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.*
+import com.gym.o.gymoclock.functionality.workout_pr.fab_ui.setFabPosition
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseElements
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseRecyclerAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.rounds_picker.roundsPicker
@@ -49,25 +53,22 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     private var _binding: FragmentWorkoutBinding? = null
     val binding get() = _binding!!
 
-    private var isTimerRunning: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         _binding = FragmentWorkoutBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        Log.i("WorkoutFragment", "onCreateView")
+
         init()
         onSavedInstance(savedInstanceState)
         if (workoutTableName.isNotEmpty()) {
             loadRecyclerViews()
-            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         }
 
         //setItemTouchHelper()
 
         recyclerView.smoothScrollToPosition(recyclerPosition)
-
-        workoutInit()
 
         if (listAdapter.itemCount != 0)
             roundsPicker()
@@ -81,37 +82,15 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
 
-    override fun onDestroyView() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // _binding = null
-        //TextToSpeechUtils.getInstance(requireContext()).stopTTS()
-//        binding.addLayout.isEnabled = false
-//        binding.addLayout.isClickable = false
-//
-//        binding.playPauseButton.isEnabled = false
-//        binding.playPauseButton.isClickable = false
-//
-//        binding.roundsEdit.isEnabled = false
-//        binding.roundsEdit.isClickable = false
-//
-//        if(listAdapter.itemCount > 0) {
-//            val position = dataList[recyclerPosition]
-//
-//            if (position.wTimerIsRunning) {
-//                pauseTotalTimer()
-//                listAdapter.pauseExerciseTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-//            }
-//
-//            if (position.rTimerIsRunning) {
-//                pauseTotalTimer()
-//                listAdapter.pauseRestTimer(recyclerPosition, resources.getString(R.string.workout_stopped))
-//            }
-//        }
-//        recyclerPosition = 0
-//        PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
-//        Log.i("WorkFrag", "onDestroyView")
-//        stopAnimation(ClockSelected.clockSelected)
-        super.onDestroyView()
+        setFabPosition()
+
+        if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+            fabFadeInFadeOutAnimation(binding.playPauseFab)
+            fabFadeInFadeOutAnimation(binding.addLayoutFab)
+        }
 
     }
 
@@ -203,7 +182,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (deleteView)
                 Toast.makeText(context, "Exercise Deleted", Toast.LENGTH_SHORT).show()
 
-            if (SharedPreferencesUtils.getRecyclerViewAnimationsState(requireContext()))
+            if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext()))
                 setOnRemoveViewAnimation(itemView, dataPosition)
 
             Handler(Looper.getMainLooper()).postDelayed(
@@ -221,7 +200,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             Log.e("WorkoutFrag", "Item Position = $dataPosition, Animate Delete Position = $getLastPositionForRemoveViewAnimation" + " " +
                     "Animate Add Position = $getLastPositionForAddViewAnimation")
 
-            binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+            binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
             Handler(Looper.getMainLooper()).postDelayed(
                 {
                     loadRecyclerViews()
@@ -344,6 +323,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
+    private var isTimerRunning: Boolean = false
 
     override fun roundsCount() {
         rounds--
@@ -384,6 +364,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     lateinit var listAdapter: ExerciseRecyclerAdapter
     lateinit var dataList: ArrayList<ExerciseElements>
     lateinit var workoutDB: WorkoutDB
+
     private fun init() {
         if (SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
             rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
@@ -412,20 +393,78 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         workoutDB = WorkoutDB(requireActivity().applicationContext)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
         recyclerView.adapter = listAdapter
+
+        workoutInit()
+
     }
 
+    open fun calculateRectOnScreen(view: View): RectF? {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        return RectF(location[0].toFloat(), location[1].toFloat(), (location[0] + view.measuredWidth).toFloat(), (location[1] + view.measuredHeight).toFloat())
+    }
 
     private fun workoutInit() {
-        binding.addLayout.setOnClickListener {
-            if (workoutTableName.isEmpty()) {
-                Toast.makeText(context, "No exercises available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            addExerciseRecyclerView()
-            return@setOnClickListener
-        }
 
-        binding.playPauseButton.setOnClickListener {
+        val displayMetrics = Resources.getSystem().displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+
+        binding.playPauseFab.setOnTouchListener(object : View.OnTouchListener {
+            var x = 0f
+            var y = 0f
+            var xyPivot = 25
+
+            override fun onTouch(view: View, event: MotionEvent): Boolean {
+                val touchDuration = event.eventTime - event.downTime
+                val clickThreshold = 200
+
+                val newX: Float
+                val newY: Float
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        x = event.x
+                        y = event.y
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        newX = binding.playPauseFab.x + (event.x - x)
+                        newY = binding.playPauseFab.y + (event.y - y)
+
+                        // check if the view out of screen
+                        // xyPivot is used to prevent dragged view from coming too close to
+                        // the screen borders, as results from the view getting bellow it
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) ||
+                            (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot)
+                        ) return true
+
+                        val collisionPoint = 100f
+                        if (
+                            (newX <= (binding.addLayoutFab.x + collisionPoint) && newY <= (binding.addLayoutFab.y + collisionPoint)) &&
+                            (newX >= (binding.addLayoutFab.x - collisionPoint) && newY >= (binding.addLayoutFab.y - collisionPoint))
+                        ) return true
+
+                        binding.playPauseFab.x = newX
+                        binding.playPauseFab.y = newY
+
+                        SharedPreferencesUtils.savePlayPauseFABPositionXY(requireContext(), newX, newY)
+
+                        return true
+                    }
+                    MotionEvent.ACTION_UP   -> {
+                        if (event.action == MotionEvent.ACTION_UP && touchDuration < clickThreshold)
+                            view.performClick()
+
+                        return true
+                    }
+
+                }
+                return true
+            }
+        })
+
+        binding.playPauseFab.setOnClickListener {
 
             if (rounds == 0) {
                 recyclerPosition = 0
@@ -440,21 +479,20 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             }
 
             if (binding.roundsPicker.textColor == Color.RED) {
-                binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+                binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
                 binding.roundsPicker.textColor = Color.WHITE
             }
 
             isTimerRunning = !isTimerRunning
-            Log.d("isStartWorkout", (isTimerRunning).toString())
             if (isTimerRunning) {
 
                 if (PrepareTimerState.prepareTimerState == PrepareTimerStateEnum.Preparing) {
-                    exerciseSettingsButtonState(false)
-                    prepareForWorkoutTimer()
+                    responsiveUIElementsStateOnWorkout(false)
+                    prepareForWorkout()
                     return@setOnClickListener
                 }
 
-                binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_pause_button)
+                binding.playPauseFab.setImageResource(android.R.drawable.ic_media_pause)
                 startTotalTimer()
                 listAdapter.startExerciseTimer(recyclerPosition)
 
@@ -469,37 +507,103 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 listAdapter.pauseRestTimer(recyclerPosition, resources.getString(R.string.rest_paused))
 
             pauseTotalTimer()
-            binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
-
+            binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
             if (SharedPreferencesUtils.getClocksAnimationsState(requireContext()))
                 stopClockProgressBar(ClockSelected.clockSelected)
 
             return@setOnClickListener
         }
+
+        binding.addLayoutFab.setOnTouchListener(object : View.OnTouchListener {
+            var x = 0f
+            var y = 0f
+            var xyPivot = 25
+
+            override fun onTouch(view: View, event: MotionEvent): Boolean {
+                val touchDuration = event.eventTime - event.downTime
+                val clickThreshold = 200
+
+                val newX: Float
+                val newY: Float
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        x = event.x
+                        y = event.y
+                        return true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        newX = binding.addLayoutFab.x + (event.x - x)
+                        newY = binding.addLayoutFab.y + (event.y - y)
+
+                        // check if the view out of screen
+                        // xyPivot is used to prevent dragged view from coming too close to
+                        // the screen borders, as results from the view getting bellow it
+                        if ((newX <= xyPivot || newX >= screenWidth - view.width - xyPivot) ||
+                            (newY <= xyPivot || newY >= screenHeight - view.height - xyPivot)
+                        ) return true
+
+                        val collisionPoint = 100f
+                        if (
+                            (newX <= (binding.playPauseFab.x + collisionPoint) && newY <= (binding.playPauseFab.y + collisionPoint)) &&
+                            (newX >= (binding.playPauseFab.x - collisionPoint) && newY >= (binding.playPauseFab.y - collisionPoint))
+                        ) return true
+
+                        binding.addLayoutFab.x = newX
+                        binding.addLayoutFab.y = newY
+
+                        SharedPreferencesUtils.saveAddLayoutFABPositionXY(requireContext(), newX, newY)
+
+                        return true
+                    }
+                    MotionEvent.ACTION_UP   -> {
+                        if (event.action == MotionEvent.ACTION_UP && touchDuration < clickThreshold)
+                            view.performClick()
+
+                        return true
+                    }
+
+                }
+                return true
+            }
+        })
+
+        binding.addLayoutFab.setOnClickListener {
+            if (workoutTableName.isEmpty()) {
+                Toast.makeText(context, "No workouts available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            addExerciseRecyclerView()
+            return@setOnClickListener
+        }
     }
+
 
     private lateinit var calendarDB: CalendarDB
     private lateinit var exercisesScreenDB: ExercisesScreenDB
+
     private fun onEndOfWorkout() {
-        binding.playPauseButton.background = getDrawable(requireContext(), R.drawable.ic_play_button)
+
+        binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
         isTimerRunning = false
         PrepareTimerState.prepareTimerState = PrepareTimerStateEnum.Preparing
-        buttonsStateOnWorkout(true)
-        exerciseSettingsButtonState(true)
+        responsiveUIElementsStateOnWorkout(true)
 
         calendarDB = CalendarDB(context)
-        Log.d("CountDown", "rounds == 0 ${DateTimeUtils.getCurrentTime()}")
+
         val monthYear = "${DateTimeUtils.getCurrentMonth()} ${DateTimeUtils.getCurrentYear()}".replace(" ", "_")
 
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutTableName,
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
-            FormatUtils.convertTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
+            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
+            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
         )
+
 
         saveExercisesList(monthYear)
         ClockSelected.clockSelected = ClockSelectedEnum.Idle
         startTime = ""
+
     }
 
 
@@ -672,21 +776,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 dataList.removeAt(0)
 
             listAdapter.notifyDataSetChanged()
-        }
-
-    }
-
-
-    private fun exerciseSettingsButtonState(stateEnabled: Boolean) {
-
-        var holder: ExerciseRecyclerAdapter.ViewHolder?
-        for (i: Int in 0 until listAdapter.itemCount) {
-            holder = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
-            holder?.exerciseSettingsButton?.isEnabled = stateEnabled
-
-            if (holder!!.isSettingsVisible)
-                foldSettingsAnimation(requireContext(), holder.exerciseSettingsButton, holder.editView, holder.removeView)
-
         }
 
     }

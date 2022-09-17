@@ -10,7 +10,7 @@ var endTimeTotalTimer: Long = 0//by Delegates.notNull<Long>()
 
 fun WorkoutFragment.startTotalTimer() {
 
-    totalTimeInMillis = FormatUtils.convertDigitalTimeToMillis(binding.totalTime.text.toString())
+    totalTimeInMillis = FormatUtils.convertDigitalTotalTimeToMillis(binding.totalTime.text.toString())
     endTimeTotalTimer = System.currentTimeMillis() + totalTimeInMillis
 
     totalTimer = object : CountDownTimer(totalTimeInMillis, 1000) {
@@ -26,7 +26,7 @@ fun WorkoutFragment.startTotalTimer() {
 }
 
 fun WorkoutFragment.updateTotalTimerUI() {
-    binding.totalTime.text = FormatUtils.timeInMillisecondsClockUI(totalTimeInMillis)
+    binding.totalTime.text = FormatUtils.totalTimeInMillisecondsClockUI(totalTimeInMillis)
 }
 
 fun pauseTotalTimer() {

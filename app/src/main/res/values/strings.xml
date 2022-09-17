@@ -27,7 +27,7 @@
     <string name="edit_view">Edit View</string>
     <string name="rounds_text">ROUNDS</string>
     <string name="rounds_edit">0</string>
-    <string name="total_time">Total Time:</string>
+    <string name="total_time">Total Time</string>
     <string name="initial_remaining_time">-</string>
     <string name="prepare_for_workout"> </string>
     <!--  __________________________________________________  -->

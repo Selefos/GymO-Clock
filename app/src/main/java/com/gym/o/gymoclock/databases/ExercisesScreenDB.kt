@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-//Saves Screen of Exercises done!
 
 class ExercisesScreenDB(context: Context?): SQLiteOpenHelper(context, DATABASE_NAME, null, 1){
 
@@ -51,6 +50,13 @@ class ExercisesScreenDB(context: Context?): SQLiteOpenHelper(context, DATABASE_N
         cursor.close()
         db.close()
         return list
+    }
+
+    fun screenDBDeleteTestEntries(tableName: String, exerciseName: String): Boolean {
+        val db = this.writableDatabase
+        val result = db.delete(tableName, "$COL_WORKOUT_NAME = ?", arrayOf(exerciseName))
+        db.close()
+        return result != -1
     }
 
     companion object {

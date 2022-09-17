@@ -1,129 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:addStatesFromChildren="true"
     android:background="@drawable/main_layout_background"
-    android:clipChildren="true"
-    android:orientation="vertical"
     tools:context=".ui.workout.WorkoutFragment">
 
-    <TextView
-        android:id="@+id/workout_workout_name"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/play_pause_fab"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textColor="@color/white" />
+        android:layout_marginBottom="4sp"
+        android:contentDescription="@string/ok_button"
+        android:src="@android:drawable/ic_media_play"
+        app:backgroundTint="#DC172230"
+        app:borderWidth="@dimen/fab_borderWidth"
+        app:fabCustomSize="@dimen/fab_size"
+        app:tint="@color/custom_text_color" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_constraint_layout"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_layout_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4sp"
+        android:contentDescription="@string/ok_button"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#DC172230"
+        app:borderWidth="@dimen/fab_borderWidth"
+        app:fabCustomSize="@dimen/fab_size"
+        app:tint="@color/custom_text_color" />
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageButton
-            android:id="@+id/add_layout"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/ic_add_button"
-            android:contentDescription="@string/add_layout_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ImageButton
-            android:id="@+id/play_pause_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/ic_play_button"
-            android:contentDescription="@string/manipulate_timers"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_layout"
-            app:layout_constraintVertical_bias="0.0" />
-
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/rounds_text"
-            android:layout_width="98dp"
-            android:layout_height="18dp"
-            android:gravity="center"
-            android:text="@string/rounds_text"
-            android:textAlignment="center"
-            android:textColor="@color/custom_text_color"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/rounds_picker"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <NumberPicker
-            android:id="@+id/rounds_picker"
-            android:layout_width="50dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:autofillHints="hint:number"
-            android:descendantFocusability="blocksDescendants"
-            android:gravity="center"
-            android:solidColor="#00000000"
-            android:textAlignment="center"
-            android:textColor="@color/custom_text_color"
-            android:textColorHint="#939393"
-            android:theme="@style/NumberPicker"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/total_time_text_view"
-            android:layout_width="80dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="64dp"
-            android:gravity="center"
-            android:text="@string/total_time"
-            android:textAlignment="center"
-            android:textColor="@color/custom_text_color"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
-
-        <TextView
-            android:id="@+id/total_time"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="4dp"
-            android:gravity="center"
-            android:text="@string/initial_remaining_time"
-            android:textAlignment="center"
-            android:textColor="@color/custom_text_color"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/total_time_text_view"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+            android:id="@+id/workout_workout_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarSize="1dp"
-            android:scrollbarStyle="insideInset"
-            android:scrollbarThumbVertical="?attr/colorButtonNormal"
-            android:scrollbars="vertical" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</LinearLayout>
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_constraint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/rounds_text"
+                android:layout_width="98dp"
+                android:layout_height="18dp"
+                android:gravity="center"
+                android:text="@string/rounds_text"
+                android:textAlignment="center"
+                android:textColor="@color/custom_text_color"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/rounds_picker"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <NumberPicker
+                android:id="@+id/rounds_picker"
+                android:layout_width="50dp"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:autofillHints="hint:number"
+                android:descendantFocusability="blocksDescendants"
+                android:gravity="center"
+                android:solidColor="#00000000"
+                android:textAlignment="center"
+                android:textColor="@color/custom_text_color"
+                android:textColorHint="#939393"
+                android:theme="@style/NumberPicker"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/total_time_text_view"
+                android:layout_width="100dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/total_time"
+                android:textAlignment="center"
+                android:textColor="@color/custom_text_color"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/total_time"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center"
+                android:text="@string/initial_remaining_time"
+                android:textAlignment="center"
+                android:textColor="@color/custom_text_color"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/total_time_text_view"
+                app:layout_constraintStart_toStartOf="@+id/total_time_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/total_time_text_view"
+                app:layout_constraintVertical_bias="0.120000005" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarSize="1dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbarThumbVertical="?attr/colorButtonNormal"
+                android:scrollbars="vertical" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -27,7 +27,7 @@ fun MainActivity.voiceAssist() {
 
 }
 
-fun MainActivity.voiceAssistantState(dialogBuilderUtils: DialogBuilderUtils){
+fun MainActivity.voiceAssistantState(dialogBuilderUtils: DialogBuilderUtils) {
     dialogBuilderUtils.voiceAssistState.isChecked = SharedPreferencesUtils.getTtsState(this)
     //dialogBuilderUtils.voiceAssistState.isChecked = dialogBuilderUtils.voiceAssistState.isChecked
 
@@ -49,7 +49,7 @@ fun MainActivity.voiceAssistantState(dialogBuilderUtils: DialogBuilderUtils){
     }
 }
 
-fun MainActivity.voiceTestButton(dialogBuilderUtils: DialogBuilderUtils){
+fun MainActivity.voiceTestButton(dialogBuilderUtils: DialogBuilderUtils) {
     var isPlayPressed = false
     dialogBuilderUtils.testVoiceVolumeButton.setOnClickListener {
 
@@ -85,7 +85,7 @@ fun MainActivity.voiceTestButton(dialogBuilderUtils: DialogBuilderUtils){
     }
 }
 
-fun MainActivity.volumeControl(dialogBuilderUtils: DialogBuilderUtils){
+fun MainActivity.volumeControl(dialogBuilderUtils: DialogBuilderUtils) {
     val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     var currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
@@ -97,7 +97,7 @@ fun MainActivity.volumeControl(dialogBuilderUtils: DialogBuilderUtils){
 
     dialogBuilderUtils.volumeControl.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (progress*15)/100, 0)
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (progress * 15) / 100, 0)
             dialogBuilderUtils.volumePercent.text = "$progress%"
             currentVolume = progress
         }

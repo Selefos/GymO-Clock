@@ -6,7 +6,7 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.utils.DialogBuilderUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 
-fun MainActivity.animations(){
+fun MainActivity.animations() {
     val dialogBuilderUtils = DialogBuilderUtils(this)
     dialogBuilderUtils.animationsScope(false)
 
@@ -19,13 +19,12 @@ fun MainActivity.animations(){
     clocksAnimationsState(dialogBuilderUtils)
 }
 
-fun MainActivity.allAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
+fun MainActivity.allAnimationsState(dialogBuilderUtils: DialogBuilderUtils) {
     dialogBuilderUtils.allAnimationsState.isChecked = SharedPreferencesUtils.getAllAnimationsState(this)
 
     if (dialogBuilderUtils.allAnimationsState.isChecked) {
         dialogBuilderUtils.allAnimationsState.text = resources.getString(R.string.settings_disable_all_animations)
-    }
-    else {
+    } else {
         dialogBuilderUtils.allAnimationsState.text = resources.getString(R.string.settings_enable_all_animations)
         isSwitchEnabled(dialogBuilderUtils, dialogBuilderUtils.allAnimationsState.isChecked)
     }
@@ -55,8 +54,8 @@ fun MainActivity.allAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
     }
 }
 
-fun MainActivity.recyclerViewAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
-    animRecyclerViewState(dialogBuilderUtils,SharedPreferencesUtils.getLayoutAnimationsState(this))
+fun MainActivity.recyclerViewAnimationsState(dialogBuilderUtils: DialogBuilderUtils) {
+    animRecyclerViewState(dialogBuilderUtils, SharedPreferencesUtils.getLayoutAnimationsState(this))
 
     dialogBuilderUtils.recyclerViewAnimationsState.setOnCheckedChangeListener { _, isChecked ->
         if (isChecked) {
@@ -70,7 +69,7 @@ fun MainActivity.recyclerViewAnimationsState(dialogBuilderUtils: DialogBuilderUt
     }
 }
 
-fun MainActivity.clocksAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
+fun MainActivity.clocksAnimationsState(dialogBuilderUtils: DialogBuilderUtils) {
 
     animClocksState(dialogBuilderUtils, SharedPreferencesUtils.getClocksAnimationsState(this))
 
@@ -87,7 +86,7 @@ fun MainActivity.clocksAnimationsState(dialogBuilderUtils: DialogBuilderUtils){
     }
 }
 
-fun MainActivity.animRecyclerViewState(dialogBuilderUtils: DialogBuilderUtils, isChecked: Boolean){
+fun MainActivity.animRecyclerViewState(dialogBuilderUtils: DialogBuilderUtils, isChecked: Boolean) {
     dialogBuilderUtils.recyclerViewAnimationsState.isChecked = isChecked
     if (isChecked)
         dialogBuilderUtils.recyclerViewAnimationsState.text = resources.getString(R.string.settings_disable_recycler_view_animations)
@@ -96,7 +95,7 @@ fun MainActivity.animRecyclerViewState(dialogBuilderUtils: DialogBuilderUtils, i
 
 }
 
-fun MainActivity.animClocksState(dialogBuilderUtils: DialogBuilderUtils, isChecked: Boolean){
+fun MainActivity.animClocksState(dialogBuilderUtils: DialogBuilderUtils, isChecked: Boolean) {
     dialogBuilderUtils.clocksAnimationsState.isChecked = isChecked
     if (isChecked)
         dialogBuilderUtils.clocksAnimationsState.text = resources.getString(R.string.settings_disable_clock_animations)
@@ -104,7 +103,7 @@ fun MainActivity.animClocksState(dialogBuilderUtils: DialogBuilderUtils, isCheck
         dialogBuilderUtils.clocksAnimationsState.text = resources.getString(R.string.settings_enable_clock_animations)
 }
 
-fun isSwitchEnabled(dialogBuilderUtils: DialogBuilderUtils, isEnabled: Boolean){
+fun isSwitchEnabled(dialogBuilderUtils: DialogBuilderUtils, isEnabled: Boolean) {
     dialogBuilderUtils.recyclerViewAnimationsState.isEnabled = isEnabled
     dialogBuilderUtils.clocksAnimationsState.isEnabled = isEnabled
     Log.i("isEnabled", isEnabled.toString())

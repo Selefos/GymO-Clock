@@ -184,7 +184,7 @@ fun fabFadeInFadeOutAnimation(fab: FloatingActionButton) {
 
 }
 
-fun fabFadeOutFadeInAnimation(fab: FloatingActionButton){
+fun fabFadeOutFadeInAnimation(fab: FloatingActionButton) {
 
     Handler(Looper.getMainLooper()).postDelayed(
         {

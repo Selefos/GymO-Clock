@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
-class ExercisesScreenDB(context: Context?): SQLiteOpenHelper(context, DATABASE_NAME, null, 1){
+class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE IF NOT EXISTS $TABLE_SCREEN_EXERCISES (ID INTEGER PRIMARY KEY , $COL_STORED_ID INTEGER, $COL_DATE DATE, $COL_WORKOUT_NAME ΤΕΧΤ, $COL_EXERCISES_LIST TEXT)"
@@ -38,7 +38,7 @@ class ExercisesScreenDB(context: Context?): SQLiteOpenHelper(context, DATABASE_N
         return db.query(TABLE_SCREEN_EXERCISES, getData, select, selection, null, null, null)
     }
 
-    fun list(storedId: String): String{
+    fun list(storedId: String): String {
         val db: SQLiteDatabase = readableDatabase
         val cursor = db.rawQuery("SELECT $COL_EXERCISES_LIST FROM $TABLE_SCREEN_EXERCISES WHERE $COL_STORED_ID = $storedId", null)
         var list = ""

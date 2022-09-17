@@ -7,101 +7,101 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="346dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="346dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:orientation="horizontal">
+
+        <NumberPicker
+            android:id="@+id/numberPicker_minutes"
+            android:layout_width="68dp"
+            android:layout_height="140dp"
+            android:theme="@style/NumberPicker"
+            app:layout_constraintBottom_toTopOf="@+id/cancel_numberPicker_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/_textview_minutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:orientation="horizontal">
+            android:layout_marginStart="4dp"
+            android:elevation="15dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/minutes"
+            android:textAlignment="center"
+            android:textColor="@color/custom_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/numberPicker_minutes"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.431" />
 
-            <NumberPicker
-                android:id="@+id/numberPicker_minutes"
-                android:layout_width="68dp"
-                android:layout_height="140dp"
-                android:theme="@style/NumberPicker"
-                app:layout_constraintBottom_toTopOf="@+id/cancel_numberPicker_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/time_digital_format"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:elevation="15dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/digital_format"
+            android:textAlignment="center"
+            android:textColor="@color/custom_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/_textview_seconds"
+            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintStart_toEndOf="@+id/_textview_minutes"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.431" />
 
-            <TextView
-                android:id="@+id/_textview_minutes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="4dp"
-                android:elevation="15dp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/minutes"
-                android:textAlignment="center"
-                android:textColor="@color/custom_text_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/numberPicker_minutes"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.431" />
+        <TextView
+            android:id="@+id/_textview_seconds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:elevation="15dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/seconds"
+            android:textAlignment="center"
+            android:textColor="@color/custom_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/numberPicker_seconds"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.431" />
 
-            <TextView
-                android:id="@+id/time_digital_format"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:elevation="15dp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/digital_format"
-                android:textAlignment="center"
-                android:textColor="@color/custom_text_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/_textview_seconds"
-                app:layout_constraintHorizontal_bias="0.478"
-                app:layout_constraintStart_toEndOf="@+id/_textview_minutes"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.431" />
+        <NumberPicker
+            android:id="@+id/numberPicker_seconds"
+            android:layout_width="68dp"
+            android:layout_height="140dp"
+            android:theme="@style/NumberPicker"
+            app:layout_constraintBottom_toTopOf="@+id/set_numberPicker_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/_textview_seconds"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:elevation="15dp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/seconds"
-                android:textAlignment="center"
-                android:textColor="@color/custom_text_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/numberPicker_seconds"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.431" />
+        <Button
+            android:id="@+id/cancel_numberPicker_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/custom_transparent"
+            android:text="@string/cancel_button"
+            android:textColor="@color/custom_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <NumberPicker
-                android:id="@+id/numberPicker_seconds"
-                android:layout_width="68dp"
-                android:layout_height="140dp"
-                android:theme="@style/NumberPicker"
-                app:layout_constraintBottom_toTopOf="@+id/set_numberPicker_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/set_numberPicker_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/custom_transparent"
+            android:text="@string/setNumberPicker"
+            android:textColor="@color/custom_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <Button
-                android:id="@+id/cancel_numberPicker_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/custom_transparent"
-                android:text="@string/cancel_button"
-                android:textColor="@color/custom_text_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Button
-                android:id="@+id/set_numberPicker_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/custom_transparent"
-                android:text="@string/setNumberPicker"
-                android:textColor="@color/custom_text_color"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

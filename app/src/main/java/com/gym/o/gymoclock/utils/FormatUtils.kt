@@ -65,7 +65,7 @@ class FormatUtils {
             } else convertedTime
         }
 
-        
+
         fun totalTimeInMillisecondsClockUI(timeInMilliseconds: Long): String {
             val secondsWork = (timeInMilliseconds / 1000) % 60
             val minutesWork = (timeInMilliseconds / (1000 * 60)) % 60

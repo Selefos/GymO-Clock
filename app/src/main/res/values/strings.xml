@@ -97,7 +97,7 @@
     <string name="settings_global_rest_time">Set Rest Timers</string>
     <string name="settings_voice_assist">Voice Assist Helper</string>
     <string name="settings_animations">Animations</string>
-    
+
     <string name="settings_enable_voice_assist">Enable Voice Assistant</string>
     <string name="settings_disable_voice_assist">Disable Voice Assistant</string>
     <string name="settings_volume_control">Volume Control</string>

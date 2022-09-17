@@ -15,12 +15,14 @@ import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
-import java.util.*
 
-var workTimeInMillis: Long = 0; var restTimeInMillis: Long = 0
-var startTime: String = ""; var endTime: Long = 0
+var workTimeInMillis: Long = 0
+var restTimeInMillis: Long = 0
+var startTime: String = ""
+var endTime: Long = 0
 
-var isExerciseAnimating = true; var isRestAnimating = true
+var isExerciseAnimating = true
+var isRestAnimating = true
 
 fun ExerciseRecyclerAdapter.startExerciseTimer(positionData: Int) {
     val position = dataList[positionData]

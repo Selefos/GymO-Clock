@@ -4,7 +4,6 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
-import android.graphics.RectF
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -264,8 +263,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         db = workoutDB.readableDatabase
 
         resetProgressBar()
-        removeAllRecyclerViews()
-
+        //removeAllRecyclerViews()
+        recyclerView.removeAllViews()
+        
         //prevents recycler views from stacking
         dataList.clear()
         recyclerView.recycledViewPool.clear()
@@ -354,6 +354,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
 
     override fun scrollToPosition() {
+        //recyclerView.setItemViewCacheSize(0)
         recyclerView.smoothScrollToPosition(recyclerPosition)
     }
 
@@ -398,11 +399,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
-    open fun calculateRectOnScreen(view: View): RectF? {
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-        return RectF(location[0].toFloat(), location[1].toFloat(), (location[0] + view.measuredWidth).toFloat(), (location[1] + view.measuredHeight).toFloat())
-    }
 
     private fun workoutInit() {
 

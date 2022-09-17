@@ -12,12 +12,12 @@ import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TimePickerUtils
 
-fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int){
+fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int) {
     val timePickerUtils = TimePickerUtils(this)
     timePickerUtils.settingsTimeDialogPrepareClock()
 
     timePickerUtils.setNumberPickerButton.setOnClickListener {
-        prepareCountdownInMillis = if(FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString()) == 0L )
+        prepareCountdownInMillis = if (FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString()) == 0L)
             1000L
         else
             FormatUtils.convertDigitalTimeToMillis(timePickerUtils.timeDigitalFormatTextView.text.toString())
@@ -32,7 +32,7 @@ fun MainActivity.prepareTimer(parent: ExpandableListView, groupPosition: Int){
     }
 }
 
-fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, workoutName: String){
+fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, workoutName: String) {
     val timePickerUtils = TimePickerUtils(this)
 
     timePickerUtils.settingsTimeDialogPrepareClock()
@@ -52,7 +52,7 @@ fun MainActivity.workTimer(parent: ExpandableListView, groupPosition: Int, worko
 
 }
 
-fun MainActivity.restTimer(parent: ExpandableListView, groupPosition: Int, workoutName: String){
+fun MainActivity.restTimer(parent: ExpandableListView, groupPosition: Int, workoutName: String) {
     val timePickerUtils = TimePickerUtils(this)
 
     timePickerUtils.settingsTimeDialogPrepareClock()

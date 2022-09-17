@@ -88,10 +88,10 @@ fun WorkoutFragment.responsiveUIElementsStateOnWorkout(stateEnabled: Boolean) {
 
 }
 
-fun WorkoutFragment.disableAddLayoutFAB(){
+fun WorkoutFragment.disableAddLayoutFAB() {
     binding.addLayoutFab.setColorFilter(Color.rgb(155, 50, 50))//red
 
-    if(SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
         fabFadeOutFadeInAnimation(binding.addLayoutFab)
         Handler(Looper.getMainLooper()).postDelayed(
             {
@@ -103,13 +103,13 @@ fun WorkoutFragment.disableAddLayoutFAB(){
     numericalFABPosition(binding.addLayoutFab, 30.0f, 30.0f)
 }
 
-fun WorkoutFragment.enableAddLayoutFAB(){
+fun WorkoutFragment.enableAddLayoutFAB() {
     binding.addLayoutFab.setColorFilter(Color.rgb(145, 251, 218))//green
 
     val addLayoutFABX = SharedPreferencesUtils.getAddLayoutFABPositionX(requireContext())
     val addLayoutFABY = SharedPreferencesUtils.getAddLayoutFABPositionY(requireContext())
 
-    if(SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext())) {
         fabFadeOutFadeInAnimation(binding.addLayoutFab)
         Handler(Looper.getMainLooper()).postDelayed(
             {

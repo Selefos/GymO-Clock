@@ -12,7 +12,7 @@ import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 
 
-class CustomExpandableListAdapter(mainActivity: MainActivity, listIcon:  List<MenuModel>, listTitle: List<MenuModel>, listChild: HashMap<MenuModel, List<MenuModel>?>) : BaseExpandableListAdapter() {
+class CustomExpandableListAdapter(mainActivity: MainActivity, listIcon: List<MenuModel>, listTitle: List<MenuModel>, listChild: HashMap<MenuModel, List<MenuModel>?>) : BaseExpandableListAdapter() {
     private var context: Context? = null
     private var listIcon: List<MenuModel>? = null
     private var listTitle: List<MenuModel>? = null
@@ -37,7 +37,7 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listIcon:  List<Me
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View? {
         var convertView = convertView
         val childText = getChild(groupPosition, childPosition).menuName
-        val childIcon = getChild(groupPosition,childPosition).itemIcon
+        val childIcon = getChild(groupPosition, childPosition).itemIcon
         if (convertView == null) {
             val inflater =
                 context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

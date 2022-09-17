@@ -13,7 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.functionality.workout_pr.animations.*
+import com.gym.o.gymoclock.functionality.workout_pr.animations.exerciseSettingsButtonAnimationControl
+import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
@@ -55,9 +56,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
             resources = itemView.context.resources
 
 
-
-
-
         }
 
     }
@@ -71,6 +69,11 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        //holder.setIsRecyclable(false)
+        //if(!holderList.containsKey(holder.adapterPosition))
+        holderList[holder.adapterPosition] = holder
+
         val newList = dataList[position]
         holder.exerciseName.text = newList.exerciseNameValue
 
@@ -82,9 +85,6 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         holder.mrTimerIsRunning = newList.rTimerIsRunning
         holder.mrTimerIsPaused = newList.rTimerIsPaused
 
-        //holder.setIsRecyclable(false)
-        //if(!holderList.containsKey(holder.adapterPosition))
-        holderList[holder.adapterPosition] = holder
 
         if (SharedPreferencesUtils.getLayoutAnimationsState(context))
             setOnAddViewAnimation(holder.itemView, position)
@@ -102,11 +102,21 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         holder.removeView.setOnClickListener {
             mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)
         }
+
+
     }
 
 
     override fun getItemCount(): Int {
         return dataList.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
 

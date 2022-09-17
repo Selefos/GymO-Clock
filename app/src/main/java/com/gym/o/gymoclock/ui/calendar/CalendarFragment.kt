@@ -42,7 +42,7 @@ class CalendarFragment : DialogFragment() {
         _binding = null
     }
 
-    private fun onOpeningViewGetDateWorkout(){
+    private fun onOpeningViewGetDateWorkout() {
         val date = DateTimeUtils.getDate()//String.format("%02d-%02d-%02d", dayOfMonth, month, year)
         DateTimeUtils.getCurrentMonth()
         DateTimeUtils.getCurrentYear()

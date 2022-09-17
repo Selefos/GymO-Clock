@@ -17,9 +17,9 @@
                 android:thicknessRatio="50"
                 android:useLevel="true">
                 <gradient
+                    android:centerColor="#6E2F64"
                     android:endColor="@color/custom_text_color"
                     android:startColor="@color/custom_text_color"
-                    android:centerColor="#6E2F64"
                     android:type="linear" />
             </shape>
         </rotate>

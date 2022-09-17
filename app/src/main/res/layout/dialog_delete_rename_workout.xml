@@ -5,8 +5,8 @@
     android:layout_height="220dp"
     android:background="@drawable/delete_rename_workout_background"
     android:gravity="center"
-    android:theme="@style/CustomAlertDialog"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/CustomAlertDialog">
 
     <LinearLayout
         android:layout_width="match_parent"

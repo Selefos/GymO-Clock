@@ -46,7 +46,7 @@ fun WorkoutFragment.roundsPicker() {
 
 
         //elapsedTime = elapsedTime(listAdapter.totalTimeFromDB(oldVal))
-        binding.totalTime.text = FormatUtils.convertTimeToDigitalClock(
+        binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock(
             //listAdapter.totalTimeFromView(rounds).toString()
             //refreshTotalTimeOnRoundsChanged(elapsedTime, newVal).toString()
             (listAdapter.totalTimeFromDB(newVal)).toString()

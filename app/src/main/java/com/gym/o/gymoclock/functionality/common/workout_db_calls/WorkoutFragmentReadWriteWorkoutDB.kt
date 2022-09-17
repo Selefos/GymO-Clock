@@ -43,7 +43,7 @@ fun WorkoutFragment.updateExerciseValues(dataPosition: Int) {
 
         saveExerciseValues(ExerciseActionEnum.Update, oldExerciseName, position.exerciseNameValue, position.exerciseClockValue, position.restClockValue)
 
-        binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+        binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
 
         if (listAdapter.totalTimeFromDB(rounds) > 0) {
             binding.totalTimeTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.custom_text_color))
@@ -125,7 +125,7 @@ fun WorkoutFragment.addEditExercise() {
         )
         saveExerciseValues(ExerciseActionEnum.Add, "", exerciseName, exerciseClock, restClock)
 
-        binding.totalTime.text = FormatUtils.convertTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+        binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
         loadRecyclerViews()
         dialogBuilderUtils.dialog.dismiss()
     }

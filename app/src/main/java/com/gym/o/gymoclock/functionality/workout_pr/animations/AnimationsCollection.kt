@@ -9,6 +9,7 @@ import android.view.animation.ScaleAnimation
 import android.widget.ImageButton
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.enums.ClockSelected
 import com.gym.o.gymoclock.functionality.workout_pr.countdown_functionality.isExerciseAnimating
@@ -133,7 +134,7 @@ fun exerciseSettingsButtonAnimationControl(context: Context, isSettingsVisible: 
 
 fun unfoldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
 
-    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(context)) {
         exerciseSettingsButtonAnimation(exerciseSettingsButton)
 
         Handler(Looper.getMainLooper()).postDelayed(
@@ -151,7 +152,7 @@ fun unfoldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButto
 }
 
 fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton, editView: ImageButton, removeView: ImageButton) {
-    if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context)) {
+    if (SharedPreferencesUtils.getLayoutAnimationsState(context)) {
         exerciseSettingsButtonAnimation(exerciseSettingsButton)
 
         Handler(Looper.getMainLooper()).postDelayed(
@@ -167,4 +168,32 @@ fun foldSettingsAnimation(context: Context, exerciseSettingsButton: ImageButton,
 
     editView.isVisible = false
     removeView.isVisible = false
+}
+
+fun fabFadeInFadeOutAnimation(fab: FloatingActionButton) {
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(0f).setDuration(500).start()
+        }, 20)
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(1f).setDuration(500).start()
+        }, 1020)
+
+}
+
+fun fabFadeOutFadeInAnimation(fab: FloatingActionButton){
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(0f).setDuration(1000).start()
+        }, 0)
+
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            fab.animate().alpha(1f).setDuration(1000).start()
+        }, 1000)
+
 }

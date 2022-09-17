@@ -51,14 +51,12 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var isSettingsVisible = false
 
         init {
+
             resources = itemView.context.resources
 
-            editView.setOnClickListener { mRecyclerViewInterface.editExercise(adapterPosition) }
 
-            exerciseSettingsButton.setOnClickListener {
-                isSettingsVisible = !isSettingsVisible
-                exerciseSettingsButtonAnimationControl(context, isSettingsVisible, exerciseSettingsButton, editView, removeView)
-            }
+
+
 
         }
 
@@ -88,8 +86,18 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         //if(!holderList.containsKey(holder.adapterPosition))
         holderList[holder.adapterPosition] = holder
 
-        if (SharedPreferencesUtils.getRecyclerViewAnimationsState(context))
+        if (SharedPreferencesUtils.getLayoutAnimationsState(context))
             setOnAddViewAnimation(holder.itemView, position)
+
+        holder.exerciseSettingsButton.setOnClickListener {
+            holder.isSettingsVisible = !holder.isSettingsVisible
+
+            exerciseSettingsButtonAnimationControl(context,
+                holder.isSettingsVisible, holder.exerciseSettingsButton,
+                holder.editView, holder.removeView)
+        }
+
+        holder.editView.setOnClickListener { mRecyclerViewInterface.editExercise(holder.adapterPosition) }
 
         holder.removeView.setOnClickListener {
             mRecyclerViewInterface.removeExercise(holder.itemView, holder.adapterPosition)

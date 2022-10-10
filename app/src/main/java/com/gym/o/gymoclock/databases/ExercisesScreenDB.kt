@@ -5,6 +5,14 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.view.View
+import android.widget.ListView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.DividerItemDecoration
+import com.gym.o.gymoclock.R
+import com.gym.o.gymoclock.functionality.calendar_pr.ExerciseScreeningAdapter
+import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScreening
+import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import io.paperdb.Paper
 
@@ -60,12 +68,7 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         return list
     }
 
-    fun screenDBDeleteTestEntries(tableName: String, exerciseName: String): Boolean {
-        val db = this.writableDatabase
-        val result = db.delete(tableName, "$COL_WORKOUT_NAME = ?", arrayOf(exerciseName))
-        db.close()
-        return result != -1
-    }
+
 
     companion object {
         const val DATABASE_NAME = "ExercisesScreen.db"
@@ -83,7 +86,23 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         Paper.book(DateTimeUtils.getCurrentMonth() + "_" + DateTimeUtils.getCurrentYear()).write(bookName, dbDataMap)
     }
 
+    fun readDataList(bookName: String, keyName: String, viewSpecifyDetailsLayout: View) {
 
+        val listView = viewSpecifyDetailsLayout.findViewById<ListView>(R.id.exercise_details_list)
+        val data = Paper.book(keyName).read<HashMap<String, ArrayList<ArrayList<String>>>>(bookName)
+        val keysList: ArrayList<ExerciseScreening> = ArrayList()
+
+        var exerciseName: String
+
+        for (index in 0 until data?.get("Round1")!![0].size - 1) {
+            exerciseName = data["Round1"]!![0][index + 1]
+            keysList.add(ExerciseScreening(exerciseName, index))
+        }
+
+        val exerciseScreeningAdapter = ExerciseScreeningAdapter(context!!, R.layout.dialog_exercise_screen_list_layout, keysList, bookName, keyName)
+        listView.adapter = exerciseScreeningAdapter
+
+    }
 
 
 }

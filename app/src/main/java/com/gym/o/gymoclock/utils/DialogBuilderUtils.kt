@@ -1,8 +1,6 @@
 package com.gym.o.gymoclock.utils
 
 import android.content.Context
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.text.Editable
 import android.text.InputType
@@ -18,13 +16,9 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.gym.o.gymoclock.R
-import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.functionality.calendar_pr.ExerciseScreeningAdapter
-import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScreening
-import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
-import io.paperdb.Paper
+import com.gym.o.gymoclock.functionality.calendar_pr.*
 
 
 class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
@@ -116,7 +110,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
-
+    private var viewSpecifyDetailsLayout = inflater.inflate(R.layout.dialog_exercise_screen_list, null)
     private var isViewOnWorkoutDetails = true
     private var isListForLoad = true
 
@@ -134,7 +128,8 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
             if (!isViewOnWorkoutDetails) {
                 if (isListForLoad) {
-                    readDataList(bookName, tableName)
+                    val exercisesScreenDB = ExercisesScreenDB(context)
+                    exercisesScreenDB.readDataList(bookName, tableName, viewSpecifyDetailsLayout)
                 }
 
                 isListForLoad = false
@@ -148,26 +143,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         }
     }
 
-    private lateinit var keysList: ArrayList<ExerciseScreening>
-    private var viewSpecifyDetailsLayout = inflater.inflate(R.layout.dialog_exercise_screen_list, null)
 
-    fun readDataList(bookName: String, keyName: String) {
-
-        val listView = viewSpecifyDetailsLayout.findViewById<ListView>(R.id.exercise_details_list)
-        val data = Paper.book(keyName).read<HashMap<String, ArrayList<ArrayList<String>>>>(bookName)
-
-        keysList = ArrayList()
-        var exerciseName: String
-
-        for (index in 0 until data?.get("Round1")!![0].size - 1) {
-            exerciseName = data["Round1"]!![0][index + 1]
-            keysList.add(ExerciseScreening(exerciseName, index))
-        }
-
-        val exerciseScreeningAdapter = ExerciseScreeningAdapter(context, R.layout.dialog_exercise_screen_list_layout, keysList, bookName, keyName)
-        listView.adapter = exerciseScreeningAdapter
-
-    }
     /****************************************/
     /*          VOICE ASSIST DIALOGS        */
     /****************************************/
@@ -222,33 +198,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
 
     private var viewSpecifyDetails: View = inflater.inflate(R.layout.dialog_specify_workout_details, null)
-    private var roundsCountText = 1
-    private val roundWeightEditTexts = arrayListOf<EditText>()
-    private val roundRepsEditTexts = arrayListOf<EditText>()
-
-    private val exerciseNameStringList = arrayListOf<String>()
-    private var roundWeightStringList = arrayListOf<String>()
-    private var roundRepsStringList = arrayListOf<String>()
-
-    private val screeningDetailsHashMap: HashMap<String, ArrayList<ArrayList<String>>> = HashMap()
-
-    private fun loadWorkoutExercises(): ArrayList<String> {
-        val workoutDB = WorkoutDB(context)
-        val db: SQLiteDatabase = workoutDB.readableDatabase
-        val cursorWorkoutDB = workoutDB.loadRecyclerElements(workoutTableName, db)
-        val exerciseNameList = arrayListOf<String>()
-
-        if (cursorWorkoutDB.moveToFirst()) {
-            do {
-                exerciseNameList.add(cursorWorkoutDB.getString(1))
-                println(exerciseNameList)
-            } while (cursorWorkoutDB.moveToNext())
-        }
-        cursorWorkoutDB.close()
-        db.close()
-
-        return exerciseNameList
-    }
 
     fun screeningDBDetailsDialog() {
         val table: TableLayout = viewSpecifyDetails.findViewById(R.id.specify_details_table)
@@ -273,8 +222,8 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         * i = 1  → Apply to row: Exercise Name, Weight, Reps
         * i >= 2 → Apply to row: All the names from WorkoutDB */
         /** @see WorkoutDB **/
-        loadWorkoutExercises()
-        for (i in 1..loadWorkoutExercises().size + 1) {
+
+        for (i in 1..loadWorkoutExercises(context).size + 1) {
             val row = TableRow(context)
             row.layoutParams = lp
             row.gravity = Gravity.START
@@ -311,7 +260,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 exerciseNameText.tag = "exercise_name_text_$i"
                 exerciseNameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
                 exerciseNameText.setTextColor(Color.WHITE)
-                exerciseNameText.text = loadWorkoutExercises()[i - 2]
+                exerciseNameText.text = loadWorkoutExercises(context)[i - 2]
                 exerciseNameText.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
                 exerciseNameStringList.add(exerciseNameText.text.toString())
                 row.addView(exerciseNameText)
@@ -344,7 +293,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
 
     private var nextSetButtonSpecifyDetails: Button = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
-    private var detailsArray = arrayListOf<ArrayList<String>>()
+
     private fun screeningDBDetailsOnClickListenerScope() {
 
         if (roundsCountText == SharedPreferencesUtils.getRoundsValueFromPreferences(context))
@@ -356,7 +305,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 return@setOnClickListener
 
             if (roundsCountText == SharedPreferencesUtils.getRoundsValueFromPreferences(context)) {
-                saveHashMapDetails()
+                saveHashMapDetails(context)
                 dialog.dismiss()
                 return@setOnClickListener
             }
@@ -371,57 +320,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
     }
 
-    private fun isHashMapPrepared(): Boolean {
-        var isEditTextReady = true
-        for (i in roundWeightEditTexts.indices) {
-
-            if (ErrorUtils.isTextEmpty(roundWeightEditTexts[i]).isEmpty()) {
-                isEditTextReady = false
-            } else
-                roundWeightStringList.add(roundWeightEditTexts[i].text.toString())
-
-            if (ErrorUtils.isTextEmpty(roundRepsEditTexts[i]).isEmpty()) {
-                isEditTextReady = false
-            } else
-                roundRepsStringList.add(roundRepsEditTexts[i].text.toString())
-//            roundWeightStringList.add((0..25).random().toString())
-//            roundRepsStringList.add((0..25).random().toString())
-        }
-
-        detailsArray.add(exerciseNameStringList)
-        detailsArray.add(roundWeightStringList)
-        detailsArray.add(roundRepsStringList)
-        screeningDetailsHashMap["Round$roundsCountText"] = detailsArray
-
-        return isEditTextReady
-    }
-
-    private fun saveHashMapDetails() {
-        val calendarDB = CalendarDB(context)
-        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
-        val tableName = "${(DateTimeUtils.getCurrentMonth())}_${DateTimeUtils.getCurrentYear()}"
-        println(tableName)
-        val cursor: Cursor = calendarDB.getCalendarWorkoutID(tableName, DateTimeUtils.getDate(), sqlDB)
-        //val cursor: Cursor = calendarDB.getCalendarWorkoutID("SEPTEMBER_2022", "30-09-2022", sqlDB)
-
-        val exercisesScreenDB = ExercisesScreenDB(context)
-        if (cursor.moveToLast()) {
-            exercisesScreenDB.saveData("${DateTimeUtils.getDate()}_${cursor.getString(0)}", screeningDetailsHashMap)
-            //ExercisesScreenDB.readData("${DateTimeUtils.getDate()}_${cursor.getString(0)}")
-        }
-
-        cursor.close()
-        sqlDB.close()
-    }
-
-    private fun instantiateLists() {
-        exerciseNameStringList.clear()
-        roundWeightEditTexts.clear()
-        roundRepsEditTexts.clear()
-        roundWeightStringList = ArrayList()
-        roundRepsStringList = ArrayList()
-        detailsArray = ArrayList()
-    }
 
 }
 

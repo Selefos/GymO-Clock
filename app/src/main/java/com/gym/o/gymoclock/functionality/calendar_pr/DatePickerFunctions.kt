@@ -5,15 +5,16 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.util.Log
-import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.content.res.AppCompatResources
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.CalendarDB
 import com.gym.o.gymoclock.databases.ExercisesScreenDB
+import com.gym.o.gymoclock.databases.WorkoutDB
+import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.calendar.CalendarFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.DialogBuilderUtils
@@ -91,4 +92,81 @@ fun CalendarFragment.createButton(tableName: String, workoutID: String, workoutN
         dialogBuilderUtils.calendarWorkoutDetailsDialog(true)
     }
 
+}
+
+
+val screeningDetailsHashMap: HashMap<String, ArrayList<ArrayList<String>>> = HashMap()
+var roundsCountText = 1
+val roundWeightEditTexts = arrayListOf<EditText>()
+val roundRepsEditTexts = arrayListOf<EditText>()
+val exerciseNameStringList = arrayListOf<String>()
+var roundWeightStringList = arrayListOf<String>()
+var roundRepsStringList = arrayListOf<String>()
+var detailsArray = arrayListOf<ArrayList<String>>()
+
+fun loadWorkoutExercises(context: Context): ArrayList<String> {
+    val workoutDB = WorkoutDB(context)
+    val db: SQLiteDatabase = workoutDB.readableDatabase
+    val cursorWorkoutDB = workoutDB.loadRecyclerElements(workoutTableName, db)
+    val exerciseNameList = arrayListOf<String>()
+
+    if (cursorWorkoutDB.moveToFirst()) {
+        do {
+            exerciseNameList.add(cursorWorkoutDB.getString(1))
+            println(exerciseNameList)
+        } while (cursorWorkoutDB.moveToNext())
+    }
+    cursorWorkoutDB.close()
+    db.close()
+
+    return exerciseNameList
+}
+
+fun isHashMapPrepared(): Boolean {
+    var isEditTextReady = true
+    for (i in roundWeightEditTexts.indices) {
+
+        if (ErrorUtils.isTextEmpty(roundWeightEditTexts[i]).isEmpty()) {
+            isEditTextReady = false
+        } else
+            roundWeightStringList.add(roundWeightEditTexts[i].text.toString())
+
+        if (ErrorUtils.isTextEmpty(roundRepsEditTexts[i]).isEmpty()) {
+            isEditTextReady = false
+        } else
+            roundRepsStringList.add(roundRepsEditTexts[i].text.toString())
+    }
+
+    detailsArray.add(exerciseNameStringList)
+    detailsArray.add(roundWeightStringList)
+    detailsArray.add(roundRepsStringList)
+    screeningDetailsHashMap["Round$roundsCountText"] = detailsArray
+
+    return isEditTextReady
+}
+
+fun saveHashMapDetails(context: Context) {
+    val calendarDB = CalendarDB(context)
+    val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+    val tableName = "${(DateTimeUtils.getCurrentMonth())}_${DateTimeUtils.getCurrentYear()}"
+    println(tableName)
+    val cursor: Cursor = calendarDB.getCalendarWorkoutID(tableName, DateTimeUtils.getDate(), sqlDB)
+
+    val exercisesScreenDB = ExercisesScreenDB(context)
+    if (cursor.moveToLast()) {
+        exercisesScreenDB.saveData("${DateTimeUtils.getDate()}_${cursor.getString(0)}", screeningDetailsHashMap)
+
+    }
+
+    cursor.close()
+    sqlDB.close()
+}
+
+fun instantiateLists() {
+    exerciseNameStringList.clear()
+    roundWeightEditTexts.clear()
+    roundRepsEditTexts.clear()
+    roundWeightStringList = ArrayList()
+    roundRepsStringList = ArrayList()
+    detailsArray = ArrayList()
 }

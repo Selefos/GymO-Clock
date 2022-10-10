@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.databases.CalendarDB
+import com.gym.o.gymoclock.databases.ExercisesScreenDB
 
 fun MainActivity.changeDataCalendar() {
     val calendarDB = CalendarDB(this)
@@ -44,6 +45,13 @@ fun getCalendarTimes(tableName: String, sqlDB: SQLiteDatabase): Cursor {
 fun CalendarDB.calendarDBDeleteTestEntries(tableName: String, exerciseName: String): Boolean {
     val db = this.writableDatabase
     val result = db.delete(tableName, "${CalendarDB.COL_WORKOUT_NAME} = ?", arrayOf(exerciseName))
+    db.close()
+    return result != -1
+}
+
+fun ExercisesScreenDB.screenDBDeleteTestEntries(tableName: String, exerciseName: String): Boolean {
+    val db = this.writableDatabase
+    val result = db.delete(tableName, "${ExercisesScreenDB.COL_WORKOUT_NAME} = ?", arrayOf(exerciseName))
     db.close()
     return result != -1
 }

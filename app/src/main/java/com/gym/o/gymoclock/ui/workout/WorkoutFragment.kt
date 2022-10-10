@@ -407,7 +407,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         recyclerView.apply {
             val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-            dividerItemDecoration.setDrawable(getDrawable(context, R.drawable.divider_recycler_view)!!)
+            dividerItemDecoration.setDrawable(getDrawable(context, R.drawable.custom_divider)!!)
             addItemDecoration(dividerItemDecoration)
         }
 

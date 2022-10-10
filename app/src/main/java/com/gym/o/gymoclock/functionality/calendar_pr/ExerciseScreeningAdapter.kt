@@ -16,8 +16,10 @@ import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScr
 import com.gym.o.gymoclock.utils.FormatUtils
 import io.paperdb.Paper
 
-class ExerciseScreeningAdapter(private val mContext: Context, private val mResource: Int, objects: ArrayList<ExerciseScreening>, private val bookName: String, private val keyName: String) : ArrayAdapter<ExerciseScreening?>(mContext, mResource, objects as List<ExerciseScreening?>) {
-
+class ExerciseScreeningAdapter(private val mContext: Context, private val mResource: Int,
+    objects: ArrayList<ExerciseScreening>, private val bookName: String, private val keyName: String) : ArrayAdapter<ExerciseScreening?>(
+    mContext, mResource, objects as List<ExerciseScreening?>
+) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
@@ -46,7 +48,6 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
         exerciseNameScreen.text = getItem(position)!!.exerciseNameValue
 
         for (key in data!!.keys) {
-
 
             val rowDetails = TableRow(context)
             rowDetails.gravity = Gravity.START

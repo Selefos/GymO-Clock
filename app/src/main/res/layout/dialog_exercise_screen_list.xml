@@ -18,7 +18,10 @@
         <ListView
             android:id="@+id/exercise_details_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:dividerHeight="2sp"
+            android:divider="@drawable/custom_divider"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

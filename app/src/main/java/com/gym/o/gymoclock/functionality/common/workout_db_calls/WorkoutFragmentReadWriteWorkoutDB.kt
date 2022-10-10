@@ -14,15 +14,15 @@ import com.gym.o.gymoclock.functionality.workout_pr.rounds
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.FormatUtils
-import com.gym.o.gymoclock.utils.WidgetsWarningsUtils
+import com.gym.o.gymoclock.utils.ErrorUtils
 
 
 fun WorkoutFragment.updateExerciseValues(dataPosition: Int) {
     val position = dataList[dataPosition]
     workoutDB = WorkoutDB(requireContext())
 
-    if (nameIsDuplicate(dialogBuilderUtils.exerciseNameEdit.text.toString()))
-        WidgetsWarningsUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
+    if (ErrorUtils.isNameDuplicate(dialogBuilderUtils.exerciseNameEdit.text.toString(), requireContext()))
+        ErrorUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
     else {
         val oldExerciseName = position.exerciseNameValue
 
@@ -92,8 +92,8 @@ fun WorkoutFragment.addEditExercise() {
     if (dialogBuilderUtils.exerciseNameEdit.text.toString().isNotEmpty())
         exerciseName = dialogBuilderUtils.exerciseNameEdit.text.toString().trim()
 
-    if (nameIsDuplicate(exerciseName))
-        WidgetsWarningsUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
+    if (ErrorUtils.isNameDuplicate(exerciseName, requireContext()))
+        ErrorUtils.editTextWarning(dialogBuilderUtils.exerciseNameEdit, "Exercise already registered")
     else {
         val exerciseClock: TextView = dialogBuilderUtils.viewRecycler.findViewById(R.id.countdown_work)
         exerciseClock.text = dialogBuilderUtils.workDigitalTime.text.toString()//FormatUtils.convertTimeToDigitalClock(dialogBuilderExercise.workTimePicker.text.toString())

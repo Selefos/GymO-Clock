@@ -9,6 +9,7 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.main_activity_pr.*
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.ErrorUtils
 import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 
@@ -27,8 +28,8 @@ fun MainActivity.addWorkoutTable() {
     dialog.show()
 
     addButton.setOnClickListener {
-        if (isTextEmpty(workoutNameAdd).isNotEmpty() && isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty()
-            && isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
+        if (ErrorUtils.isTextEmpty(workoutNameAdd).isNotEmpty() && ErrorUtils.isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty()
+            && ErrorUtils.isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
 
             workoutDB.addWorkoutTable(FormatUtils.stringSpaceToUnderscore(workoutNameAdd.text.toString()))
 
@@ -69,8 +70,8 @@ fun MainActivity.editWorkoutName(workoutName: String) {
     dialog.show()
 
     updateWorkoutButton.setOnClickListener {
-        if (isTextEmpty(renameWorkout).isNotEmpty() && isNotDuplicate(renameWorkout, workoutDB).isNotEmpty()
-            && isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
+        if (ErrorUtils.isTextEmpty(renameWorkout).isNotEmpty() && ErrorUtils.isNotDuplicate(renameWorkout, workoutDB).isNotEmpty()
+            && ErrorUtils.isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
 
             workoutDB.renameWorkoutTable(workoutName, FormatUtils.stringSpaceToUnderscore(renameWorkout.text.toString()))
 

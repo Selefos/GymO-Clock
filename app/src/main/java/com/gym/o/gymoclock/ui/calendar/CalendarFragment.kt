@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.gym.o.gymoclock.databinding.FragmentCalendarBinding
 import com.gym.o.gymoclock.functionality.calendar_pr.onDateChangeListener
 import com.gym.o.gymoclock.functionality.calendar_pr.showWorkoutDetails
-import com.gym.o.gymoclock.functionality.calendar_pr.tableNameExists
 import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.ErrorUtils
 
 
 class CalendarFragment : DialogFragment() {
@@ -50,7 +50,7 @@ class CalendarFragment : DialogFragment() {
         Log.d("TAG", "onDateSet: mm/dd/yyy: $date ${DateTimeUtils.setCalendarTableName()} $tableName")
 
         binding.buttonPopLayout.removeAllViews()
-        if (tableNameExists(tableName))
+        if (ErrorUtils.tableNameExists(tableName, requireContext()))
             showWorkoutDetails(tableName, date)
     }
 }

@@ -6,6 +6,8 @@
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
+    <dimen name="dialogTextSize">19sp</dimen>
+
     <!-- FAB Dimensions -->
     <dimen name="fab_size">48sp</dimen>
     <dimen name="fab_borderWidth">2sp</dimen>

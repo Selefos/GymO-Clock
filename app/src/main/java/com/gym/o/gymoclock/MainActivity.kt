@@ -31,6 +31,7 @@ import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
+import io.paperdb.Paper
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,6 +68,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navView: NavigationView = binding.navView
         navView.setNavigationItemSelectedListener(this)
         changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
+
+        Paper.init(this)
+
+//        val dialogBuilderUtils = DialogBuilderUtils(this)
+//        dialogBuilderUtils.screeningDBDialog(false)
+//        dialogBuilderUtils.okButtonVerifyDetails.setOnClickListener {
+//            dialogBuilderUtils.dialog.dismiss()
+//            dialogBuilderUtils.screeningDBDetailsDialog()
+//
+//        }
+//        dialogBuilderUtils.cancelButtonVerifyDetails.setOnClickListener {
+//            dialogBuilderUtils.dialog.dismiss()
+//        }
+
+//        val calendarDB = CalendarDB(this)
+//        calendarDB.calendarDBDeleteTestEntries("OCTOBER_2022", "Test")
 
     }
 

@@ -103,8 +103,10 @@
     <string name="settings_volume_control">Volume Control</string>
     <string name="settings_test_button_play">Play</string>
     <string name="settings_test_button_stop">Stop</string>
-    <string name="settings_test_button_text">You can adjust the volume of voice assistant at any time, by scrolling the bar above. While you have pressed the
-    PLAY button, you can hear the adjustments on real time.</string>
+    <string name="settings_test_button_text">
+        You can adjust the volume of voice assistant at any time, by scrolling the bar above. While you have pressed the
+        PLAY button, you can hear the adjustments on real time.
+    </string>
 
     <string name="settings_enable_all_animations">Enable All Animations</string>
     <string name="settings_disable_all_animations">Disable All Animations</string>
@@ -112,6 +114,13 @@
     <string name="settings_disable_recycler_view_animations">Disable Layout Animations</string>
     <string name="settings_enable_clock_animations">Enable Clock Animations</string>
     <string name="settings_disable_clock_animations">Disable Clock Animations</string>
+    <!--  __________________________________________________  -->
+
+    <!--  __________________________________________________  -->
+    <!--  ____________________Screening DB__________________  -->
+    <string name="screeningDB_ask_dialog">Save workout details?</string>
+    <string name="screeningDB_button_next">Next</string>
+    <string name="screeningDB_button_set">Set</string>
     <!--  __________________________________________________  -->
 
     <!-- Preference Titles -->

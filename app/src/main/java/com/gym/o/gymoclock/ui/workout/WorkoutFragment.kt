@@ -135,6 +135,35 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     lateinit var dialogBuilderUtils: DialogBuilderUtils
     private lateinit var timePickerUtils: TimePickerUtils
 
+    private fun addExerciseRecyclerView() {
+        dialogBuilderUtils = DialogBuilderUtils(requireContext())
+        timePickerUtils = TimePickerUtils(requireContext())
+
+        dialogBuilderUtils.addOrEditExerciseDialog(false)
+
+//        dialogBuilderUtils.onClickListenerWorkoutScope(
+//            { addEditExercise() },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
+//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
+//        )
+
+        dialogBuilderUtils.verifyButtonEditExercise.setOnClickListener {
+            addEditExercise()
+        }
+        dialogBuilderUtils.cancelButtonEditExercise.setOnClickListener {
+            TimePickerUtils.isTimePicked(false)
+            dialogBuilderUtils.dialog.dismiss()
+        }
+        dialogBuilderUtils.workTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+        dialogBuilderUtils.restTimePicker.setOnClickListener {
+            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
+        }
+
+    }
+
+
     override fun editExercise(dataPosition: Int) {
         val position = dataList[dataPosition]
         dialogBuilderUtils = DialogBuilderUtils(requireContext())
@@ -265,7 +294,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         resetProgressBar()
         //removeAllRecyclerViews()
         recyclerView.removeAllViews()
-        
+
         //prevents recycler views from stacking
         dataList.clear()
         recyclerView.recycledViewPool.clear()
@@ -276,7 +305,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (cursor.moveToFirst()) {
             do {
                 val inflaterRecycler = layoutInflater
-                val viewRecycler = inflaterRecycler.inflate(R.layout.add_view, null)
+                val viewRecycler = inflaterRecycler.inflate(R.layout.add_recycler_view, null)
 
                 val exerciseName: TextView = viewRecycler.findViewById(R.id.exercise_name)
                 val exerciseClock: TextView = viewRecycler.findViewById(R.id.countdown_work)
@@ -464,13 +493,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
             if (rounds == 0) {
                 recyclerPosition = 0
-                WidgetsWarningsUtils.pickerTextWarning(binding.roundsPicker, rounds)
+                ErrorUtils.pickerTextWarning(binding.roundsPicker, rounds)
                 return@setOnClickListener
             }
 
             if (listAdapter.itemCount == 0 || listAdapter.totalTimeFromDB(rounds) == 0) {
                 binding.totalTimeTextView.setTextColor(Color.RED)
-                WidgetsWarningsUtils.textViewWarning(binding.totalTime)
+                ErrorUtils.textViewWarning(binding.totalTime)
                 return@setOnClickListener
             }
 
@@ -566,7 +595,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         binding.addLayoutFab.setOnClickListener {
             if (workoutTableName.isEmpty()) {
-                Toast.makeText(context, "No workouts available. Please add an exercise in order to start.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "No workouts available. Please add a workout in order to start.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             addExerciseRecyclerView()
@@ -600,8 +629,22 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         ClockSelected.clockSelected = ClockSelectedEnum.Idle
         startTime = ""
 
+        exerciseDetailsPostWorkout()
     }
 
+    private fun exerciseDetailsPostWorkout(){
+        val dialogBuilderUtils = DialogBuilderUtils(requireContext())
+        dialogBuilderUtils.screeningDBDialog(false)
+        dialogBuilderUtils.okButtonVerifyDetails.setOnClickListener {
+            dialogBuilderUtils.dialog.dismiss()
+            dialogBuilderUtils.screeningDBDetailsDialog()
+
+        }
+
+        dialogBuilderUtils.cancelButtonVerifyDetails.setOnClickListener {
+            dialogBuilderUtils.dialog.dismiss()
+        }
+    }
 
     private fun saveExercisesList(monthYear: String) {
         val workoutDB = WorkoutDB(context)
@@ -628,47 +671,6 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
         cursorCalendarDB.close()
         sqlDB.close()
-    }
-
-
-    private fun addExerciseRecyclerView() {
-        dialogBuilderUtils = DialogBuilderUtils(requireContext())
-        timePickerUtils = TimePickerUtils(requireContext())
-
-        dialogBuilderUtils.addOrEditExerciseDialog(false)
-
-//        dialogBuilderUtils.onClickListenerWorkoutScope(
-//            { addEditExercise() },
-//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) },
-//            { timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise) }
-//        )
-
-        dialogBuilderUtils.verifyButtonEditExercise.setOnClickListener {
-            addEditExercise()
-        }
-        dialogBuilderUtils.cancelButtonEditExercise.setOnClickListener {
-            TimePickerUtils.isTimePicked(false)
-            dialogBuilderUtils.dialog.dismiss()
-        }
-        dialogBuilderUtils.workTimePicker.setOnClickListener {
-            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.workDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
-        }
-        dialogBuilderUtils.restTimePicker.setOnClickListener {
-            timePickerUtils.numberPickerTimeDialogExercises(dialogBuilderUtils.restDigitalTime, dialogBuilderUtils.verifyButtonEditExercise)
-        }
-
-    }
-
-
-    fun nameIsDuplicate(name: String): Boolean {
-        workoutDB = WorkoutDB(requireActivity().applicationContext)
-        val nameTemp: List<String> = workoutDB.checkForDuplicateNames(workoutTableName)
-
-        for (temp in nameTemp)
-            if (name == temp)
-                return true
-
-        return false
     }
 
 

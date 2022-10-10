@@ -5,9 +5,17 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.gym.o.gymoclock.utils.DateTimeUtils
+import io.paperdb.Paper
 
 
 class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
+
+    private var context: Context? = null
+
+    init {
+        this.context = context
+    }
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE IF NOT EXISTS $TABLE_SCREEN_EXERCISES (ID INTEGER PRIMARY KEY , $COL_STORED_ID INTEGER, $COL_DATE DATE, $COL_WORKOUT_NAME ΤΕΧΤ, $COL_EXERCISES_LIST TEXT)"
@@ -67,5 +75,15 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         const val COL_WORKOUT_NAME = "WORKOUT_NAME"
         const val COL_DATE = "DATE"
         const val COL_EXERCISES_LIST = "EXERCISES_LIST"
+
     }
+
+    fun saveData(bookName: String, screeningDetailsHashMap: HashMap<String, ArrayList<ArrayList<String>>>) {
+        val dbDataMap: HashMap<String, ArrayList<ArrayList<String>>> = screeningDetailsHashMap
+        Paper.book(DateTimeUtils.getCurrentMonth() + "_" + DateTimeUtils.getCurrentYear()).write(bookName, dbDataMap)
+    }
+
+
+
+
 }

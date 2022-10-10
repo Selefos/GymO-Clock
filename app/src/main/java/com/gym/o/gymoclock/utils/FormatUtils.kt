@@ -1,5 +1,11 @@
 package com.gym.o.gymoclock.utils
 
+import android.content.res.Resources
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import androidx.core.content.res.ResourcesCompat
+import com.gym.o.gymoclock.R
 import java.util.*
 
 
@@ -96,6 +102,17 @@ class FormatUtils {
 
         fun stringUnderscoreToSpace(string: String): String {
             return string.replace("_", " ")
+        }
+
+        fun spannableText(text1: String, text2: String, res: Any): SpannableString {
+            val inputTextReps = "$text1$text2"
+            val coloredText = SpannableString(inputTextReps)
+            coloredText.setSpan(
+                ForegroundColorSpan(ResourcesCompat.getColor(res as Resources, R.color.custom_blue, null)),
+                text1.length, text2.length + text1.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            return coloredText
         }
 
         var strSeparator = ","

@@ -20,6 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.gym.o.gymoclock.databases.CalendarDB
+import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
 import com.gym.o.gymoclock.databinding.ActivityMainBinding
 import com.gym.o.gymoclock.functionality.main_activity_pr.changeNavHeaderText
@@ -29,8 +30,10 @@ import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.DialogBuilderUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
+import io.paperdb.Paper
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             workoutTableName = SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this)
 
         calendarDBInit()
-
+        exerciseScreeningInit()
         expandableListView = binding.expandableView
         prepareMenuData()
         populateList()
@@ -67,6 +70,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navView: NavigationView = binding.navView
         navView.setNavigationItemSelectedListener(this)
         changeNavHeaderText(SharedPreferencesUtils.getWorkoutTableNameFromPreferences(this))
+
+        Paper.init(this)
+
+//        val dialogBuilderUtils = DialogBuilderUtils(this)
+//        dialogBuilderUtils.screeningDBDialog(false)
+//        dialogBuilderUtils.okButtonVerifyDetails.setOnClickListener {
+//            dialogBuilderUtils.dialog.dismiss()
+//            dialogBuilderUtils.screeningDBDetailsDialog()
+//
+//        }
+//        dialogBuilderUtils.cancelButtonVerifyDetails.setOnClickListener {
+//            dialogBuilderUtils.dialog.dismiss()
+//        }
+
+//        val calendarDB = CalendarDB(this)
+//        calendarDB.calendarDBDeleteTestEntries("OCTOBER_2022", "Test")
 
     }
 
@@ -179,6 +198,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    private fun exerciseScreeningInit(){
+        val exercisesScreeningDB = ExercisesScreenDB(this)
+        val screeningMonths: List<String> = exercisesScreeningDB.loadScreeningTableNames()
+
+        DateTimeUtils.getCurrentYear()
+        DateTimeUtils.getCurrentMonth()
+        DateTimeUtils.setCalendarTableName()
+        DateTimeUtils.getDate()
+        DateTimeUtils.getCurrentTime()
+
+        for (month in screeningMonths)
+            if (DateTimeUtils.setCalendarTableName() == month) {
+                Log.d("Screening Database", "Occurrence Found")
+                return
+            }
+
+        exercisesScreeningDB.addScreeningTable(DateTimeUtils.setCalendarTableName())
+
+    }
 
     fun changeFragment(fragmentChoice: Class<*>) {
         //Toast.makeText(this, "Pressed", Toast.LENGTH_SHORT).show()

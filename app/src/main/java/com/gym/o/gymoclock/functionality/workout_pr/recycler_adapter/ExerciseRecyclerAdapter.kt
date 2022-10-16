@@ -52,10 +52,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var isSettingsVisible = false
 
         init {
-
             resources = itemView.context.resources
-
-
         }
 
     }
@@ -63,7 +60,7 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val v = inflater.inflate(R.layout.add_view, parent, false)
+        val v = inflater.inflate(R.layout.add_recycler_view, parent, false)
         return ViewHolder(v)
     }
 

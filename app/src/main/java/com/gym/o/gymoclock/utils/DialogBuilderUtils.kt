@@ -3,18 +3,29 @@ package com.gym.o.gymoclock.utils
 import android.content.Context
 import android.graphics.Color
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.gym.o.gymoclock.R
+import com.gym.o.gymoclock.databases.ExercisesScreenDB
+import com.gym.o.gymoclock.databases.WorkoutDB
+import com.gym.o.gymoclock.functionality.calendar_pr.*
 
 
 class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
+
+    /****************************************/
+    /*            WORKOUT DIALOGS           */
+    /****************************************/
 
     private var dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context, R.style.CustomAlertDialog)
     lateinit var dialog: AlertDialog
@@ -22,7 +33,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
 
     private val viewAddOrEditExercise: View = inflater.inflate(R.layout.dialog_edit_workout, null)
     private val inflaterRecycler: LayoutInflater = LayoutInflater.from(context)
-    val viewRecycler: View = inflaterRecycler.inflate(R.layout.add_view, null)
+    val viewRecycler: View = inflaterRecycler.inflate(R.layout.add_recycler_view, null)
 
 
     val exerciseNameEdit: EditText = viewAddOrEditExercise.findViewById(R.id.exercise_name_edit)
@@ -39,7 +50,6 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private val viewRemoveExercise: View = inflater.inflate(R.layout.delete_exercise, null)
     val okButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.verify_exercise_delete)
     val cancelButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.cancel_exercise_delete)
-
 
     fun addOrEditExerciseDialog(setCanceledOnTouchOutside: Boolean) {
 
@@ -74,10 +84,14 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
+    /****************************************/
+    /*          CALENDAR DIALOGS            */
+    /****************************************/
+
     private val viewCalendarWorkoutDetails: View = inflater.inflate(R.layout.dialog_calendar_workout_details, null)
     private val calendarCircleChangeButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_change_to_exercises_button)
     private val calendarCancelButton: ImageButton = viewCalendarWorkoutDetails.findViewById(R.id.calendar_cancel_button)
-    private val scrollView: ScrollView = viewCalendarWorkoutDetails.findViewById(R.id.scroll_view_change)
+    private val scrollView: HorizontalScrollView = viewCalendarWorkoutDetails.findViewById(R.id.scroll_view_change)
 
     private val tableLayout: View = inflater.inflate(R.layout.table_layout_workout_details, null)
     val calendarDate: TextView = tableLayout.findViewById(R.id.calendar_date)
@@ -86,6 +100,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val calendarWorkoutName: TextView = tableLayout.findViewById(R.id.calendar_workout_name)
     val calendarTotalTime: TextView = tableLayout.findViewById(R.id.calendar_total_time)
     val calendarTotalWorkingTime: TextView = tableLayout.findViewById(R.id.calendar_total_working_time)
+    private var tableLayoutInflater: View = inflater.inflate(R.layout.table_layout_inflater, null)
 
     fun calendarWorkoutDetailsDialog(setCanceledOnTouchOutside: Boolean) {
 
@@ -96,31 +111,47 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
+    private var viewSpecifyDetailsLayout = inflater.inflate(R.layout.dialog_exercise_screen_list, null)
+    private var isViewOnGenericWorkoutDetails = true
+    private var isViewOnExerciseDetails = true
 
-    private val viewCalendarExerciseScreenList = inflater.inflate(R.layout.dialog_exercise_screen_list, null)//findViewById(R.id.dialog_exercise_screen_list) as View
-    val exerciseScreenListLayout: LinearLayout = viewCalendarExerciseScreenList.findViewById(R.id.exercise_screen_list)
-    private var isViewOnWorkoutDetails = true
-    private var isListForLoad = true
-
-    fun onClickListenerCalendarScope(workoutID: String, populateTextViews: (workoutID: String) -> Unit) {
+    fun onClickListenerCalendarScope(bookName: String, tableName: String, workoutName: String, workoutID: String, sets: Int) {
 
         calendarCircleChangeButton.setOnClickListener {
-            isViewOnWorkoutDetails = !isViewOnWorkoutDetails
+            isViewOnGenericWorkoutDetails = !isViewOnGenericWorkoutDetails
 
             scrollView.removeAllViews()
-            Log.i("IsOnDetails", isViewOnWorkoutDetails.toString())
-            Log.i("FLAG", isListForLoad.toString())
-            if (isViewOnWorkoutDetails) {
+
+            if (isViewOnGenericWorkoutDetails) {
                 calendarCircleChangeButton.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
                 scrollView.addView(tableLayout)
             }
 
-            if (!isViewOnWorkoutDetails) {
-                if (isListForLoad)
-                    populateTextViews(workoutID)
-                isListForLoad = false
+            if (!isViewOnGenericWorkoutDetails) {
+
+                if (isViewOnExerciseDetails) {
+
+                    val exercisesScreenDB = ExercisesScreenDB(context)
+                    if (!exercisesScreenDB.readDataList(bookName, tableName, viewSpecifyDetailsLayout)) {
+                        val viewNoDetailsFound: View = inflater.inflate(R.layout.dialog_no_details_found, null)
+                        val noDetailsTextView: TextView = viewNoDetailsFound.findViewById(R.id.no_details_tv)
+                        noDetailsTextView.text = "${noDetailsTextView.text}\n$workoutName"
+                        val insertDetailsButton = viewNoDetailsFound.findViewById<Button>(R.id.insert_details)
+                        scrollView.addView(viewNoDetailsFound)
+
+                        insertDetailsButton.setOnClickListener {
+                            dialog.dismiss()
+                            screeningDBDetailsDialog(bookName, tableName, workoutName, workoutID, sets)
+                        }
+
+                        return@setOnClickListener
+                    }
+
+                }
+
+                isViewOnExerciseDetails = !isViewOnExerciseDetails
                 calendarCircleChangeButton.background.setTint(Color.WHITE)
-                scrollView.addView(viewCalendarExerciseScreenList)
+                scrollView.addView(viewSpecifyDetailsLayout)
             }
         }
 
@@ -128,6 +159,222 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
             dialog.dismiss()
         }
     }
+
+    /****************************************/
+    /*     EXERCISE SCREENING DIALOGS       */
+    /****************************************/
+    private val viewScreeningDB: View = inflater.inflate(R.layout.dialog_verify_for_workout_screening, null)
+    val okButtonVerifyDetails: Button = viewScreeningDB.findViewById(R.id.verify_details_screening)
+    val cancelButtonVerifyDetails: Button = viewScreeningDB.findViewById(R.id.cancel_details_screening)
+
+    fun screeningDBDialog(setCanceledOnTouchOutside: Boolean) {
+        dialogBuilder.setView(viewScreeningDB)
+        //dialogBuilder.setCancelable(false)
+        dialog = dialogBuilder.create()
+        dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
+        dialog.show()
+    }
+
+
+    private var viewSpecifyDetails: View = inflater.inflate(R.layout.dialog_specify_workout_details, null)
+    private var scrollViewSpecifyDetails: ScrollView = viewSpecifyDetails.findViewById(R.id.scroll_view_add_details)
+    private var table: TableLayout = tableLayoutInflater.findViewById(R.id.show_details_table)
+
+    fun screeningDBDetailsDialog(bookName: Any?, tableName: Any?, workoutName: Any?, workoutID: Any?, sets: Any?) {
+
+        val layoutIndicators: LinearLayout = viewSpecifyDetails.findViewById(R.id.layout_round_indicator)
+
+        val resources = context.resources
+        val lp: TableRow.LayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
+        lp.setMargins(0, 0, 0, 0)
+
+        val roundsText = TextView(context)
+        roundsText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+        roundsText.setTextColor(ResourcesCompat.getColor(resources, R.color.custom_text_color, null))
+        roundsText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        roundsText.gravity = View.TEXT_ALIGNMENT_CENTER
+
+        val loadWorkoutExercises: ArrayList<String>
+        if(bookName == null) {
+            roundsText.text= "Round $roundsCountText/${SharedPreferencesUtils.getRoundsValueFromPreferences(context)}"
+            loadWorkoutExercises = loadCurrentWorkoutExercises(context)
+        }
+        else{
+            roundsText.text = "Round $roundsCountText/$sets"
+            loadWorkoutExercises = loadScreenedWorkoutExercises(context, tableName as String, workoutID as String)
+        }
+
+        layoutIndicators.addView(roundsText)
+
+        /*
+        * i = 0  → Apply to row: Exercise Name, Weight, Reps
+        * i >= 1 → Apply to row: All the names from WorkoutDB */
+        /** @see WorkoutDB **/
+
+        val textSize = 14f
+        for (i in 0..loadWorkoutExercises.size) {
+            val row = TableRow(context)
+            row.layoutParams = lp
+            row.gravity = Gravity.START
+
+            if (i == 0) {
+                val exerciseNameText = TextView(context)
+                exerciseNameText.tag = "exercise_name"
+                exerciseNameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+                exerciseNameText.setTextColor(Color.WHITE)
+                exerciseNameText.text = "Exercise Name"
+                exerciseNameText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                exerciseNameStringList.add(exerciseNameText.text.toString())
+                row.addView(exerciseNameText)
+
+                val roundWeightText = TextView(context)
+                roundWeightText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+                roundWeightText.setTextColor(Color.WHITE)
+                roundWeightText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                roundWeightText.text = "Weight"
+                roundWeightStringList.add(roundWeightText.text.toString())
+                row.addView(roundWeightText)
+
+                val roundRepsText = TextView(context)
+                roundRepsText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+                roundRepsText.setTextColor(Color.WHITE)
+                roundRepsText.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                roundRepsText.text = "Reps"
+                roundRepsStringList.add(roundRepsText.text.toString())
+                row.addView(roundRepsText)
+
+            } else {
+
+                val exerciseNameText = TextView(context)
+                exerciseNameText.tag = "exercise_name_text_$i"
+                exerciseNameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
+                exerciseNameText.setTextColor(Color.WHITE)
+                exerciseNameText.text = loadWorkoutExercises[i - 1]
+                exerciseNameText.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                exerciseNameStringList.add(exerciseNameText.text.toString())
+                row.addView(exerciseNameText)
+
+                val editTextWeight = EditText(context)
+                editTextWeight.tag = "edit_text_weight_$i"
+                editTextWeight.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                editTextWeight.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                editTextWeight.hint = "max 999"
+                roundWeightEditTexts.add(editTextWeight)
+                row.addView(editTextWeight)
+
+                val editTextReps = EditText(context)
+                editTextReps.tag = "edit_text_rep_$i"
+                editTextReps.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                editTextReps.inputType = InputType.TYPE_CLASS_NUMBER
+                editTextReps.hint = "max 999"
+                roundRepsEditTexts.add(editTextReps)
+                row.addView(editTextReps)
+
+            }
+            table.addView(row, i)
+        }
+
+        val lastRow = TableRow(context)
+        lastRow.gravity = Gravity.START
+        lastRow.layoutParams = lp
+
+        val applyToAllText = TextView(context)
+        applyToAllText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+        applyToAllText.setTextColor(ResourcesCompat.getColor(resources, R.color.white, null))
+        applyToAllText.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+        applyToAllText.text = "Apply To All"
+        lastRow.addView(applyToAllText)
+
+        val weightApplyToAll = EditText(context)
+        weightApplyToAll.tag = "weight_apply_to_all"
+        weightApplyToAll.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        weightApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        weightApplyToAll.hint = "weight"
+        weightApplyToAll.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                for (i in roundWeightEditTexts.indices)
+                    roundWeightEditTexts[i].text = s
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
+        lastRow.addView(weightApplyToAll)
+
+        val repsApplyToAll = EditText(context)
+        repsApplyToAll.tag = "reps_apply_to_all"
+        repsApplyToAll.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        repsApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        repsApplyToAll.hint = "reps"
+        repsApplyToAll.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                for (i in roundWeightEditTexts.indices)
+                    roundRepsEditTexts[i].text = s
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
+        lastRow.addView(repsApplyToAll)
+
+        table.addView(lastRow)
+
+        scrollViewSpecifyDetails.addView(tableLayoutInflater)
+        dialogBuilder.setCancelable(false)
+        dialogBuilder.setView(viewSpecifyDetails)
+        dialog = dialogBuilder.create()
+        dialog.show()
+
+        screeningDBDetailsOnClickListenerScope(bookName, tableName, workoutName, workoutID, sets)
+    }
+
+    private var nextSetButtonSpecifyDetails: Button = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
+
+    private fun screeningDBDetailsOnClickListenerScope(bookName: Any?, tableName: Any?, workoutName: Any?, workoutID: Any?, sets: Any?) {
+
+        val setsCount = if(bookName == null)
+            SharedPreferencesUtils.getRoundsValueFromPreferences(context)
+        else
+            sets as Int
+
+        if (roundsCountText == setsCount)
+            nextSetButtonSpecifyDetails.setBackgroundResource(R.drawable.ic_check_change)
+
+        nextSetButtonSpecifyDetails.setOnClickListener {
+
+            if (!isHashMapPrepared())
+                return@setOnClickListener
+
+            if (roundsCountText == SharedPreferencesUtils.getRoundsValueFromPreferences(context)) {
+                saveHashMapDetailsOnEndWorkout(context, bookName)
+                instantiateLists()
+                roundsCountText = 1
+                dialog.dismiss()
+                return@setOnClickListener
+            }
+            roundsCountText++
+            instantiateLists()
+            instantiateViews()
+            dialog.dismiss()
+            screeningDBDetailsDialog(bookName, tableName, workoutName, workoutID, sets)
+        }
+
+    }
+
+    private fun instantiateViews() {
+        tableLayoutInflater = inflater.inflate(R.layout.table_layout_inflater, null)
+        table = tableLayoutInflater.findViewById(R.id.show_details_table)
+        viewSpecifyDetails = inflater.inflate(R.layout.dialog_specify_workout_details, null)
+        nextSetButtonSpecifyDetails = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
+        scrollViewSpecifyDetails = viewSpecifyDetails.findViewById(R.id.scroll_view_add_details)
+    }
+
+
+    /****************************************/
+    /*          VOICE ASSIST DIALOGS        */
+    /****************************************/
 
     private val viewVoiceAssistSettings: View = inflater.inflate(R.layout.dialog_voice_assist, null)
     var cancelButtonVoiceAssistSettings: ImageButton = viewVoiceAssistSettings.findViewById(R.id.voice_assist_cancel_button)
@@ -144,6 +391,11 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.show()
     }
 
+
+    /****************************************/
+    /*           ANIMATIONS DIALOGS         */
+    /****************************************/
+
     private val viewAnimationsSettings: View = inflater.inflate(R.layout.dialog_animations, null)
     var cancelButtonAnimationsSettings: ImageButton = viewAnimationsSettings.findViewById(R.id.animations_cancel_button)
     var allAnimationsState: SwitchCompat = viewAnimationsSettings.findViewById(R.id.all_animations)
@@ -157,4 +409,5 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         dialog.setCanceledOnTouchOutside(setCanceledOnTouchOutside)
         dialog.show()
     }
+
 }

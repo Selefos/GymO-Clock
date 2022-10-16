@@ -24,7 +24,7 @@
             android:padding="10dp"
             android:text="@string/screeningDB_ask_dialog"
             android:textColor="@color/custom_text_color"
-            android:textSize="@dimen/dialogTextSize"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
 

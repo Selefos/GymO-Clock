@@ -19,7 +19,8 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
     fun addCalendarTable(monthYearTable: String) {
         val db = writableDatabase
-        val createCalendarTable = "CREATE TABLE IF NOT EXISTS $monthYearTable (ID INTEGER PRIMARY KEY , $COL_DATE DATE , $COL_START_TIME TEXT, $COL_END_TIME TEXT, $COL_WORKOUT_NAME TEXT, $COL_TOTAL_TIME TEXT, $COL_TOTAL_WORKING_TIME TEXT)"
+        val createCalendarTable = "CREATE TABLE IF NOT EXISTS $monthYearTable (ID INTEGER PRIMARY KEY , $COL_DATE DATE , $COL_START_TIME TEXT, $COL_END_TIME TEXT, " +
+                "$COL_WORKOUT_NAME TEXT, $COL_TOTAL_TIME TEXT, $COL_TOTAL_WORKING_TIME TEXT, $COL_SETS TEXT)"
         db.execSQL(createCalendarTable)
         db.close()
     }
@@ -40,7 +41,7 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
     }
 
     fun loadCalendarDetails(tableName: String, id: String, sqlDB: SQLiteDatabase): Cursor {
-        val getData = arrayOf(COL_DATE, COL_START_TIME, COL_END_TIME, COL_WORKOUT_NAME, COL_TOTAL_TIME, COL_TOTAL_WORKING_TIME)
+        val getData = arrayOf(COL_DATE, COL_START_TIME, COL_END_TIME, COL_WORKOUT_NAME, COL_TOTAL_TIME, COL_TOTAL_WORKING_TIME, COL_SETS)
         val select = "$COL_ID LIKE ?"
         val selection = arrayOf(id)
         return sqlDB.query(tableName, getData, select, selection, null, null, null)
@@ -67,7 +68,7 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
         return sqlDB.query(tableName, getData, select, selection, null, null, null)
     }
 
-    fun insertCalendarDetails(monthYearTable: String, date: String, startTime: String, endTime: String, workoutName: String, totalTime: String, totalWorkingTime: String): Boolean {
+    fun insertCalendarDetails(monthYearTable: String, date: String, startTime: String, endTime: String, workoutName: String, totalTime: String, totalWorkingTime: String, sets: Int): Boolean {
         val db = this.writableDatabase
         val calendarDetails = ContentValues()
         calendarDetails.put(COL_DATE, date)
@@ -76,6 +77,7 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
         calendarDetails.put(COL_WORKOUT_NAME, workoutName)
         calendarDetails.put(COL_TOTAL_TIME, totalTime)
         calendarDetails.put(COL_TOTAL_WORKING_TIME, totalWorkingTime)
+        calendarDetails.put(COL_SETS, sets)
         val result: Long = db.insert(monthYearTable, null, calendarDetails)
         db.close()
         return result != -1L
@@ -92,5 +94,6 @@ class CalendarDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, n
         const val COL_WORKOUT_NAME = "WORKOUT_NAME"
         const val COL_TOTAL_TIME = "TOTAL_TIME"
         const val COL_TOTAL_WORKING_TIME = "TOTAL_WORKING_TIME"
+        const val COL_SETS = "COL_SETS"
     }
 }

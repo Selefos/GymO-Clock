@@ -5,15 +5,14 @@
     android:layout_height="wrap_content"
     android:background="@drawable/delete_rename_workout_background">
 
-    <TableLayout
-        android:id="@+id/specify_details_table"
+    <LinearLayout
+        android:id="@+id/layout_round_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/screeningDB_button_next_set"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </TableLayout>
+        app:layout_constraintTop_toBottomOf="@+id/screeningDB_button_next_set" />
 
     <Button
         android:id="@+id/screeningDB_button_next_set"
@@ -22,9 +21,22 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:background="@color/custom_transparent"
-        android:text="@string/screeningDB_button_next"
+        android:backgroundTint="@color/custom_text_color"
+        android:text=">"
         android:textColor="@color/custom_text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textSize="26sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scroll_view_add_details"
+        android:layout_width="match_parent"
+        android:layout_height="412sp"
+        android:layout_gravity="center_vertical"
+        android:fillViewport="true"
+        android:foregroundGravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_round_indicator" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

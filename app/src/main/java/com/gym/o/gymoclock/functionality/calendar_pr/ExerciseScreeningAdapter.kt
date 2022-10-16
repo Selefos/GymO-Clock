@@ -15,6 +15,8 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScreening
 import com.gym.o.gymoclock.utils.FormatUtils
 import io.paperdb.Paper
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ExerciseScreeningAdapter(private val mContext: Context, private val mResource: Int,
     objects: ArrayList<ExerciseScreening>, private val bookName: String, private val keyName: String) : ArrayAdapter<ExerciseScreening?>(
@@ -42,7 +44,7 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
         val tableRowParams = TableLayout.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT)
         tableRowParams.setMargins(0, 0, 0, 42)
 
-        val data = Paper.book(keyName).read<HashMap<String, ArrayList<ArrayList<String>>>>(bookName)
+        val data = Paper.book(keyName).read<SortedMap<String, ArrayList<ArrayList<String>>>>(bookName)
         val textViewTextAlignment = View.TEXT_ALIGNMENT_CENTER
 
         exerciseNameScreen.text = getItem(position)!!.exerciseNameValue
@@ -57,7 +59,7 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
             roundsDetails.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
             roundsDetails.setTextColor(ResourcesCompat.getColor(resources, R.color.white, null))
             roundsDetails.textAlignment = textViewTextAlignment
-            roundsDetails.text = key
+            roundsDetails.text = FormatUtils.spannableText(key.length - 1, key.length, key, null, resources)
             roundsDetails.layoutParams = textViewParams
             rowDetails.addView(roundsDetails)
 
@@ -70,7 +72,7 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
             val weightString = "${data[key]!![1][0]}: "
             val weightValue = data[key]!![1][getItem(position)!!.index + 1]
 
-            roundWeight.text = FormatUtils.spannableText(weightString, weightValue, resources)
+            roundWeight.text = FormatUtils.spannableText(null, null, weightString, weightValue, resources)
             roundWeight.layoutParams = textViewParams
             rowDetails.addView(roundWeight)
 
@@ -83,7 +85,7 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
             val repsString = "${data[key]!![2][0]}: "
             val repsValue = data[key]!![2][getItem(position)!!.index + 1]
 
-            roundReps.text = FormatUtils.spannableText(repsString, repsValue, resources)
+            roundReps.text = FormatUtils.spannableText(null, null, repsString, repsValue, resources)
             roundWeight.layoutParams = textViewParams
             rowDetails.addView(roundReps)
 

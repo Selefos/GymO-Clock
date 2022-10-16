@@ -62,7 +62,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         onSavedInstance(savedInstanceState)
         if (workoutTableName.isNotEmpty()) {
             loadRecyclerViews()
+            Log.i("ROUNDS", rounds.toString())
             binding.totalTime.text = FormatUtils.convertTotalTimeToDigitalClock((listAdapter.totalTimeFromDB(rounds)).toString())
+
         }
 
         //setItemTouchHelper()
@@ -366,7 +368,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         if (rounds == 0) {
             binding.roundsPicker.textColor = Color.RED
             binding.roundsPicker.value = 1
-            rounds = 1
+            rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
             onEndOfWorkout()
             return
         }
@@ -396,9 +398,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     lateinit var workoutDB: WorkoutDB
 
     private fun init() {
-        if (SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != null)
+        if (SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext()) != -1)
             rounds = SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
-        if (SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext()) != null)
+        if (SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext()) != 0L)
             prepareCountdownInMillis = SharedPreferencesUtils.getPrepareTimeFromPreferences(requireContext())
 
         dataList = ArrayList()
@@ -490,7 +492,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         })
 
         binding.playPauseFab.setOnClickListener {
-
+            binding.roundsPicker.value = rounds
             if (rounds == 0) {
                 recyclerPosition = 0
                 ErrorUtils.pickerTextWarning(binding.roundsPicker, rounds)
@@ -621,7 +623,8 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         calendarDB.insertCalendarDetails(
             monthYear, DateTimeUtils.getDate(), startTime, DateTimeUtils.getCurrentTime(), workoutTableName,
             FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalTimeFromDB(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
-            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString())
+            FormatUtils.convertTotalTimeToDigitalClock(listAdapter.totalWorkingTime(SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())).toString()),
+            SharedPreferencesUtils.getRoundsValueFromPreferences(requireContext())
         )
 
 
@@ -632,13 +635,13 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         exerciseDetailsPostWorkout()
     }
 
-    private fun exerciseDetailsPostWorkout(){
+    private fun exerciseDetailsPostWorkout() {
         val dialogBuilderUtils = DialogBuilderUtils(requireContext())
         dialogBuilderUtils.screeningDBDialog(false)
+
         dialogBuilderUtils.okButtonVerifyDetails.setOnClickListener {
             dialogBuilderUtils.dialog.dismiss()
-            dialogBuilderUtils.screeningDBDetailsDialog()
-
+            dialogBuilderUtils.screeningDBDetailsDialog(null, null, null, null, null)
         }
 
         dialogBuilderUtils.cancelButtonVerifyDetails.setOnClickListener {

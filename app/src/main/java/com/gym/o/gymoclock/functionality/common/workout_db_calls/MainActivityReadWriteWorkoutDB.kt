@@ -59,10 +59,10 @@ fun MainActivity.editWorkoutName(workoutName: String) {
     val updateWorkoutButton = view.findViewById<Button>(R.id.rename_workout)
     val deleteWorkoutButton = view.findViewById<Button>(R.id.delete_workout)
 
-    val updateTextView: String = getString(R.string.edit_indicator) + " " + workoutName
+    val updateTextView: String = getString(R.string.edit_indicator) + " " + FormatUtils.stringUnderscoreToSpace(workoutName)
     editIndicator.text = updateTextView
 
-    val updateEditTextHint: String = getString(R.string.rename) + " \"" + workoutName + "\""
+    val updateEditTextHint: String = getString(R.string.rename) + " \"" + FormatUtils.stringUnderscoreToSpace(workoutName) + "\""
     renameWorkout.hint = updateEditTextHint
 
     dialogBuilder.setView(view)

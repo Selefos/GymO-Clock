@@ -15,6 +15,9 @@ import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScr
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
 import io.paperdb.Paper
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
@@ -25,14 +28,34 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         this.context = context
     }
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE IF NOT EXISTS $TABLE_SCREEN_EXERCISES (ID INTEGER PRIMARY KEY , $COL_STORED_ID INTEGER, $COL_DATE DATE, $COL_WORKOUT_NAME ΤΕΧΤ, $COL_EXERCISES_LIST TEXT)"
-        db!!.execSQL(createTable)
+    override fun onCreate(db: SQLiteDatabase) {}
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_SCREEN_EXERCISES")
+        onCreate(db)
+        db.close()
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db!!.execSQL("DROP TABLE IF EXISTS $TABLE_SCREEN_EXERCISES")
-        onCreate(db)
+    fun addScreeningTable(monthYearTable: String) {
+        val db = writableDatabase
+        val createScreeningTable = "CREATE TABLE IF NOT EXISTS $monthYearTable (ID INTEGER PRIMARY KEY , $COL_STORED_ID INTEGER , $COL_DATE DATE, $COL_WORKOUT_NAME TEXT, $COL_EXERCISES_LIST TEXT)"
+        db.execSQL(createScreeningTable)
+        db.close()
+    }
+
+    fun loadScreeningTableNames(): List<String> {
+        val db = this.writableDatabase
+        val selectTables = "SELECT name FROM sqlite_master WHERE type='table' AND name!='android_metadata'"
+        val cursor = db.rawQuery(selectTables, null)
+        val result: MutableList<String> = ArrayList()
+        if (cursor.moveToFirst()) {
+            do {
+                result.add(cursor.getString(0))
+            } while (cursor.moveToNext())
+        }
+        db.close()
+        cursor.close()
+        return result
     }
 
     fun insertScreenDBDetails(id: String, date: String, workoutName: String, exercisesList: String): Boolean {
@@ -47,6 +70,13 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         return result != -1L
     }
 
+    fun loadRecyclerElements(tableName: String, id: String, sqlDB: SQLiteDatabase): Cursor {
+        val getData = arrayOf(COL_EXERCISES_LIST)
+        val select = "$COL_STORED_ID LIKE ?"
+        val selection = arrayOf(id)
+        return sqlDB.query(tableName, getData, select, selection, null, null, null)
+    }
+
     fun getScreenDBList(id: String, db: SQLiteDatabase): Cursor {
         val getData = arrayOf(CalendarDB.COL_ID, CalendarDB.COL_WORKOUT_NAME)
         val select = "$COL_STORED_ID LIKE ?"
@@ -54,9 +84,9 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         return db.query(TABLE_SCREEN_EXERCISES, getData, select, selection, null, null, null)
     }
 
-    fun list(storedId: String): String {
+    fun list(tableName: String, storedId: String): String {
         val db: SQLiteDatabase = readableDatabase
-        val cursor = db.rawQuery("SELECT $COL_EXERCISES_LIST FROM $TABLE_SCREEN_EXERCISES WHERE $COL_STORED_ID = $storedId", null)
+        val cursor = db.rawQuery("SELECT $COL_EXERCISES_LIST FROM $tableName WHERE $COL_STORED_ID = $storedId", null)
         var list = ""
         if (cursor.moveToFirst()) {
             do {
@@ -68,12 +98,10 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
         return list
     }
 
-
-
     companion object {
         const val DATABASE_NAME = "ExercisesScreen.db"
 
-        var TABLE_SCREEN_EXERCISES = "SCREEN_EXERCISES"
+        var TABLE_SCREEN_EXERCISES = DateTimeUtils.setCalendarTableName()
         const val COL_STORED_ID = "STORED_ID"
         const val COL_WORKOUT_NAME = "WORKOUT_NAME"
         const val COL_DATE = "DATE"
@@ -81,28 +109,31 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
 
     }
 
-    fun saveData(bookName: String, screeningDetailsHashMap: HashMap<String, ArrayList<ArrayList<String>>>) {
-        val dbDataMap: HashMap<String, ArrayList<ArrayList<String>>> = screeningDetailsHashMap
+    //Paper DB
+    fun saveData(bookName: String, screeningDetailsHashMap: SortedMap<String, ArrayList<ArrayList<String>>>) {
+        val dbDataMap: SortedMap<String, ArrayList<ArrayList<String>>> = screeningDetailsHashMap
         Paper.book(DateTimeUtils.getCurrentMonth() + "_" + DateTimeUtils.getCurrentYear()).write(bookName, dbDataMap)
     }
 
-    fun readDataList(bookName: String, keyName: String, viewSpecifyDetailsLayout: View) {
+    fun readDataList(bookName: String, keyName: String, viewSpecifyDetailsLayout: View): Boolean {
 
         val listView = viewSpecifyDetailsLayout.findViewById<ListView>(R.id.exercise_details_list)
-        val data = Paper.book(keyName).read<HashMap<String, ArrayList<ArrayList<String>>>>(bookName)
+        val data = Paper.book(keyName).read<SortedMap<String, ArrayList<ArrayList<String>>>>(bookName)
         val keysList: ArrayList<ExerciseScreening> = ArrayList()
 
         var exerciseName: String
 
-        for (index in 0 until data?.get("Round1")!![0].size - 1) {
-            exerciseName = data["Round1"]!![0][index + 1]
+        if(data == null)
+            return false
+
+        for (index in 0 until data[data.keys.first()]!![0].size - 1) {
+            exerciseName = data[data.keys.first()]!![0][index + 1]
             keysList.add(ExerciseScreening(exerciseName, index))
         }
 
         val exerciseScreeningAdapter = ExerciseScreeningAdapter(context!!, R.layout.dialog_exercise_screen_list_layout, keysList, bookName, keyName)
         listView.adapter = exerciseScreeningAdapter
 
+        return true
     }
-
-
 }

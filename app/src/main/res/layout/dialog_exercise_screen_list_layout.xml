@@ -13,10 +13,12 @@
         android:textSize="@dimen/dialogTextSize"
         android:textStyle="bold" />
 
-    <TableLayout
-        android:id="@+id/show_details_table"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    <include layout="@layout/table_layout_inflater"/>
+
+<!--    <TableLayout-->
+<!--        android:id="@+id/show_details_table"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center" />-->
 
 </LinearLayout>

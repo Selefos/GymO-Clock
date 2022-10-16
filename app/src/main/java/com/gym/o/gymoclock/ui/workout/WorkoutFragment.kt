@@ -215,9 +215,11 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             if (SharedPreferencesUtils.getLayoutAnimationsState(requireContext()))
                 setOnRemoveViewAnimation(itemView, dataPosition)
 
+
             Handler(Looper.getMainLooper()).postDelayed(
                 {
                     dataList.removeAt(dataPosition)
+                    removeAllRecyclerViews()
                     listAdapter.notifyItemRemoved(dataPosition)
                 }, 500)
 

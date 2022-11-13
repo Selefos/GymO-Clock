@@ -3,6 +3,7 @@ package com.gym.o.gymoclock.utils
 import android.content.Context
 import android.graphics.Color
 import android.text.Editable
+import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
@@ -195,11 +196,10 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         roundsText.gravity = View.TEXT_ALIGNMENT_CENTER
 
         val loadWorkoutExercises: ArrayList<String>
-        if(bookName == null) {
-            roundsText.text= "Round $roundsCountText/${SharedPreferencesUtils.getRoundsValueFromPreferences(context)}"
+        if (bookName == null) {
+            roundsText.text = "Round $roundsCountText/${SharedPreferencesUtils.getRoundsValueFromPreferences(context)}"
             loadWorkoutExercises = loadCurrentWorkoutExercises(context)
-        }
-        else{
+        } else {
             roundsText.text = "Round $roundsCountText/$sets"
             loadWorkoutExercises = loadScreenedWorkoutExercises(context, tableName as String, workoutID as String)
         }
@@ -258,7 +258,9 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 editTextWeight.tag = "edit_text_weight_$i"
                 editTextWeight.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 editTextWeight.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                editTextWeight.filters += InputFilter.LengthFilter(7) // set max length
                 editTextWeight.hint = "max 999"
+                FormatUtils.textChangeListenerDecimal(context, editTextWeight, null, nextSetButtonSpecifyDetails)
                 roundWeightEditTexts.add(editTextWeight)
                 row.addView(editTextWeight)
 
@@ -266,7 +268,9 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 editTextReps.tag = "edit_text_rep_$i"
                 editTextReps.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 editTextReps.inputType = InputType.TYPE_CLASS_NUMBER
+                editTextReps.filters += InputFilter.LengthFilter(3)
                 editTextReps.hint = "max 999"
+                FormatUtils.textChangeListenerInteger(context, editTextReps, null, nextSetButtonSpecifyDetails)
                 roundRepsEditTexts.add(editTextReps)
                 row.addView(editTextReps)
 
@@ -289,34 +293,20 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         weightApplyToAll.tag = "weight_apply_to_all"
         weightApplyToAll.textAlignment = View.TEXT_ALIGNMENT_CENTER
         weightApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        weightApplyToAll.filters += InputFilter.LengthFilter(7)
         weightApplyToAll.hint = "weight"
-        weightApplyToAll.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                for (i in roundWeightEditTexts.indices)
-                    roundWeightEditTexts[i].text = s
-            }
+        FormatUtils.textChangeListenerDecimal(context, weightApplyToAll, roundWeightEditTexts, nextSetButtonSpecifyDetails)
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        })
         lastRow.addView(weightApplyToAll)
 
         val repsApplyToAll = EditText(context)
         repsApplyToAll.tag = "reps_apply_to_all"
         repsApplyToAll.textAlignment = View.TEXT_ALIGNMENT_CENTER
-        repsApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        repsApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER
+        repsApplyToAll.filters += InputFilter.LengthFilter(3)
         repsApplyToAll.hint = "reps"
-        repsApplyToAll.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                for (i in roundWeightEditTexts.indices)
-                    roundRepsEditTexts[i].text = s
-            }
+        FormatUtils.textChangeListenerInteger(context, repsApplyToAll, roundRepsEditTexts, nextSetButtonSpecifyDetails)
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        })
         lastRow.addView(repsApplyToAll)
 
         table.addView(lastRow)
@@ -330,11 +320,13 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         screeningDBDetailsOnClickListenerScope(bookName, tableName, workoutName, workoutID, sets)
     }
 
-    private var nextSetButtonSpecifyDetails: Button = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
+
+
+    private var nextSetButtonSpecifyDetails: ImageButton = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
 
     private fun screeningDBDetailsOnClickListenerScope(bookName: Any?, tableName: Any?, workoutName: Any?, workoutID: Any?, sets: Any?) {
 
-        val setsCount = if(bookName == null)
+        val setsCount = if (bookName == null)
             SharedPreferencesUtils.getRoundsValueFromPreferences(context)
         else
             sets as Int

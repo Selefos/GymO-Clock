@@ -73,20 +73,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Paper.init(this)
 
-//        val dialogBuilderUtils = DialogBuilderUtils(this)
-//        dialogBuilderUtils.screeningDBDialog(false)
-//        dialogBuilderUtils.okButtonVerifyDetails.setOnClickListener {
-//            dialogBuilderUtils.dialog.dismiss()
-//            dialogBuilderUtils.screeningDBDetailsDialog()
-//
-//        }
-//        dialogBuilderUtils.cancelButtonVerifyDetails.setOnClickListener {
-//            dialogBuilderUtils.dialog.dismiss()
-//        }
-
-//        val calendarDB = CalendarDB(this)
-//        calendarDB.calendarDBDeleteTestEntries("OCTOBER_2022", "Test")
-
     }
 
     /* init  {

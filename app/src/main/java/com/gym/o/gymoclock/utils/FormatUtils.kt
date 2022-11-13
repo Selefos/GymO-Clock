@@ -1,5 +1,21 @@
 package com.gym.o.gymoclock.utils
 
+import android.content.Context
+import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
+import android.util.Log
+import android.widget.EditText
+import android.widget.ImageButton
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import com.gym.o.gymoclock.R
+import java.text.DecimalFormat
 import java.util.*
 
 
@@ -98,6 +114,29 @@ class FormatUtils {
             return string.replace("_", " ")
         }
 
+        fun spannableText(length1: Any?, length2: Any?, text1: Any?, text2: Any?, res: Any?): SpannableString {
+            lateinit var coloredText: SpannableString
+
+            if (text1 != null && text2 != null) {
+                val inputTextReps = "$text1$text2"
+                coloredText = SpannableString(inputTextReps)
+                coloredText.setSpan(
+                    ForegroundColorSpan(ResourcesCompat.getColor(res as Resources, R.color.custom_blue, null)),
+                    text1.toString().length, text2.toString().length + text1.toString().length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            if (length1 != null && length2 != null) {
+                coloredText = SpannableString(text1.toString())
+                coloredText.setSpan(
+                    ForegroundColorSpan(ResourcesCompat.getColor(res as Resources, R.color.custom_blue, null)),
+                    length1.toString().toInt(), length2.toString().toInt(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            return coloredText
+        }
+
         var strSeparator = ","
         fun convertArrayToString(array: Array<String>): String {
             var str = ""
@@ -115,6 +154,164 @@ class FormatUtils {
             return str.split(strSeparator).toTypedArray()
         }
 
+        fun removeTrailingZeros(num: String): String {
+            //traverse the entire string
+            for (i in num.indices) {
+
+                //check for the first non-zero character
+                if (num[i] != '0') {
+                    //return the remaining string
+                    return num.substring(i)
+                }
+            }
+
+            //If the entire string is traversed
+            //that means it didn't have a single
+            //non-zero character, hence return "0"
+            return "0"
+        }
+
+        fun addChar(str: String, ch: Char, position: Int): String {
+            val len = str.length
+            val updatedArr = CharArray(len + 1)
+            str.toCharArray(updatedArr, 0, 0, position)
+            updatedArr[position] = ch
+            str.toCharArray(updatedArr, position + 1, position, len)
+            return String(updatedArr)
+        }
+
+        fun textChangeListenerDecimal(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?, button: ImageButton) {
+            editText.addTextChangedListener(object : TextWatcher {
+                var indexOfDecimalPoint = 0
+                var isUserInput = true
+                private var delay: Long = 2000 // x seconds after user stops typing
+                var editableString = ""
+                var lastTextEdit: Long = 0
+
+                val inputFinishChecker = Runnable {
+                    Log.i("IN_HANDLER", "Check")
+                    if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
+                        isUserInput = false
+
+                        if(editableString.isNotEmpty()) {
+                            if (!editableString.contains(".") && editableString != "0" && indexOfDecimalPoint == editableString.length - 1 && indexOfDecimalPoint != 0)
+                                editableString = addChar(editableString, '.', indexOfDecimalPoint)
+
+                            val df = DecimalFormat("0.###")
+                            val doubleValue = editableString.toDouble()
+                            editableString = df.format(doubleValue)
+                            editableString = removeTrailingZeros(editableString)
+
+                            editText.setText(editableString)
+                            editText.setSelection(editText.length()) // keep cursor at the end of edittext
+                        }
+                        button.isEnabled = true
+                        button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                    editableString = s.toString()
+                    if (editableString.contains('.'))
+                        indexOfDecimalPoint = editableString.indexOf('.')
+
+                    editText.setOnKeyListener { _, _, _ ->
+                        isUserInput = true
+                        if (button.isEnabled) {
+                            button.isEnabled = false
+                            button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                        }
+
+                        if (editableString.length == 3 && !editableString.contains(".") && isUserInput) {
+                            editableString = addChar(editableString, '.', 3)
+                            editText.setText(editableString)
+                            editText.setSelection(editText.length())
+
+                        }
+                        false
+
+                    }
+
+                    if (s.isNotEmpty() && s.toString() != "." && isUserInput) {
+                        lastTextEdit = System.currentTimeMillis()
+                        Handler(Looper.getMainLooper()).postDelayed(inputFinishChecker, delay)
+                    }
+
+                    //apply text to all weight edit_texts
+                    if (editTextArray != null){
+                        for (i in editTextArray.indices)
+                            editTextArray[i].text = editText.text
+                    }
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    Handler(Looper.getMainLooper()).removeCallbacks(inputFinishChecker)
+                }
+            })
+        }
+
+        fun textChangeListenerInteger(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?,button: ImageButton){
+            editText.addTextChangedListener(object : TextWatcher {
+                var isUserInput = true
+                private var delay: Long = 2000 // x seconds after user stops typing
+                var editableString = ""
+                var lastTextEdit: Long = 0
+
+
+                val inputFinishChecker = Runnable {
+                    Log.i("IN_HANDLER", "Check")
+                    if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
+                        isUserInput = false
+
+                        if(editableString.isNotEmpty()) {
+                            editableString = removeTrailingZeros(editableString)
+
+                            editText.setText(editableString)
+                            editText.setSelection(editText.length()) // keep cursor at the end of edittext
+                        }
+
+                        button.isEnabled = true
+                        button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                    }
+                }
+
+
+                override fun afterTextChanged(s: Editable) {
+                    editableString = s.toString()
+
+                    editText.setOnKeyListener { _, _, _ ->
+                        isUserInput = true
+                        Log.i("setOnKeyListener", "$isUserInput")
+                        if (button.isEnabled) {
+                            button.isEnabled = false
+                            button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                        }
+                        false
+                    }
+
+                    if (s.isNotEmpty() && isUserInput) {
+                        lastTextEdit = System.currentTimeMillis()
+                        Handler(Looper.getMainLooper()).postDelayed(inputFinishChecker, delay)
+                    }
+
+                    //apply text to all weight edit_texts
+                    if(editTextArray != null) {
+                        for (i in editTextArray.indices)
+                            editTextArray[i].text = editText.text
+                    }
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    Handler(Looper.getMainLooper()).removeCallbacks(inputFinishChecker)
+                }
+            })
+        }
     }
 
 }

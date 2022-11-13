@@ -26,5 +26,5 @@
     <color name="number_picker_scroll_flying">#22FFA7</color>
     <color name="number_picker_scroll_touched">#BDBDBD</color>
     <color name="grayed_icons">#707070</color>
-
+    <color name="custom_blue">#7DD7DF</color>
 </resources>

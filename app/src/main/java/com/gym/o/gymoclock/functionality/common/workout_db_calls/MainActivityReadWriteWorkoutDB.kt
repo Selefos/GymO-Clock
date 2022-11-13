@@ -9,6 +9,7 @@ import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.main_activity_pr.*
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.ui.workout.WorkoutFragment
+import com.gym.o.gymoclock.utils.ErrorUtils
 import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 
@@ -27,8 +28,8 @@ fun MainActivity.addWorkoutTable() {
     dialog.show()
 
     addButton.setOnClickListener {
-        if (isTextEmpty(workoutNameAdd).isNotEmpty() && isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty()
-            && isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
+        if (ErrorUtils.isTextEmpty(workoutNameAdd).isNotEmpty() && ErrorUtils.isNotDuplicate(workoutNameAdd, workoutDB).isNotEmpty()
+            && ErrorUtils.isNotTextNumberOrSymbol(workoutNameAdd).isNotEmpty()) {
 
             workoutDB.addWorkoutTable(FormatUtils.stringSpaceToUnderscore(workoutNameAdd.text.toString()))
 
@@ -58,10 +59,10 @@ fun MainActivity.editWorkoutName(workoutName: String) {
     val updateWorkoutButton = view.findViewById<Button>(R.id.rename_workout)
     val deleteWorkoutButton = view.findViewById<Button>(R.id.delete_workout)
 
-    val updateTextView: String = getString(R.string.edit_indicator) + " " + workoutName
+    val updateTextView: String = getString(R.string.edit_indicator) + " " + FormatUtils.stringUnderscoreToSpace(workoutName)
     editIndicator.text = updateTextView
 
-    val updateEditTextHint: String = getString(R.string.rename) + " \"" + workoutName + "\""
+    val updateEditTextHint: String = getString(R.string.rename) + " \"" + FormatUtils.stringUnderscoreToSpace(workoutName) + "\""
     renameWorkout.hint = updateEditTextHint
 
     dialogBuilder.setView(view)
@@ -69,8 +70,8 @@ fun MainActivity.editWorkoutName(workoutName: String) {
     dialog.show()
 
     updateWorkoutButton.setOnClickListener {
-        if (isTextEmpty(renameWorkout).isNotEmpty() && isNotDuplicate(renameWorkout, workoutDB).isNotEmpty()
-            && isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
+        if (ErrorUtils.isTextEmpty(renameWorkout).isNotEmpty() && ErrorUtils.isNotDuplicate(renameWorkout, workoutDB).isNotEmpty()
+            && ErrorUtils.isNotTextNumberOrSymbol(renameWorkout).isNotEmpty()) {
 
             workoutDB.renameWorkoutTable(workoutName, FormatUtils.stringSpaceToUnderscore(renameWorkout.text.toString()))
 

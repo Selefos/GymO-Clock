@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -17,6 +19,7 @@ import com.gym.o.gymoclock.functionality.workout_pr.animations.exerciseSettingsB
 import com.gym.o.gymoclock.functionality.workout_pr.animations.setOnAddViewAnimation
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
 import com.gym.o.gymoclock.interfaces.RecyclerViewInterface
+import com.gym.o.gymoclock.utils.FormatUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import kotlin.properties.Delegates
 
@@ -49,10 +52,20 @@ class ExerciseRecyclerAdapter(var context: Context, val mRecyclerViewInterface: 
         var mrTimerIsRunning by Delegates.notNull<Boolean>()
         var mrTimerIsPaused by Delegates.notNull<Boolean>()
 
+        var weightEditText: EditText = itemView.findViewById(R.id.weight_edit)
+
+        var repsEditText: EditText = itemView.findViewById(R.id.reps_edit)
+
         var isSettingsVisible = false
 
         init {
             resources = itemView.context.resources
+
+            FormatUtils.textChangeListenerDecimal(context, weightEditText, null, null)
+            weightEditText.filters += InputFilter.LengthFilter(7) // set max length
+
+            FormatUtils.textChangeListenerInteger(context, repsEditText, null, null)
+            repsEditText.filters += InputFilter.LengthFilter(3) // set max length
         }
 
     }

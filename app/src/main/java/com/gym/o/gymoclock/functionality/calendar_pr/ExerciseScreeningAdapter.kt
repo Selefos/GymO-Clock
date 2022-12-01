@@ -1,6 +1,7 @@
 package com.gym.o.gymoclock.functionality.calendar_pr
 
 import android.content.Context
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -48,9 +49,11 @@ class ExerciseScreeningAdapter(private val mContext: Context, private val mResou
         val textViewTextAlignment = View.TEXT_ALIGNMENT_CENTER
 
         exerciseNameScreen.text = getItem(position)!!.exerciseNameValue
-
+        Log.i("Before KYS", "key")
         for (key in data!!.keys) {
 
+            Log.i("KEYS", key)
+            Log.i("DATA_KEYS", data.keys.toString())
             val rowDetails = TableRow(context)
             rowDetails.gravity = Gravity.START
             rowDetails.layoutParams = tableRowParams

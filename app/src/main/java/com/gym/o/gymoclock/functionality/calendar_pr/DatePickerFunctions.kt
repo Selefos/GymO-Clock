@@ -76,7 +76,7 @@ fun CalendarFragment.createButton(tableName: String, workoutID: String, workoutN
         val cursor: Cursor = calendarDB.loadCalendarDetails(tableName, workoutID, sqlDB)
         val dialogBuilderUtils = DialogBuilderUtils(requireContext())
 
-        var sets: Int = 1
+        var sets = 1
         if (cursor.moveToFirst()) {
             do {
                 dialogBuilderUtils.calendarDate.text = cursor.getString(0)
@@ -98,95 +98,4 @@ fun CalendarFragment.createButton(tableName: String, workoutID: String, workoutN
         dialogBuilderUtils.calendarWorkoutDetailsDialog(true)
     }
 
-}
-
-
-val screeningDetailsHashMap: SortedMap<String, ArrayList<ArrayList<String>>> = TreeMap()
-var roundsCountText = 1
-val roundWeightEditTexts = arrayListOf<EditText>()
-val roundRepsEditTexts = arrayListOf<EditText>()
-val exerciseNameStringList = arrayListOf<String>()
-var roundWeightStringList = arrayListOf<String>()
-var roundRepsStringList = arrayListOf<String>()
-var detailsArray = arrayListOf<ArrayList<String>>()
-
-fun loadCurrentWorkoutExercises(context: Context): ArrayList<String> {
-    val workoutDB = WorkoutDB(context)
-    val db: SQLiteDatabase = workoutDB.readableDatabase
-    val cursorWorkoutDB = workoutDB.loadRecyclerElements(workoutTableName, db)
-    val exerciseNameList = arrayListOf<String>()
-
-    if (cursorWorkoutDB.moveToFirst()) {
-        do {
-            exerciseNameList.add(cursorWorkoutDB.getString(1))
-        } while (cursorWorkoutDB.moveToNext())
-    }
-    cursorWorkoutDB.close()
-    db.close()
-
-    return exerciseNameList
-}
-
-fun loadScreenedWorkoutExercises(context: Context, tableName: String, workoutID: String): ArrayList<String> {
-    val exercisesScreenDB = ExercisesScreenDB(context)
-    val db: SQLiteDatabase = exercisesScreenDB.readableDatabase
-    val exerciseNameList = arrayListOf<String>()
-    val list = exercisesScreenDB.list(tableName, workoutID)
-    val arrayList = FormatUtils.convertStringToArray(list)
-
-    for (i in arrayList.indices)
-        exerciseNameList.add(arrayList[i])
-
-    db.close()
-    return exerciseNameList
-}
-
-fun isHashMapPrepared(): Boolean {
-    var isEditTextReady = true
-    for (i in roundWeightEditTexts.indices) {
-
-        if (ErrorUtils.isTextEmpty(roundWeightEditTexts[i]).isEmpty()) {
-            isEditTextReady = false
-        } else
-            roundWeightStringList.add(roundWeightEditTexts[i].text.toString())
-
-        if (ErrorUtils.isTextEmpty(roundRepsEditTexts[i]).isEmpty()) {
-            isEditTextReady = false
-        } else
-            roundRepsStringList.add(roundRepsEditTexts[i].text.toString())
-    }
-
-    detailsArray.add(exerciseNameStringList)
-    detailsArray.add(roundWeightStringList)
-    detailsArray.add(roundRepsStringList)
-    screeningDetailsHashMap["Round $roundsCountText"] = detailsArray
-
-    return isEditTextReady
-}
-
-fun saveHashMapDetailsOnEndWorkout(context: Context, bookName: Any?) {
-    val calendarDB = CalendarDB(context)
-    val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
-    val tableName = "${(DateTimeUtils.getCurrentMonth())}_${DateTimeUtils.getCurrentYear()}"
-
-    val cursor: Cursor = calendarDB.getCalendarWorkoutID(tableName, DateTimeUtils.getDate(), sqlDB)
-
-    val exercisesScreenDB = ExercisesScreenDB(context)
-    if (bookName == null) {
-        if (cursor.moveToLast())
-            exercisesScreenDB.saveData("${DateTimeUtils.getDate()}_${cursor.getString(0)}", screeningDetailsHashMap)
-    } else
-        exercisesScreenDB.saveData(bookName as String, screeningDetailsHashMap)
-
-    cursor.close()
-    sqlDB.close()
-}
-
-fun instantiateLists() {
-    exerciseNameStringList.clear()
-    roundWeightEditTexts.clear()
-    roundRepsEditTexts.clear()
-    roundWeightStringList = ArrayList()
-    roundRepsStringList = ArrayList()
-    detailsArray = ArrayList()
 }

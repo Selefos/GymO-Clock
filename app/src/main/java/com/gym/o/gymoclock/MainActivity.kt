@@ -29,8 +29,9 @@ import com.gym.o.gymoclock.functionality.main_activity_pr.populateList
 import com.gym.o.gymoclock.functionality.main_activity_pr.prepareMenuData
 import com.gym.o.gymoclock.functionality.main_activity_pr.setupDrawer
 import com.gym.o.gymoclock.functionality.workout_pr.workoutTableName
+import com.gym.o.gymoclock.testFunctions.calendarDBDeleteTestEntries
+import com.gym.o.gymoclock.testFunctions.screenDBDeleteTestEntries
 import com.gym.o.gymoclock.utils.DateTimeUtils
-import com.gym.o.gymoclock.utils.DialogBuilderUtils
 import com.gym.o.gymoclock.utils.SharedPreferencesUtils
 import com.gym.o.gymoclock.utils.TextToSpeechUtils
 import io.paperdb.Paper
@@ -73,6 +74,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         Paper.init(this)
 
+//        val calendarDB = CalendarDB(this)
+//        calendarDB.calendarDBDeleteTestEntries("NOVEMBER_2022", "Test")
+//        val exercisesScreenDB = ExercisesScreenDB(this)
+//        exercisesScreenDB.screenDBDeleteTestEntries("NOVEMBER_2022", "Test")
     }
 
     /* init  {
@@ -184,7 +189,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private fun exerciseScreeningInit(){
+    private fun exerciseScreeningInit() {
         val exercisesScreeningDB = ExercisesScreenDB(this)
         val screeningMonths: List<String> = exercisesScreeningDB.loadScreeningTableNames()
 

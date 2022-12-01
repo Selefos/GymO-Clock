@@ -19,7 +19,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.databases.ExercisesScreenDB
 import com.gym.o.gymoclock.databases.WorkoutDB
-import com.gym.o.gymoclock.functionality.calendar_pr.*
 
 
 class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
@@ -133,6 +132,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 if (isViewOnExerciseDetails) {
 
                     val exercisesScreenDB = ExercisesScreenDB(context)
+                    Log.i("KEYS_DIALOG", "$bookName $tableName")
                     if (!exercisesScreenDB.readDataList(bookName, tableName, viewSpecifyDetailsLayout)) {
                         val viewNoDetailsFound: View = inflater.inflate(R.layout.dialog_no_details_found, null)
                         val noDetailsTextView: TextView = viewNoDetailsFound.findViewById(R.id.no_details_tv)
@@ -180,8 +180,10 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     private var viewSpecifyDetails: View = inflater.inflate(R.layout.dialog_specify_workout_details, null)
     private var scrollViewSpecifyDetails: ScrollView = viewSpecifyDetails.findViewById(R.id.scroll_view_add_details)
     private var table: TableLayout = tableLayoutInflater.findViewById(R.id.show_details_table)
-
-    fun screeningDBDetailsDialog(bookName: Any?, tableName: Any?, workoutName: Any?, workoutID: Any?, sets: Any?) {
+    private var nextSetButtonSpecifyDetails: ImageButton = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
+    private var roundsCountText = 1
+    private val treeMapUtils = TreeMapUtils()
+    fun screeningDBDetailsDialog(bookName: String?, tableName: String?, workoutName: String?, workoutID: String?, sets: Int?) {
 
         val layoutIndicators: LinearLayout = viewSpecifyDetails.findViewById(R.id.layout_round_indicator)
 
@@ -195,13 +197,14 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         roundsText.textAlignment = View.TEXT_ALIGNMENT_CENTER
         roundsText.gravity = View.TEXT_ALIGNMENT_CENTER
 
+
         val loadWorkoutExercises: ArrayList<String>
         if (bookName == null) {
             roundsText.text = "Round $roundsCountText/${SharedPreferencesUtils.getRoundsValueFromPreferences(context)}"
-            loadWorkoutExercises = loadCurrentWorkoutExercises(context)
+            loadWorkoutExercises = treeMapUtils.loadCurrentWorkoutExercises(context)
         } else {
             roundsText.text = "Round $roundsCountText/$sets"
-            loadWorkoutExercises = loadScreenedWorkoutExercises(context, tableName as String, workoutID as String)
+            loadWorkoutExercises = treeMapUtils.loadScreenedWorkoutExercises(context, tableName!!, workoutID!!)
         }
 
         layoutIndicators.addView(roundsText)
@@ -224,7 +227,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 exerciseNameText.setTextColor(Color.WHITE)
                 exerciseNameText.text = "Exercise Name"
                 exerciseNameText.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                exerciseNameStringList.add(exerciseNameText.text.toString())
+                treeMapUtils.exerciseNameStringList.add(exerciseNameText.text.toString())
                 row.addView(exerciseNameText)
 
                 val roundWeightText = TextView(context)
@@ -232,7 +235,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 roundWeightText.setTextColor(Color.WHITE)
                 roundWeightText.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 roundWeightText.text = "Weight"
-                roundWeightStringList.add(roundWeightText.text.toString())
+                treeMapUtils.roundWeightStringList.add(roundWeightText.text.toString())
                 row.addView(roundWeightText)
 
                 val roundRepsText = TextView(context)
@@ -240,7 +243,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 roundRepsText.setTextColor(Color.WHITE)
                 roundRepsText.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 roundRepsText.text = "Reps"
-                roundRepsStringList.add(roundRepsText.text.toString())
+                treeMapUtils.roundRepsStringList.add(roundRepsText.text.toString())
                 row.addView(roundRepsText)
 
             } else {
@@ -251,7 +254,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 exerciseNameText.setTextColor(Color.WHITE)
                 exerciseNameText.text = loadWorkoutExercises[i - 1]
                 exerciseNameText.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
-                exerciseNameStringList.add(exerciseNameText.text.toString())
+                treeMapUtils.exerciseNameStringList.add(exerciseNameText.text.toString())
                 row.addView(exerciseNameText)
 
                 val editTextWeight = EditText(context)
@@ -261,7 +264,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 editTextWeight.filters += InputFilter.LengthFilter(7) // set max length
                 editTextWeight.hint = "max 999"
                 FormatUtils.textChangeListenerDecimal(context, editTextWeight, null, nextSetButtonSpecifyDetails)
-                roundWeightEditTexts.add(editTextWeight)
+                treeMapUtils.roundWeightEditTexts.add(editTextWeight)
                 row.addView(editTextWeight)
 
                 val editTextReps = EditText(context)
@@ -271,7 +274,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
                 editTextReps.filters += InputFilter.LengthFilter(3)
                 editTextReps.hint = "max 999"
                 FormatUtils.textChangeListenerInteger(context, editTextReps, null, nextSetButtonSpecifyDetails)
-                roundRepsEditTexts.add(editTextReps)
+                treeMapUtils.roundRepsEditTexts.add(editTextReps)
                 row.addView(editTextReps)
 
             }
@@ -295,7 +298,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         weightApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         weightApplyToAll.filters += InputFilter.LengthFilter(7)
         weightApplyToAll.hint = "weight"
-        FormatUtils.textChangeListenerDecimal(context, weightApplyToAll, roundWeightEditTexts, nextSetButtonSpecifyDetails)
+        FormatUtils.textChangeListenerDecimal(context, weightApplyToAll, treeMapUtils.roundWeightEditTexts, nextSetButtonSpecifyDetails)
 
         lastRow.addView(weightApplyToAll)
 
@@ -305,7 +308,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         repsApplyToAll.inputType = InputType.TYPE_CLASS_NUMBER
         repsApplyToAll.filters += InputFilter.LengthFilter(3)
         repsApplyToAll.hint = "reps"
-        FormatUtils.textChangeListenerInteger(context, repsApplyToAll, roundRepsEditTexts, nextSetButtonSpecifyDetails)
+        FormatUtils.textChangeListenerInteger(context, repsApplyToAll, treeMapUtils.roundRepsEditTexts, nextSetButtonSpecifyDetails)
 
         lastRow.addView(repsApplyToAll)
 
@@ -320,34 +323,32 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
         screeningDBDetailsOnClickListenerScope(bookName, tableName, workoutName, workoutID, sets)
     }
 
-
-
-    private var nextSetButtonSpecifyDetails: ImageButton = viewSpecifyDetails.findViewById(R.id.screeningDB_button_next_set)
-
-    private fun screeningDBDetailsOnClickListenerScope(bookName: Any?, tableName: Any?, workoutName: Any?, workoutID: Any?, sets: Any?) {
+    private fun screeningDBDetailsOnClickListenerScope(bookName: String?, tableName: String?, workoutName: String?, workoutID: String?, sets: Int?) {
 
         val setsCount = if (bookName == null)
             SharedPreferencesUtils.getRoundsValueFromPreferences(context)
         else
-            sets as Int
+            sets
 
         if (roundsCountText == setsCount)
             nextSetButtonSpecifyDetails.setBackgroundResource(R.drawable.ic_check_change)
 
         nextSetButtonSpecifyDetails.setOnClickListener {
-
-            if (!isHashMapPrepared())
+            if (!treeMapUtils.isHashMapPrepared())
                 return@setOnClickListener
+            else
+                treeMapUtils.addToTreeMap(roundsCountText)
 
-            if (roundsCountText == SharedPreferencesUtils.getRoundsValueFromPreferences(context)) {
-                saveHashMapDetailsOnEndWorkout(context, bookName)
-                instantiateLists()
+            if (roundsCountText == setsCount) {
+                val exercisesScreenDB = ExercisesScreenDB(context)
+                exercisesScreenDB.saveHashMapDetailsOnEndWorkout(context, bookName, treeMapUtils)
+                treeMapUtils.instantiateLists()
                 roundsCountText = 1
                 dialog.dismiss()
                 return@setOnClickListener
             }
             roundsCountText++
-            instantiateLists()
+            treeMapUtils.instantiateLists()
             instantiateViews()
             dialog.dismiss()
             screeningDBDetailsDialog(bookName, tableName, workoutName, workoutID, sets)

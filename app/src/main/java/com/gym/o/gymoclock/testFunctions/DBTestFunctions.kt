@@ -27,6 +27,20 @@ fun MainActivity.changeDataCalendar() {
     sqlDB.close()
 }
 
+fun CalendarDB.calendarDBDeleteID(tableName: String, id: String): Boolean {
+    val db = this.writableDatabase
+    val result = db.delete(tableName, "${CalendarDB.COL_ID} = ?", arrayOf(id))
+    db.close()
+    return result != -1
+}
+
+fun ExercisesScreenDB.screenDBDeleteID(tableName: String, id: String): Boolean {
+    val db = this.writableDatabase
+    val result = db.delete(tableName, "${ExercisesScreenDB.COL_STORED_ID} = ?", arrayOf(id))
+    db.close()
+    return result != -1
+}
+
 fun CalendarDB.updateSelectedCalendarDetails(tableName: String, id: String, totalTime: String, totalWorkingTime: String): Boolean {
     val db: SQLiteDatabase = this.writableDatabase
     val exerciseDetails = ContentValues()

@@ -7,17 +7,13 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.view.View
 import android.widget.ListView
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.gym.o.gymoclock.R
 import com.gym.o.gymoclock.functionality.calendar_pr.ExerciseScreeningAdapter
 import com.gym.o.gymoclock.functionality.workout_pr.recycler_adapter.ExerciseScreening
-import com.gym.o.gymoclock.ui.workout.WorkoutFragment
 import com.gym.o.gymoclock.utils.DateTimeUtils
+import com.gym.o.gymoclock.utils.TreeMapUtils
 import io.paperdb.Paper
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
@@ -110,7 +106,7 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
     }
 
     //Paper DB
-    fun saveData(bookName: String, screeningDetailsHashMap: SortedMap<String, ArrayList<ArrayList<String>>>) {
+    private fun saveData(bookName: String, screeningDetailsHashMap: SortedMap<String, ArrayList<ArrayList<String>>>) {
         val dbDataMap: SortedMap<String, ArrayList<ArrayList<String>>> = screeningDetailsHashMap
         Paper.book(DateTimeUtils.getCurrentMonth() + "_" + DateTimeUtils.getCurrentYear()).write(bookName, dbDataMap)
     }
@@ -123,7 +119,7 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
 
         var exerciseName: String
 
-        if(data == null)
+        if (data == null)
             return false
 
         for (index in 0 until data[data.keys.first()]!![0].size - 1) {
@@ -136,4 +132,22 @@ class ExercisesScreenDB(context: Context?) : SQLiteOpenHelper(context, DATABASE_
 
         return true
     }
+
+    fun saveHashMapDetailsOnEndWorkout(context: Context, bookName: String?, treeMapUtils: TreeMapUtils) {
+        val calendarDB = CalendarDB(context)
+        val sqlDB: SQLiteDatabase = calendarDB.readableDatabase
+        val tableName = "${(DateTimeUtils.getCurrentMonth())}_${DateTimeUtils.getCurrentYear()}"
+
+        val cursor: Cursor = calendarDB.getCalendarWorkoutID(tableName, DateTimeUtils.getDate(), sqlDB)
+        val exercisesScreenDB = ExercisesScreenDB(context)
+        if (bookName == null) {
+            if (cursor.moveToLast())
+                exercisesScreenDB.saveData("${DateTimeUtils.getDate()}_${cursor.getString(0)}", treeMapUtils.screeningDetailsHashMap)
+        } else
+            exercisesScreenDB.saveData(bookName, treeMapUtils.screeningDetailsHashMap)
+
+        cursor.close()
+        sqlDB.close()
+    }
+
 }

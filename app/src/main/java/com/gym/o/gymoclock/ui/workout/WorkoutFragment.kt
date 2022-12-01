@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -31,6 +32,7 @@ import com.gym.o.gymoclock.enums.ClockSelected
 import com.gym.o.gymoclock.enums.ClockSelectedEnum
 import com.gym.o.gymoclock.enums.PrepareTimerState
 import com.gym.o.gymoclock.enums.PrepareTimerStateEnum
+import com.gym.o.gymoclock.functionality.calendar_pr.*
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.addEditExercise
 import com.gym.o.gymoclock.functionality.common.workout_db_calls.updateExerciseValues
 import com.gym.o.gymoclock.functionality.workout_pr.*
@@ -315,6 +317,9 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 val exerciseClock: TextView = viewRecycler.findViewById(R.id.countdown_work)
                 val restClock: TextView = viewRecycler.findViewById(R.id.countdown_rest)
 
+                val weightEditText: EditText = viewRecycler.findViewById(R.id.weight_edit)
+                val repsEditText: EditText = viewRecycler.findViewById(R.id.reps_edit)
+
                 workCountDown = object : CountDownTimer(0, 1000) {
                     override fun onTick(millsUntilFinish: Long) {
                         workTimeInMillis = millsUntilFinish
@@ -337,6 +342,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
                 dataList.add(
                     ExerciseElements(
                         exerciseName.text.toString(), exerciseClock, restClock,
+                        weightEditText, repsEditText,
                         workCountDown, restCountDown,
                         wTimerIsRunning = false, wTimerIsPaused = false,
                         rTimerIsRunning = false, rTimerIsPaused = false
@@ -357,9 +363,17 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
     }
 
     private var isTimerRunning: Boolean = false
-
+    private val treeMapUtils = TreeMapUtils()
+    private var roundsCount = 0
     override fun roundsCount() {
+
+        insertWeightReps()
+        if(treeMapUtils.isHashMapPrepared())
+           treeMapUtils.addToTreeMap(++roundsCount)
+        //isListReady = treeMapUtils.isHashMapPrepared()
+
         rounds--
+
         recyclerPosition = 0
         binding.roundsPicker.value = rounds
         Log.d("MAIN", "Rounds Total: $rounds, isStartWorkout $isTimerRunning -- ${DateTimeUtils.getCurrentTime()}")
@@ -374,7 +388,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
             onEndOfWorkout()
             return
         }
-
+        treeMapUtils.instantiateLists()
         val lastRecyclerPosition = dataList[listAdapter.itemCount - 1]
         if (rounds == 1) {
             lastRecyclerPosition.restClockValue.text = FormatUtils.convertTimeToDigitalClock("0")
@@ -610,7 +624,7 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     private lateinit var calendarDB: CalendarDB
     private lateinit var exercisesScreenDB: ExercisesScreenDB
-
+    private var isListReady = true
     private fun onEndOfWorkout() {
 
         binding.playPauseFab.setImageResource(android.R.drawable.ic_media_play)
@@ -634,7 +648,15 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
         ClockSelected.clockSelected = ClockSelectedEnum.Idle
         startTime = ""
 
-        exerciseDetailsPostWorkout()
+        Log.i("WF","EndOfWorkout")
+        if (treeMapUtils.isHashMapPrepared()) {
+            saveHashmapToPaperDB()
+            treeMapUtils.instantiateLists()
+        }
+        else {
+            treeMapUtils.instantiateLists()
+            exerciseDetailsPostWorkout()
+        }
     }
 
     private fun exerciseDetailsPostWorkout() {
@@ -771,6 +793,32 @@ open class WorkoutFragment : DialogFragment(), RecyclerViewInterface {
 
     }
 
+    private fun insertWeightReps() {
+        Log.i("WF_List", listAdapter.itemCount.toString())
+        treeMapUtils.exerciseNameStringList.add("Exercise Name")
+        treeMapUtils.roundWeightStringList.add("Weight")
+        treeMapUtils.roundRepsStringList.add("Reps")
+        for (i: Int in 0 until listAdapter.itemCount) {
+            val holder: ExerciseRecyclerAdapter.ViewHolder? = (recyclerView.adapter as ExerciseRecyclerAdapter).getViewByPosition(i)
+            treeMapUtils.exerciseNameStringList.add(holder!!.exerciseName.text.toString())
+            treeMapUtils.roundWeightEditTexts.add(holder.weightEditText)
+            treeMapUtils.roundRepsEditTexts.add(holder.repsEditText)
+
+            Log.i("exerciseNameStringList", treeMapUtils.exerciseNameStringList[i+1])
+            Log.i("roundWeightStringList", holder.weightEditText.text.toString())
+            Log.i("roundRepsStringList", holder.repsEditText.text.toString())
+}
+//            roundWeightStringList.add(holder.weightEditText.text.toString())
+//            roundRepsStringList.add(holder.repsEditText.text.toString())
+
+//            if(roundWeightStringList[i].isEmpty() || roundRepsStringList[i].isEmpty())
+//                isListReady = false
+    }
+
+    private fun saveHashmapToPaperDB() {
+        val exercisesScreenDB = ExercisesScreenDB(context)
+        exercisesScreenDB.saveHashMapDetailsOnEndWorkout(requireContext(), null, treeMapUtils)
+    }
 
     private fun removeAllRecyclerViews() {
 

@@ -1,6 +1,7 @@
 package com.gym.o.gymoclock.functionality.common.workout_db_calls
 
 import android.os.CountDownTimer
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -101,6 +102,9 @@ fun WorkoutFragment.addEditExercise() {
         val restClock: TextView = dialogBuilderUtils.viewRecycler.findViewById(R.id.countdown_rest)
         restClock.text = dialogBuilderUtils.restDigitalTime.text.toString()//FormatUtils.convertTimeToDigitalClock(dialogBuilderExercise.restTimePicker.text.toString())
 
+        val weightEditText: EditText = dialogBuilderUtils.viewRecycler.findViewById(R.id.weight_edit)
+        val repsEditText: EditText = dialogBuilderUtils.viewRecycler.findViewById(R.id.reps_edit)
+
         workCountDown = object : CountDownTimer(0, 1000) {
             override fun onTick(millsUntilFinish: Long) {
                 workTimeInMillis = millsUntilFinish
@@ -118,7 +122,9 @@ fun WorkoutFragment.addEditExercise() {
 
         dataList.add(
             ExerciseElements(
-                exerciseName, exerciseClock, restClock, workCountDown, restCountDown,
+                exerciseName, exerciseClock, restClock,
+                weightEditText, repsEditText,
+                workCountDown, restCountDown,
                 wTimerIsRunning = false, wTimerIsPaused = false,
                 rTimerIsRunning = false, rTimerIsPaused = false
             )

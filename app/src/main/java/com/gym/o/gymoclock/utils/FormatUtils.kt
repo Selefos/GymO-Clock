@@ -180,7 +180,7 @@ class FormatUtils {
             return String(updatedArr)
         }
 
-        fun textChangeListenerDecimal(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?, button: ImageButton) {
+        fun textChangeListenerDecimal(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?, button: ImageButton?) {
             editText.addTextChangedListener(object : TextWatcher {
                 var indexOfDecimalPoint = 0
                 var isUserInput = true
@@ -193,7 +193,7 @@ class FormatUtils {
                     if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
                         isUserInput = false
 
-                        if(editableString.isNotEmpty()) {
+                        if (editableString.isNotEmpty()) {
                             if (!editableString.contains(".") && editableString != "0" && indexOfDecimalPoint == editableString.length - 1 && indexOfDecimalPoint != 0)
                                 editableString = addChar(editableString, '.', indexOfDecimalPoint)
 
@@ -205,8 +205,10 @@ class FormatUtils {
                             editText.setText(editableString)
                             editText.setSelection(editText.length()) // keep cursor at the end of edittext
                         }
-                        button.isEnabled = true
-                        button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                        if (button != null) {
+                            button.isEnabled = true
+                            button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                        }
                     }
                 }
 
@@ -217,9 +219,11 @@ class FormatUtils {
 
                     editText.setOnKeyListener { _, _, _ ->
                         isUserInput = true
-                        if (button.isEnabled) {
-                            button.isEnabled = false
-                            button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                        if (button != null) {
+                            if (button.isEnabled) {
+                                button.isEnabled = false
+                                button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                            }
                         }
 
                         if (editableString.length == 3 && !editableString.contains(".") && isUserInput) {
@@ -238,7 +242,7 @@ class FormatUtils {
                     }
 
                     //apply text to all weight edit_texts
-                    if (editTextArray != null){
+                    if (editTextArray != null) {
                         for (i in editTextArray.indices)
                             editTextArray[i].text = editText.text
                     }
@@ -253,7 +257,7 @@ class FormatUtils {
             })
         }
 
-        fun textChangeListenerInteger(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?,button: ImageButton){
+        fun textChangeListenerInteger(context: Context, editText: EditText, editTextArray: ArrayList<EditText>?, button: ImageButton?) {
             editText.addTextChangedListener(object : TextWatcher {
                 var isUserInput = true
                 private var delay: Long = 2000 // x seconds after user stops typing
@@ -266,15 +270,17 @@ class FormatUtils {
                     if (System.currentTimeMillis() > lastTextEdit + delay - 500) {
                         isUserInput = false
 
-                        if(editableString.isNotEmpty()) {
+                        if (editableString.isNotEmpty()) {
                             editableString = removeTrailingZeros(editableString)
 
                             editText.setText(editableString)
                             editText.setSelection(editText.length()) // keep cursor at the end of edittext
                         }
 
-                        button.isEnabled = true
-                        button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                        if (button != null) {
+                            button.isEnabled = true
+                            button.background.setTint(ContextCompat.getColor(context, R.color.custom_text_color))
+                        }
                     }
                 }
 
@@ -285,9 +291,11 @@ class FormatUtils {
                     editText.setOnKeyListener { _, _, _ ->
                         isUserInput = true
                         Log.i("setOnKeyListener", "$isUserInput")
-                        if (button.isEnabled) {
-                            button.isEnabled = false
-                            button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                        if (button != null) {
+                            if (button.isEnabled) {
+                                button.isEnabled = false
+                                button.background.setTintList(ContextCompat.getColorStateList(context, R.color.grayed_icons))
+                            }
                         }
                         false
                     }
@@ -298,7 +306,7 @@ class FormatUtils {
                     }
 
                     //apply text to all weight edit_texts
-                    if(editTextArray != null) {
+                    if (editTextArray != null) {
                         for (i in editTextArray.indices)
                             editTextArray[i].text = editText.text
                     }

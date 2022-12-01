@@ -30,6 +30,8 @@
     <string name="total_time">Total Time</string>
     <string name="initial_remaining_time">-</string>
     <string name="prepare_for_workout"> </string>
+    <string name="weight">weight</string>
+    <string name="reps">reps</string>
     <!--  __________________________________________________  -->
     <!--  ________________Navigation Drawer_________________  -->
     <string name="open">Open</string>

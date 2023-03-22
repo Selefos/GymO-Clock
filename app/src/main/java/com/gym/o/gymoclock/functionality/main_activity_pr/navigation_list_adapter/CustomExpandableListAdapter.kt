@@ -12,7 +12,7 @@ import com.gym.o.gymoclock.MainActivity
 import com.gym.o.gymoclock.R
 
 
-class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<MenuModel>, listChild: HashMap<MenuModel, List<MenuModel>?>) : BaseExpandableListAdapter() {
+class CustomExpandableListAdapter(mainActivity: MainActivity, listIcon: List<MenuModel>, listTitle: List<MenuModel>, listChild: HashMap<MenuModel, List<MenuModel>?>) : BaseExpandableListAdapter() {
     private var context: Context? = null
     private var listIcon: List<MenuModel>? = null
     private var listTitle: List<MenuModel>? = null
@@ -20,6 +20,7 @@ class CustomExpandableListAdapter(mainActivity: MainActivity, listTitle: List<Me
 
     init {
         this.context = mainActivity
+        this.listIcon = listIcon
         this.listTitle = listTitle
         this.listItem = listChild
     }

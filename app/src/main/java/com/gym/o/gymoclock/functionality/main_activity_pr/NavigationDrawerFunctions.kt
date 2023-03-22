@@ -83,7 +83,7 @@ fun MainActivity.prepareMenuData() {
 
 
 fun MainActivity.populateList() {
-    expandableAdapter = CustomExpandableListAdapter(this, listTitle, listChild)
+    expandableAdapter = CustomExpandableListAdapter(this, listIcon, listTitle, listChild)
     expandableListView.setAdapter(expandableAdapter)
 
     expandableListView.setOnGroupClickListener { parent, v, groupPosition, id ->

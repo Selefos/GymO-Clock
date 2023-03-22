@@ -47,7 +47,7 @@ class DialogBuilderUtils(context: Context) : AlertDialog.Builder(context) {
     val verifyButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.ok_button)
     val cancelButtonEditExercise: ImageButton = viewAddOrEditExercise.findViewById(R.id.cancel_button)
 
-    private val viewRemoveExercise: View = inflater.inflate(R.layout.delete_exercise, null)
+    private val viewRemoveExercise: View = inflater.inflate(R.layout.dialog_delete_exercise, null)
     val okButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.verify_exercise_delete)
     val cancelButtonRemoveExercise: Button = viewRemoveExercise.findViewById(R.id.cancel_exercise_delete)
 

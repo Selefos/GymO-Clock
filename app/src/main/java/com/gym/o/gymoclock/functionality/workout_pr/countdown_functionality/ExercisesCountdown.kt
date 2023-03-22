@@ -105,11 +105,14 @@ fun ExerciseRecyclerAdapter.startRestTimer(positionData: Int) {
 //                dataList.clear()
 //                notifyDataSetChanged()
 
-                // temp fix, recycler view positions load at ui thread
-                // if the handler gets removed the 1st positions' 1st clock
-                // will not animate after the re-load  and the 2nd or third positions'
-                // 2nd clock will have the progress bar not reset by
-                /** @see com.gym.o.gymoclock.ui.workout.WorkoutFragment.resetProgressBar **/
+
+                /**
+                 * temp fix, recycler view positions load at ui thread
+                 * if the handler gets removed the 1st positions' 1st clock
+                 * will not animate after the re-load  and the 2nd or third positions'
+                 * 2nd clock will have the progress bar not reset by
+                 * @see com.gym.o.gymoclock.ui.workout.WorkoutFragment.resetProgressBar
+                 */
 
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
